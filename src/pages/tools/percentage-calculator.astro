@@ -1,0 +1,53 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('percentage-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'How do you convert a 4.0 GPA to a percentage?',
+    answer:
+      'A widely used standard formula is: Percentage = (GPA / 4.0) * 100. However, some universities use tiered conversion charts where 3.7 = 90-92% and 4.0 = 93-100%. Our tool provides both formulaic and official chart comparisons.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">GPA to Percentage Conversion</h2>
+        <p class="text-xs text-slate-500 mb-4">Convert college GPA or CGPA into official percentage equivalents.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField id="input-gpa" label="Your Current GPA" type="number" step="0.01" value="3.82" />
+          <InputField id="input-max-gpa" label="Scale Maximum" type="number" step="1" value="4.0" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Percentage Equivalent"
+        primaryValue="95.5%"
+        primaryLabel="Standard Percentage Equivalent"
+        badge="First Class / Distinction"
+        badgeTone="success"
+        secondaryStats={[
+          { label: '4.0 Scale', value: '3.82', subtext: 'Input GPA' },
+          { label: 'Letter Grade', value: 'A', subtext: 'Equivalent' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">International Grading Equivalencies</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Converting GPA to percentage is frequently required for graduate school admissions, scholarship applications, and international credential evaluation services (such as WES).
+    </p>
+  </div>
+</ToolLayout>

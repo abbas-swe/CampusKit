@@ -1,0 +1,90 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import Button from '../components/common/Button.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+
+const breadcrumbs = [{ name: 'About CampusKit', item: '/about' }];
+---
+
+<BaseLayout
+  title="About CampusKit"
+  description="Learn about CampusKit's mission: providing fast, free, accessible academic tools and calculators for university students worldwide without account walls."
+  canonical="/about"
+  breadcrumbs={breadcrumbs}
+  activeNavPath="/about"
+>
+  <div class="bg-white border-b border-slate-200">
+    <Container size="lg" class="py-12 sm:py-16">
+      <Breadcrumbs items={breadcrumbs} />
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-700 border border-academic-200/80 mt-4 mb-4">
+        <span>Our Mission & Ethos</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+        Tools for university life, engineered without friction.
+      </h1>
+      <p class="mt-4 text-lg text-slate-600 leading-relaxed max-w-2xl">
+        CampusKit was built on a simple premise: college students need accurate, fast academic tools without mandatory accounts, cluttered paywalls, or privacy-invasive tracking.
+      </p>
+    </Container>
+  </div>
+
+  <div class="py-12 sm:py-16 bg-slate-50">
+    <Container size="lg">
+      <div class="prose prose-slate max-w-none space-y-12">
+        <!-- Core Pillars -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 not-prose">
+          <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-subtle">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-md bg-academic-100 text-academic-700 flex items-center justify-center font-bold text-xs">1</span>
+              Zero-Account Accessibility
+            </h2>
+            <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+              When midterms and finals arrive, students should not have to create yet another username and password just to compute their GPA or check what they need on a final exam.
+            </p>
+          </div>
+
+          <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-subtle">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-md bg-academic-100 text-academic-700 flex items-center justify-center font-bold text-xs">2</span>
+              Client-Side Local Privacy
+            </h2>
+            <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+              Your grades, GPA predictions, and course schedules compute entirely inside your web browser. We do not store student academic records on remote databases.
+            </p>
+          </div>
+
+          <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-subtle">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-md bg-academic-100 text-academic-700 flex items-center justify-center font-bold text-xs">3</span>
+              Universal Academic Calibration
+            </h2>
+            <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+              Calibrated for higher education institutions in the United States, United Kingdom, Canada, and global universities using 4.0, 5.0, 10.0, and weighted percentage scales.
+            </p>
+          </div>
+
+          <div class="p-6 bg-white rounded-xl border border-slate-200 shadow-subtle">
+            <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+              <span class="w-7 h-7 rounded-md bg-academic-100 text-academic-700 flex items-center justify-center font-bold text-xs">4</span>
+              High-Speed Static Architecture
+            </h2>
+            <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+              Built with cutting-edge static rendering to deliver near-instantaneous page loads, accessible contrast ratios, and responsive touch controls on mobile devices.
+            </p>
+          </div>
+        </div>
+
+        <div class="bg-academic-900 text-white rounded-2xl p-8 sm:p-10 not-prose flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div>
+            <h3 class="text-2xl font-bold">Ready to calculate your GPA?</h3>
+            <p class="text-academic-200 text-sm mt-1">Free, instant, and configured with standard North American 4.0 grading.</p>
+          </div>
+          <Button href="/tools/gpa-calculator" variant="primary" size="lg" class="bg-white text-academic-900 hover:bg-academic-50 border-white">
+            Open GPA Calculator
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>

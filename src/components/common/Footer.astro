@@ -1,0 +1,138 @@
+---
+import Container from './Container.astro';
+
+const currentYear = new Date().getFullYear();
+
+const academicTools = [
+  { name: 'GPA Calculator', href: '/tools/gpa-calculator' },
+  { name: 'CGPA Calculator', href: '/tools/cgpa-calculator' },
+  { name: 'Weighted Grade Calculator', href: '/tools/grade-calculator' },
+  { name: 'Final Grade Calculator', href: '/tools/final-grade-calculator' },
+  { name: 'Attendance Calculator', href: '/tools/attendance-calculator' },
+  { name: 'Marks Needed Calculator', href: '/tools/marks-needed-calculator' },
+  { name: 'GPA to Percentage', href: '/tools/percentage-calculator' },
+];
+
+const productivityTools = [
+  { name: 'Study Hours Calculator', href: '/tools/study-hours-calculator' },
+  { name: 'Exam Countdown Timer', href: '/tools/exam-countdown' },
+  { name: 'Academic Pomodoro', href: '/tools/pomodoro-timer' },
+];
+
+const legalLinks = [
+  { name: 'About CampusKit', href: '/about' },
+  { name: 'Contact & Feedback', href: '/contact' },
+  { name: 'Privacy Policy', href: '/privacy' },
+  { name: 'Terms of Service', href: '/terms' },
+];
+---
+
+<footer class="bg-slate-900 text-slate-300 border-t border-slate-800 mt-auto">
+  <Container size="xl" class="py-12 sm:py-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+      <!-- Brand column -->
+      <div class="lg:col-span-2 flex flex-col">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-lg bg-academic-600 flex items-center justify-center text-white font-bold">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 7H7a3 3 0 00-3 3v4a3 3 0 003 3h2" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 7v10" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 7.5L14.5 12L20.5 16.5" />
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-white tracking-tight">CampusKit</span>
+        </div>
+
+        <p class="mt-3 text-sm text-slate-400 max-w-sm leading-relaxed">
+          Tools for university life. Precision academic calculators and productivity utilities engineered for students worldwide with zero account friction.
+        </p>
+
+        <!-- Trust highlights -->
+        <div class="mt-6 flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            100% Free
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            No Account Required
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700">
+            <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Runs Locally in Browser
+          </span>
+        </div>
+      </div>
+
+      <!-- Academic Tools Column -->
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4">
+          Academic Calculators
+        </h3>
+        <ul class="space-y-2.5 text-sm">
+          {
+            academicTools.map((tool) => (
+              <li>
+                <a href={tool.href} class="text-slate-400 hover:text-white transition-colors">
+                  {tool.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Productivity Tools Column -->
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4">
+          Study Productivity
+        </h3>
+        <ul class="space-y-2.5 text-sm">
+          {
+            productivityTools.map((tool) => (
+              <li>
+                <a href={tool.href} class="text-slate-400 hover:text-white transition-colors">
+                  {tool.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <!-- Platform & Legal Column -->
+      <div>
+        <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-4">
+          Platform & Trust
+        </h3>
+        <ul class="space-y-2.5 text-sm">
+          {
+            legalLinks.map((item) => (
+              <li>
+                <a href={item.href} class="text-slate-400 hover:text-white transition-colors">
+                  {item.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom copyright row -->
+    <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+      <p>© {currentYear} CampusKit. Built for university students worldwide.</p>
+      <div class="flex items-center gap-6">
+        <a href="/privacy" class="hover:text-slate-400 transition-colors">Privacy</a>
+        <a href="/terms" class="hover:text-slate-400 transition-colors">Terms</a>
+        <a href="/contact" class="hover:text-slate-400 transition-colors">Contact</a>
+      </div>
+    </div>
+  </Container>
+</footer>

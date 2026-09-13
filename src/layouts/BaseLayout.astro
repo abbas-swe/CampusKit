@@ -1,0 +1,42 @@
+---
+import SEOHead from '../components/common/SEOHead.astro';
+import Header from '../components/common/Header.astro';
+import Footer from '../components/common/Footer.astro';
+import type { SEOProps } from '../types/seo';
+import '../styles/global.css';
+
+interface Props extends SEOProps {
+  activeNavPath?: string;
+  hideFooter?: boolean;
+}
+
+const { activeNavPath, hideFooter = false, ...seoProps } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="h-full scroll-smooth">
+  <head>
+    <SEOHead {...seoProps} />
+    <slot name="head" />
+  </head>
+  <body class="min-h-full flex flex-col bg-slate-50 text-slate-900 selection:bg-blue-100 selection:text-academic-900">
+    <!-- Skip to main content for accessibility -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-50 px-4 py-2 bg-academic-700 text-white font-medium rounded-lg shadow-elevated focus:outline-none"
+    >
+      Skip to main content
+    </a>
+
+    <!-- Global Header -->
+    <Header activePath={activeNavPath} />
+
+    <!-- Main Content Landmark -->
+    <main id="main-content" class="flex-grow flex flex-col">
+      <slot />
+    </main>
+
+    <!-- Global Footer -->
+    {!hideFooter && <Footer />}
+  </body>
+</html>

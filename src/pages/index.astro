@@ -1,0 +1,30 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/home/Hero.astro';
+import PopularTools from '../components/home/PopularTools.astro';
+import CategorySection from '../components/home/CategorySection.astro';
+import WhyCampusKit from '../components/home/WhyCampusKit.astro';
+import AITeaser from '../components/home/AITeaser.astro';
+import { SITE_TAGLINE, DEFAULT_DESCRIPTION } from '../utils/seo';
+---
+
+<BaseLayout
+  title="CampusKit"
+  description={DEFAULT_DESCRIPTION}
+  activeNavPath="/"
+>
+  <!-- 1. Hero with Brand, Tagline, Value Prop, and Instant Search -->
+  <Hero />
+
+  <!-- 2. Most Popular Academic Tools -->
+  <PopularTools />
+
+  <!-- 3. Tool Directory by Category (Academic, Productivity, AI) -->
+  <CategorySection />
+
+  <!-- 4. Why CampusKit Core Value Pillars -->
+  <WhyCampusKit />
+
+  <!-- 5. Small, Unobtrusive AI Feature Teaser -->
+  <AITeaser />
+</BaseLayout>

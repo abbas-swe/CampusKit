@@ -1,0 +1,61 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('grade-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'How do weighted course grades work?',
+    answer:
+      'In a weighted grading system, each assessment category (e.g., Homework 20%, Midterms 30%, Final 50%) counts for a specific proportion of your overall course grade regardless of total raw points.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Course Assessment Categories</h2>
+        <p class="text-xs text-slate-500 mb-4">Add your coursework categories and assigned syllabus percentages.</p>
+        <div class="space-y-3">
+          <div class="grid grid-cols-12 gap-3 items-center">
+            <div class="col-span-6"><InputField id="cat-1-name" label="Category" value="Assignments & Homework" /></div>
+            <div class="col-span-3"><InputField id="cat-1-weight" label="Weight" suffix="%" value="25" type="number" /></div>
+            <div class="col-span-3"><InputField id="cat-1-score" label="Your Score" suffix="%" value="92" type="number" /></div>
+          </div>
+          <div class="grid grid-cols-12 gap-3 items-center">
+            <div class="col-span-6"><InputField id="cat-2-name" label="Category" value="Midterm Exam" /></div>
+            <div class="col-span-3"><InputField id="cat-2-weight" label="Weight" suffix="%" value="30" type="number" /></div>
+            <div class="col-span-3"><InputField id="cat-2-score" label="Your Score" suffix="%" value="88" type="number" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Weighted Grade Standing"
+        primaryValue="89.8%"
+        primaryLabel="Current Running Course Grade"
+        badge="Letter Grade: B+"
+        badgeTone="info"
+        secondaryStats={[
+          { label: 'Weight Graded', value: '55%', subtext: 'Completed' },
+          { label: 'Remaining', value: '45%', subtext: 'To Be Graded' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Calculating Weighted Grades</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      To calculate your weighted grade, multiply the average percentage score for each category by its syllabus weight percentage, sum the products, and divide by the total weight completed.
+    </p>
+  </div>
+</ToolLayout>

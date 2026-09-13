@@ -1,0 +1,149 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import ToolCard from '../components/tools/ToolCard.astro';
+import type { ToolMetadata } from '../types/tools';
+import type { FAQItem } from '../types/seo';
+import { generateSoftwareApplicationSchema } from '../utils/seo';
+import { TOOLS } from '../data/tools';
+
+interface Props {
+  tool: ToolMetadata;
+  faqs?: FAQItem[];
+  canonical?: string;
+  metaDescription?: string;
+}
+
+const { tool, faqs = [], canonical, metaDescription } = Astro.props;
+
+const breadcrumbs = [
+  { name: 'Tools', item: '/#tools' },
+  { name: tool.name, item: `/tools/${tool.slug}` },
+];
+
+const structuredData = generateSoftwareApplicationSchema({
+  name: `${tool.name} - CampusKit`,
+  description: tool.description,
+  url: `/tools/${tool.slug}`,
+  category: tool.category,
+});
+
+// Find related tools from data
+const relatedTools = TOOLS.filter(
+  (t) => tool.relatedToolSlugs.includes(t.slug) && t.slug !== tool.slug
+).slice(0, 3);
+---
+
+<BaseLayout
+  title={tool.name}
+  description={metaDescription || tool.description}
+  canonical={canonical || `/tools/${tool.slug}`}
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  structuredData={structuredData}
+>
+  <!-- Tool Header Banner -->
+  <div class="bg-white border-b border-slate-200">
+    <Container size="xl" class="py-6 sm:py-8">
+      <Breadcrumbs items={breadcrumbs} />
+
+      <div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-academic-50 text-academic-700 border border-academic-200">
+              {tool.category}
+            </span>
+            {
+              tool.badge && (
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                  {tool.badge}
+                </span>
+              )
+            }
+          </div>
+          <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900">
+            {tool.name}
+          </h1>
+          <p class="mt-2 text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
+            {tool.tagline}
+          </p>
+        </div>
+
+        <!-- Quick tool meta -->
+        <div class="flex items-center gap-4 text-xs sm:text-sm text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-200/80 self-start md:self-auto">
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>Client-side secure</span>
+          </div>
+          <span class="text-slate-300">•</span>
+          <div class="flex items-center gap-1.5">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span>{tool.estimatedTime || '< 1 min'}</span>
+          </div>
+        </div>
+      </div>
+    </Container>
+  </div>
+
+  <!-- Interactive Tool Workspace -->
+  <div class="py-8 sm:py-12 bg-slate-50">
+    <Container size="xl">
+      <slot />
+    </Container>
+  </div>
+
+  <!-- Educational Guide / Instructions / SEO Content Slot -->
+  <div class="py-12 bg-white border-t border-slate-200">
+    <Container size="lg">
+      <slot name="guide" />
+
+      <!-- FAQ Accordion / List if faqs provided -->
+      {
+        faqs.length > 0 && (
+          <div class="mt-12 pt-8 border-t border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-900 tracking-tight mb-6">
+              Frequently Asked Questions
+            </h2>
+            <div class="space-y-4">
+              {faqs.map((faq) => (
+                <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/50">
+                  <h3 class="text-base font-semibold text-slate-900">{faq.question}</h3>
+                  <p class="mt-2 text-sm text-slate-600 leading-relaxed">{faq.answer}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      }
+    </Container>
+  </div>
+
+  <!-- Related Tools Recommendation -->
+  {
+    relatedTools.length > 0 && (
+      <div class="py-12 bg-slate-50 border-t border-slate-200">
+        <Container size="xl">
+          <div class="flex items-center justify-between mb-6">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Related University Tools
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">Explore companion calculators for this academic term.</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {relatedTools.map((relTool) => (
+              <ToolCard tool={relTool} />
+            ))}
+          </div>
+        </Container>
+      </div>
+    )
+  }
+</BaseLayout>

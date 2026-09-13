@@ -1,0 +1,53 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('study-hours-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'How many hours should I study per college credit?',
+    answer:
+      'The traditional Carnegie rule recommends studying 2 to 3 hours outside of class for every 1 credit hour enrolled. For a standard 15-credit semester, this equates to 30 to 45 hours of dedicated study per week.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Weekly Course Load & Rigor</h2>
+        <p class="text-xs text-slate-500 mb-4">Input total credit hours and estimated course difficulty.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField id="credit-hours" label="Total Semester Credit Hours" type="number" value="15" />
+          <InputField id="multiplier" label="Target Ratio (Hours per Credit)" type="number" step="0.5" value="2.5" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Recommended Study Schedule"
+        primaryValue="37.5 hrs"
+        primaryLabel="Total Outside-of-Class Study / Week"
+        badge="Full-Time Workload"
+        badgeTone="info"
+        secondaryStats={[
+          { label: 'Daily Study', value: '5.4 hrs', subtext: '7 Days / Week' },
+          { label: 'Class Time', value: '15.0 hrs', subtext: 'In Lectures' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">The Carnegie Unit Study Rule</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Higher education accreditation relies on the Carnegie rule, which assumes that each credit hour represents one hour of direct instruction and at least two hours of out-of-class student work each week for a 15-week semester.
+    </p>
+  </div>
+</ToolLayout>

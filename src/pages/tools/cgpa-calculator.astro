@@ -1,0 +1,74 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Button from '../../components/common/Button.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('cgpa-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'What is the difference between GPA and CGPA?',
+    answer:
+      'GPA (Grade Point Average) typically refers to your academic standing in a single academic semester or term. CGPA (Cumulative Grade Point Average) measures your overall academic performance across all completed semesters throughout your entire degree program.',
+  },
+  {
+    question: 'How do you calculate Cumulative GPA across semesters?',
+    answer:
+      'To calculate CGPA, sum the total quality points earned across all completed semesters and divide by the total credit hours completed across all semesters: CGPA = (Total Cumulative Quality Points) / (Total Cumulative Credits).',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Previous Academic Record</h2>
+        <p class="text-xs text-slate-500 mb-4">Enter your existing cumulative GPA and completed credits before the current term.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField id="prev-cgpa" label="Current Cumulative GPA" type="number" step="0.01" value="3.65" placeholder="e.g. 3.65" />
+          <InputField id="prev-credits" label="Total Completed Credits" type="number" step="1" value="45" placeholder="e.g. 45" />
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Current Semester Projection</h2>
+            <p class="text-xs text-slate-500">Anticipated GPA and credit hours for the active term.</p>
+          </div>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Active Term</span>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField id="term-gpa" label="Estimated Term GPA" type="number" step="0.01" value="3.80" placeholder="e.g. 3.80" />
+          <InputField id="term-credits" label="Current Term Credits" type="number" step="1" value="15" placeholder="e.g. 15" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Projected Cumulative GPA"
+        primaryValue="3.69"
+        primaryLabel="Updated Cumulative GPA"
+        badge="Degree Standing"
+        badgeTone="success"
+        secondaryStats={[
+          { label: 'Total Credits', value: '60.0', subtext: 'Degree Total' },
+          { label: 'Quality Points', value: '221.2', subtext: 'Cumulative' },
+          { label: 'Change', value: '+0.04', subtext: 'From Prior' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Understanding Cumulative GPA (CGPA)</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Cumulative Grade Point Average (CGPA) reflects your broader undergraduate or graduate academic record. As you advance through university degrees (Freshman, Sophomore, Junior, Senior), each new semester adds to your cumulative credit weighting.
+    </p>
+  </div>
+</ToolLayout>

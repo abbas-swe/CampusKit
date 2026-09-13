@@ -1,0 +1,254 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Button from '../../components/common/Button.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import SelectField from '../../components/tools/SelectField.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import { GPA_SCALES, DEFAULT_SCALE_TYPE, DEFAULT_INITIAL_COURSES } from '../../data/gpaScales';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('gpa-calculator')!;
+
+const gpaFaqs: FAQItem[] = [
+  {
+    question: 'How is university GPA calculated?',
+    answer:
+      'GPA is calculated by multiplying the grade points earned in each course by the course credit hours to obtain total Quality Points, then dividing that sum by the total number of credit hours attempted: GPA = (Total Quality Points) / (Total Credits).',
+  },
+  {
+    question: 'What is the difference between a 4.0 and 5.0 GPA scale?',
+    answer:
+      'A 4.0 scale is the standard unweighted grading system across US and Canadian universities, where an A represents 4.0 points. A 5.0 scale is typically used for honors, AP, or specialized international curricula, awarding an extra point (up to 5.0) for advanced coursework.',
+  },
+  {
+    question: 'Do Pass/Fail or Withdrawn (W) courses affect my GPA?',
+    answer:
+      'At most institutions, courses graded as Pass/Fail, Satisfactory/Unsatisfactory (S/U), or Withdrawn (W) do not impact your GPA and are excluded from the grade point calculation, although they may satisfy degree credit requirements.',
+  },
+  {
+    question: 'What is considered a good GPA in college?',
+    answer:
+      'A GPA of 3.0 (B average) is generally considered good standing. A 3.5 or higher typically qualifies students for the Dean’s List, academic honors, and competitive graduate programs. Most graduate schools require a minimum GPA of 3.0 for admission.',
+  },
+];
+
+const scaleOptions = Object.values(GPA_SCALES).map((s) => ({
+  value: s.type,
+  label: s.name,
+}));
+
+const gradeOptions = GPA_SCALES['4.0'].grades.map((g) => ({
+  value: g.letter,
+  label: `${g.letter} (${g.points.toFixed(1)})`,
+}));
+---
+
+<ToolLayout
+  tool={tool}
+  faqs={gpaFaqs}
+  metaDescription="Free college GPA calculator supporting 4.0, 5.0, 10.0, and custom scales. Calculate semester and cumulative GPA with credit hours and letter grades."
+>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <!-- Left / Calculator Configuration & Courses (2 Cols) -->
+    <div class="lg:col-span-2 space-y-6">
+      <!-- Scale Selection Card -->
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Grading Scale</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Select the scale used by your college or university.</p>
+          </div>
+          <div class="w-full sm:w-64">
+            <SelectField
+              id="gpa-scale-select"
+              label="Grading Scale"
+              value={DEFAULT_SCALE_TYPE}
+              options={scaleOptions}
+            />
+          </div>
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-600 bg-slate-50/80 p-3 rounded-lg">
+          <svg class="w-4 h-4 text-academic-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span id="scale-description-text">
+            Standard North American 4.0 unweighted scale. A = 4.0, B = 3.0, C = 2.0, D = 1.0, F = 0.0.
+          </span>
+        </div>
+      </div>
+
+      <!-- Course Entry Table Card (Architecture Shell for Phase 2) -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-subtle overflow-hidden">
+        <div class="p-6 pb-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-slate-900">Course Grades & Credits</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Enter your courses, expected letter grades, and credit hours.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <Button variant="outline" size="sm" id="reset-courses-btn">
+              <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Reset
+            </Button>
+            <Button variant="primary" size="sm" id="add-course-btn">
+              <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Add Course
+            </Button>
+          </div>
+        </div>
+
+        <!-- Course Rows Container -->
+        <div class="p-6">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm" id="courses-table">
+              <thead>
+                <tr class="border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  <th class="pb-3 pl-1 font-medium">Course Name</th>
+                  <th class="pb-3 px-3 font-medium w-36 sm:w-44">Grade</th>
+                  <th class="pb-3 px-3 font-medium w-24 sm:w-32">Credits</th>
+                  <th class="pb-3 pr-1 font-medium w-12 text-center">Remove</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="courses-body">
+                {
+                  DEFAULT_INITIAL_COURSES.map((course, idx) => (
+                    <tr class="course-row group" data-course-id={course.id}>
+                      <td class="py-3 pl-1">
+                        <input
+                          type="text"
+                          value={course.name}
+                          placeholder={`Course ${idx + 1}`}
+                          class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+                          aria-label={`Course ${idx + 1} Name`}
+                        />
+                      </td>
+                      <td class="py-3 px-3">
+                        <select
+                          class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer"
+                          aria-label={`Course ${idx + 1} Grade`}
+                        >
+                          {gradeOptions.map((opt) => (
+                            <option value={opt.value} selected={opt.value === course.letterGrade}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td class="py-3 px-3">
+                        <input
+                          type="number"
+                          min="0"
+                          max="20"
+                          step="0.5"
+                          value={course.credits}
+                          class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+                          aria-label={`Course ${idx + 1} Credits`}
+                        />
+                      </td>
+                      <td class="py-3 pr-1 text-center">
+                        <button
+                          type="button"
+                          class="p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-rose-50 transition-colors"
+                          aria-label={`Remove Course ${idx + 1}`}
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right / Results Card & Summary (1 Col) -->
+    <div class="space-y-6">
+      <ResultCard
+        title="Term GPA Result"
+        primaryValue="3.73"
+        primaryLabel="Grade Point Average (4.0 Scale)"
+        badge="Dean's List / Honors"
+        badgeTone="success"
+        secondaryStats={[
+          { label: 'Total Credits', value: '13.0', subtext: 'Attempted' },
+          { label: 'Quality Points', value: '48.5', subtext: 'Earned' },
+          { label: 'Academic Standing', value: 'Honors', subtext: 'Top Tier' },
+        ]}
+      >
+        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2 text-xs text-slate-500">
+          <div class="flex justify-between items-center">
+            <span>Percentage Equivalent:</span>
+            <span class="font-bold text-slate-700">~ 93.3%</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span>Scale Ceiling:</span>
+            <span class="font-bold text-slate-700">4.00 Max</span>
+          </div>
+        </div>
+      </ResultCard>
+
+      <!-- Quick Guidance Card -->
+      <div class="p-5 rounded-xl bg-academic-50/70 border border-academic-200/80 text-academic-900">
+        <h3 class="text-sm font-bold flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          Phase 2 Foundation Ready
+        </h3>
+        <p class="mt-2 text-xs text-academic-800 leading-relaxed">
+          The mathematical engine in <code class="px-1 py-0.5 bg-white/80 rounded font-mono text-[11px]">src/utils/gpa.ts</code> and scale definitions in <code class="px-1 py-0.5 bg-white/80 rounded font-mono text-[11px]">src/data/gpaScales.ts</code> are fully prepared for interactive DOM bindings in the upcoming phase.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Educational Guide Slot (High-Value SEO Content) -->
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
+      How University GPA is Calculated
+    </h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Your Grade Point Average (GPA) is the official metric colleges and universities use to quantify your overall academic achievement. Rather than a simple average of course grades, a university GPA is <strong>credit-weighted</strong>: courses that carry more credit hours contribute proportionally more to your final score than lower-credit electives.
+    </p>
+
+    <h3 class="text-lg font-bold text-slate-900 mt-6">The Standard GPA Formula</h3>
+    <div class="my-4 p-4 rounded-xl bg-slate-100 border border-slate-200 font-mono text-sm text-slate-800 text-center">
+      GPA = &Sigma; (Course Grade Points &times; Course Credit Hours) &divide; &Sigma; (Total Credit Hours)
+    </div>
+
+    <h3 class="text-lg font-bold text-slate-900 mt-6">Standard 4.0 Scale Letter Grade Conversion Chart</h3>
+    <div class="mt-4 overflow-x-auto">
+      <table class="min-w-full text-left text-sm border-collapse">
+        <thead>
+          <tr class="border-b border-slate-300 text-xs font-semibold uppercase text-slate-700 bg-slate-100">
+            <th class="py-2.5 px-4">Letter Grade</th>
+            <th class="py-2.5 px-4">Grade Points (4.0 Scale)</th>
+            <th class="py-2.5 px-4">Standard Percentage</th>
+            <th class="py-2.5 px-4">Academic Meaning</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 text-slate-600">
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">A+ / A</td><td class="py-2 px-4">4.0</td><td class="py-2 px-4">93 – 100%</td><td class="py-2 px-4">Excellent / High Honors</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">A-</td><td class="py-2 px-4">3.7</td><td class="py-2 px-4">90 – 92%</td><td class="py-2 px-4">Very Good</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">B+</td><td class="py-2 px-4">3.3</td><td class="py-2 px-4">87 – 89%</td><td class="py-2 px-4">Good</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">B</td><td class="py-2 px-4">3.0</td><td class="py-2 px-4">83 – 86%</td><td class="py-2 px-4">Above Average</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">B-</td><td class="py-2 px-4">2.7</td><td class="py-2 px-4">80 – 82%</td><td class="py-2 px-4">Average</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">C+</td><td class="py-2 px-4">2.3</td><td class="py-2 px-4">77 – 79%</td><td class="py-2 px-4">Satisfactory</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">C</td><td class="py-2 px-4">2.0</td><td class="py-2 px-4">73 – 76%</td><td class="py-2 px-4">Minimum Degree Standard</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">D</td><td class="py-2 px-4">1.0</td><td class="py-2 px-4">60 – 69%</td><td class="py-2 px-4">Minimum Passing</td></tr>
+          <tr><td class="py-2 px-4 font-semibold text-slate-900">F</td><td class="py-2 px-4">0.0</td><td class="py-2 px-4">Below 60%</td><td class="py-2 px-4">Failing (Zero Credit)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</ToolLayout>

@@ -1,0 +1,78 @@
+---
+import Container from '../common/Container.astro';
+import Section from '../common/Section.astro';
+
+const pillars = [
+  {
+    title: '100% Free for Students',
+    description:
+      'No subscription paywalls, no trial periods, and no locked features. Every calculator and utility is freely available for college students worldwide.',
+    icon: 'sparkles',
+  },
+  {
+    title: 'No Account Required',
+    description:
+      'Start calculating instantly. We do not demand email registrations, social sign-ins, or profile setups before letting you compute your GPA.',
+    icon: 'user-off',
+  },
+  {
+    title: 'Engineered for Pure Speed',
+    description:
+      'Built with static-first web architecture for instant page loads. Calculations compute in real time without lag, spinners, or round-trip server delays.',
+    icon: 'bolt',
+  },
+  {
+    title: 'Strict Privacy & Client Computation',
+    description:
+      'Your grades and academic history belong to you. Course numbers and grades are calculated locally in your browser and never sent to a database.',
+    icon: 'shield',
+  },
+];
+---
+
+<div class="bg-slate-50 py-6 border-b border-slate-200/80">
+  <Container size="xl">
+    <Section
+      badge="Our Principles"
+      title="Why University Students Choose CampusKit"
+      subtitle="Designed with the speed, polish, and privacy expected from modern academic software."
+      align="center"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {
+          pillars.map((pillar) => (
+            <div class="p-6 bg-white rounded-xl border border-slate-200/90 shadow-subtle flex flex-col">
+              <div class="w-10 h-10 rounded-lg bg-academic-50 text-academic-700 border border-academic-100 flex items-center justify-center mb-4">
+                {pillar.icon === 'sparkles' && (
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                )}
+                {pillar.icon === 'user-off' && (
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                )}
+                {pillar.icon === 'bolt' && (
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                )}
+                {pillar.icon === 'shield' && (
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                )}
+              </div>
+
+              <h3 class="text-base font-bold text-slate-900">{pillar.title}</h3>
+              <p class="mt-2 text-sm text-slate-600 leading-relaxed flex-grow">
+                {pillar.description}
+              </p>
+            </div>
+          ))
+        }
+      </div>
+    </Section>
+  </Container>
+</div>

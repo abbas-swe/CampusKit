@@ -1,0 +1,59 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('final-grade-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'How do I calculate what I need on my final exam?',
+    answer:
+      'Use the final exam formula: Required Final Exam Score = [Target Grade - Current Grade * (1 - Final Exam Weight)] / Final Exam Weight.',
+  },
+  {
+    question: 'What if the required score is over 100%?',
+    answer:
+      'If the required score exceeds 100%, achieving that target grade mathematically requires extra credit or a curved grading scale. Our tool highlights feasible and unfeasible target thresholds.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Final Exam Target Parameters</h2>
+        <p class="text-xs text-slate-500 mb-4">Input your current grade, desired course grade, and how much the final exam is worth.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <InputField id="current-grade" label="Current Grade" type="number" suffix="%" value="84" />
+          <InputField id="target-grade" label="Target Desired Grade" type="number" suffix="%" value="90" />
+          <InputField id="final-weight" label="Final Exam Weight" type="number" suffix="%" value="35" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Required Exam Score"
+        primaryValue="101.1%"
+        primaryLabel="Score Needed on Final Exam"
+        badge="Needs Extra Credit / Curve"
+        badgeTone="warning"
+        secondaryStats={[
+          { label: 'Current Score', value: '84%', subtext: 'Before Final' },
+          { label: 'Exam Weight', value: '35%', subtext: 'Total Weight' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Final Exam Formula & Strategy</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Understanding what score you need on a final exam allows you to triage your study time efficiently across multiple difficult classes during finals week.
+    </p>
+  </div>
+</ToolLayout>

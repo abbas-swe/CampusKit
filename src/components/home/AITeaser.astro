@@ -1,0 +1,45 @@
+---
+import Container from '../common/Container.astro';
+import Button from '../common/Button.astro';
+---
+
+<section class="py-12 sm:py-16 bg-white border-b border-slate-200/80">
+  <Container size="xl">
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-academic-950 to-slate-900 text-white p-8 sm:p-12 border border-slate-800 shadow-card">
+      <!-- Background subtle glow -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-academic-600/10 blur-3xl pointer-events-none" aria-hidden="true"></div>
+
+      <div class="relative z-10 max-w-2xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-900/50 text-purple-200 border border-purple-700/50 mb-4">
+          <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span>Coming Soon</span>
+        </div>
+
+        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-tight">
+          Next Generation AI Study Assistants
+        </h2>
+
+        <p class="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">
+          We are developing thoughtful, academic-first AI utilities for source citation checking, syllabus analysis, and study guide extraction. Designed to uphold rigorous academic integrity standards.
+        </p>
+
+        <div class="mt-6 flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>APA, MLA & Chicago Citation Helper</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-400 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Syllabus Schedule Parser</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

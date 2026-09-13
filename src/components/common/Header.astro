@@ -1,0 +1,143 @@
+---
+import Container from './Container.astro';
+import Button from './Button.astro';
+
+interface Props {
+  activePath?: string;
+}
+
+const { activePath = '' } = Astro.props;
+
+const navLinks = [
+  { name: 'All Tools', href: '/#tools' },
+  { name: 'Academic', href: '/#academic' },
+  { name: 'Productivity', href: '/#productivity' },
+  { name: 'About', href: '/about' },
+];
+---
+
+<header class="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-slate-200/80 transition-colors">
+  <Container size="xl">
+    <div class="flex items-center justify-between h-16">
+      <!-- Brand / Logo -->
+      <a href="/" class="flex items-center gap-3 group focus-visible:rounded-lg" aria-label="CampusKit Home">
+        <div class="w-9 h-9 rounded-lg bg-academic-700 flex items-center justify-center text-white shadow-subtle group-hover:bg-academic-800 transition-colors">
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <!-- Subtle abstract CK -->
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M9 7H7a3 3 0 00-3 3v4a3 3 0 003 3h2" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M14 7v10" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M20 7.5L14.5 12L20.5 16.5" />
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <div class="flex items-center gap-1.5">
+            <span class="font-bold text-lg tracking-tight text-slate-900 group-hover:text-academic-700 transition-colors">
+              CampusKit
+            </span>
+          </div>
+          <span class="text-[11px] font-medium text-slate-500 tracking-wide -mt-1 hidden sm:inline-block">
+            Tools for university life
+          </span>
+        </div>
+      </a>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Main Navigation">
+        {
+          navLinks.map((link) => {
+            const isActive = activePath === link.href;
+            return (
+              <a
+                href={link.href}
+                class={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  isActive
+                    ? 'text-academic-700 bg-academic-50 font-semibold'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                {link.name}
+              </a>
+            );
+          })
+        }
+      </nav>
+
+      <!-- Right CTA -->
+      <div class="hidden sm:flex items-center gap-3">
+        <Button href="/tools/gpa-calculator" variant="primary" size="sm">
+          <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          GPA Calculator
+        </Button>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="flex md:hidden items-center">
+        <button
+          type="button"
+          id="mobile-menu-toggle"
+          class="p-2 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-academic-600"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          aria-label="Open mobile navigation menu"
+        >
+          <svg id="menu-open-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="menu-close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4 pt-2 border-t border-slate-100 animate-fadeIn">
+      <nav class="flex flex-col gap-1" aria-label="Mobile Navigation">
+        {
+          navLinks.map((link) => (
+            <a
+              href={link.href}
+              class="px-3 py-2 text-sm font-medium text-slate-700 hover:text-academic-700 hover:bg-slate-50 rounded-lg transition-colors"
+            >
+              {link.name}
+            </a>
+          ))
+        }
+        <div class="pt-2 mt-2 border-t border-slate-100 flex flex-col gap-2">
+          <Button href="/tools/gpa-calculator" variant="primary" size="md" class="w-full justify-center">
+            Open GPA Calculator
+          </Button>
+        </div>
+      </nav>
+    </div>
+  </Container>
+</header>
+
+<script>
+  const toggleBtn = document.getElementById('mobile-menu-toggle');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const openIcon = document.getElementById('menu-open-icon');
+  const closeIcon = document.getElementById('menu-close-icon');
+
+  if (toggleBtn && mobileMenu && openIcon && closeIcon) {
+    toggleBtn.addEventListener('click', () => {
+      const isExpanded = toggleBtn.getAttribute('aria-expanded') === 'true';
+      toggleBtn.setAttribute('aria-expanded', String(!isExpanded));
+      mobileMenu.classList.toggle('hidden');
+      openIcon.classList.toggle('hidden');
+      closeIcon.classList.toggle('hidden');
+    });
+
+    // Close menu when clicking navigation links
+    mobileMenu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        openIcon.classList.remove('hidden');
+        closeIcon.classList.add('hidden');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+</script>

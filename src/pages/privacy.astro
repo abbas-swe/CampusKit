@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+
+const breadcrumbs = [{ name: 'Privacy Policy', item: '/privacy' }];
+const lastUpdated = 'September 2026';
+---
+
+<BaseLayout
+  title="Privacy Policy"
+  description="CampusKit's privacy policy. We believe academic tools should not harvest student data. All grade calculations run entirely on your device."
+  canonical="/privacy"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="bg-white border-b border-slate-200">
+    <Container size="lg" class="py-12 sm:py-16">
+      <Breadcrumbs items={breadcrumbs} />
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-4">
+        Privacy Policy
+      </h1>
+      <p class="mt-2 text-sm text-slate-500">Last updated: {lastUpdated}</p>
+    </Container>
+  </div>
+
+  <div class="py-12 bg-slate-50">
+    <Container size="lg">
+      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-subtle prose prose-slate max-w-none">
+        <h2>1. Our Privacy Philosophy</h2>
+        <p>
+          At CampusKit, we believe student software should be fast, accessible, and respectful of personal privacy. We do not require accounts, logins, or personal profile creation to access any of our tools.
+        </p>
+
+        <h2>2. Client-Side Calculation & Grade Data</h2>
+        <p>
+          All academic data you enter into our tools—including course names, letter grades, credit hours, percentage scores, and attendance numbers—is processed <strong>locally within your web browser</strong> using client-side JavaScript. This data is never transmitted to, recorded by, or stored on our servers or third-party databases.
+        </p>
+
+        <h2>3. Local Storage</h2>
+        <p>
+          Certain tools (such as the Exam Countdown Timer and GPA course drafts) may save preferences to your browser's local storage (<code class="font-mono text-xs">localStorage</code>) solely to preserve your work between browser sessions. You can clear this data at any time by clearing your browser cache.
+        </p>
+
+        <h2>4. Analytics & Cookies</h2>
+        <p>
+          CampusKit does not employ invasive user-tracking cookies. Standard, privacy-preserving server logs (such as HTTP request paths, browser user agents, and IP addresses) may be temporarily processed by infrastructure providers solely for DDoS mitigation, performance caching, and site security.
+        </p>
+
+        <h2>5. Changes to This Policy</h2>
+        <p>
+          Any updates to this policy will be reflected on this page with an updated revision date.
+        </p>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>

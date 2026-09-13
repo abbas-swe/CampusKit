@@ -1,0 +1,74 @@
+---
+interface StatItem {
+  label: string;
+  value: string | number;
+  subtext?: string;
+}
+
+interface Props {
+  title?: string;
+  primaryValue: string | number;
+  primaryLabel: string;
+  badge?: string;
+  badgeTone?: 'success' | 'info' | 'warning' | 'neutral';
+  secondaryStats?: StatItem[];
+  class?: string;
+}
+
+const {
+  title = 'Calculation Result',
+  primaryValue,
+  primaryLabel,
+  badge,
+  badgeTone = 'success',
+  secondaryStats = [],
+  class: className = '',
+} = Astro.props;
+
+const badgeToneClasses = {
+  success: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+  info: 'bg-academic-50 text-academic-800 border-academic-200',
+  warning: 'bg-amber-50 text-amber-800 border-amber-200',
+  neutral: 'bg-slate-100 text-slate-700 border-slate-200',
+};
+---
+
+<div class={`bg-white rounded-xl border border-slate-200 shadow-card p-6 ${className}`}>
+  <div class="flex items-center justify-between gap-3 pb-4 border-b border-slate-100">
+    <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-500">{title}</h3>
+    {
+      badge && (
+        <span class={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${badgeToneClasses[badgeTone]}`}>
+          {badge}
+        </span>
+      )
+    }
+  </div>
+
+  <!-- Primary Stat Callout -->
+  <div class="py-6 text-center">
+    <div class="text-5xl sm:text-6xl font-extrabold tracking-tight text-academic-900 font-sans leading-none" id="result-primary-value">
+      {primaryValue}
+    </div>
+    <div class="mt-2 text-sm font-medium text-slate-600" id="result-primary-label">
+      {primaryLabel}
+    </div>
+  </div>
+
+  <!-- Secondary Stats Grid -->
+  {
+    secondaryStats.length > 0 && (
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-100">
+        {secondaryStats.map((stat) => (
+          <div class="p-3 rounded-lg bg-slate-50 border border-slate-100 text-center">
+            <span class="text-xs text-slate-500 font-medium block">{stat.label}</span>
+            <span class="text-base font-bold text-slate-800 mt-0.5 block">{stat.value}</span>
+            {stat.subtext && <span class="text-[11px] text-slate-400 block">{stat.subtext}</span>}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  <slot />
+</div>

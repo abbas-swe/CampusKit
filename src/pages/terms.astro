@@ -1,0 +1,56 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+
+const breadcrumbs = [{ name: 'Terms of Service', item: '/terms' }];
+const lastUpdated = 'September 2026';
+---
+
+<BaseLayout
+  title="Terms of Service"
+  description="CampusKit's Terms of Service. Guidelines and terms governing use of our university tools and calculators."
+  canonical="/terms"
+  breadcrumbs={breadcrumbs}
+>
+  <div class="bg-white border-b border-slate-200">
+    <Container size="lg" class="py-12 sm:py-16">
+      <Breadcrumbs items={breadcrumbs} />
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-4">
+        Terms of Service
+      </h1>
+      <p class="mt-2 text-sm text-slate-500">Last updated: {lastUpdated}</p>
+    </Container>
+  </div>
+
+  <div class="py-12 bg-slate-50">
+    <Container size="lg">
+      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-subtle prose prose-slate max-w-none">
+        <h2>1. Acceptance of Terms</h2>
+        <p>
+          By accessing or using CampusKit ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.
+        </p>
+
+        <h2>2. Educational & Informational Purpose</h2>
+        <p>
+          The calculators, estimates, and academic planning utilities provided on CampusKit are offered strictly for educational, organizational, and informational purposes. While we strive to maintain meticulous adherence to standard higher education grading formulas, official grades, degrees, and academic standings are determined solely by your educational institution's registrar.
+        </p>
+
+        <h2>3. Permitted Use</h2>
+        <p>
+          CampusKit is provided free of charge for personal, non-commercial use by students, educators, and academic advisors. You agree not to attempt to disrupt, compromise, or systematically scrape the platform's infrastructure.
+        </p>
+
+        <h2>4. Disclaimer of Warranties</h2>
+        <p>
+          The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express or implied.
+        </p>
+
+        <h2>5. Contact</h2>
+        <p>
+          If you have questions regarding these Terms, please reach out through our <a href="/contact">contact page</a>.
+        </p>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>

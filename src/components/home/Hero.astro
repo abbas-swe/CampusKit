@@ -1,0 +1,56 @@
+---
+import Container from '../common/Container.astro';
+import ToolSearch from '../tools/ToolSearch.astro';
+---
+
+<section class="relative pt-12 pb-16 sm:pt-20 sm:pb-24 overflow-hidden border-b border-slate-200/80 bg-gradient-to-b from-white to-slate-50">
+  <Container size="xl" class="relative z-10">
+    <div class="max-w-4xl mx-auto text-center">
+      <!-- Subtle academic pill -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200/80 mb-6 shadow-subtle">
+        <span class="w-2 h-2 rounded-full bg-academic-600 animate-pulse"></span>
+        <span>Built for Students in the US, UK, Canada & Worldwide</span>
+      </div>
+
+      <!-- Main Headline & Tagline -->
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+        CampusKit
+        <span class="block text-2xl sm:text-3xl md:text-4xl font-semibold text-academic-700 mt-2 font-sans">
+          Tools for university life.
+        </span>
+      </h1>
+
+      <!-- Value Proposition Paragraph -->
+      <p class="mt-5 text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        Fast, accessible academic calculators and productivity utilities engineered for higher education. Calculate GPA, target exam scores, attendance thresholds, and study schedules with zero sign-up.
+      </p>
+
+      <!-- Search and discovery component -->
+      <div class="mt-8 sm:mt-10">
+        <ToolSearch />
+      </div>
+
+      <!-- Quick Trust Indicators -->
+      <div class="mt-8 flex items-center justify-center flex-wrap gap-y-2 gap-x-6 text-xs sm:text-sm text-slate-500">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>100% Free Forever</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>No Account or Sign-In</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <span>Runs Offline in Your Browser</span>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

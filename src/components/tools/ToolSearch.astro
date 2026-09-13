@@ -1,0 +1,199 @@
+---
+interface Props {
+  class?: string;
+  initialCategory?: string;
+}
+
+const { class: className = '', initialCategory = 'all' } = Astro.props;
+---
+
+<div class={`w-full ${className}`} id="tool-search-container">
+  <!-- Search input row -->
+  <div class="relative max-w-2xl mx-auto">
+    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+    <input
+      type="search"
+      id="tool-search-input"
+      placeholder="Search calculators & tools (e.g. GPA, final grade, attendance)..."
+      autocomplete="off"
+      class="w-full pl-11 pr-10 py-3.5 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 text-sm sm:text-base shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+    />
+    <button
+      type="button"
+      id="tool-search-clear"
+      class="hidden absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600"
+      aria-label="Clear search"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Category filter tags -->
+  <div class="mt-4 flex items-center justify-center flex-wrap gap-2 text-xs sm:text-sm">
+    <span class="text-slate-500 font-medium mr-1 hidden sm:inline-block">Filter:</span>
+    <button
+      type="button"
+      class="filter-pill px-3.5 py-1.5 rounded-full font-medium transition-colors bg-academic-700 text-white border border-academic-700"
+      data-category="all"
+    >
+      All Tools
+    </button>
+    <button
+      type="button"
+      class="filter-pill px-3.5 py-1.5 rounded-full font-medium transition-colors bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300"
+      data-category="academic"
+    >
+      Academic
+    </button>
+    <button
+      type="button"
+      class="filter-pill px-3.5 py-1.5 rounded-full font-medium transition-colors bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300"
+      data-category="productivity"
+    >
+      Productivity
+    </button>
+    <button
+      type="button"
+      class="filter-pill px-3.5 py-1.5 rounded-full font-medium transition-colors bg-white text-slate-600 hover:text-slate-900 border border-slate-200 hover:border-slate-300"
+      data-category="ai"
+    >
+      AI (Preview)
+    </button>
+  </div>
+
+  <!-- Status / Empty State Indicator -->
+  <div id="search-no-results" class="hidden text-center py-12">
+    <div class="w-12 h-12 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-3">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    </div>
+    <h3 class="text-base font-semibold text-slate-800">No matching tools found</h3>
+    <p class="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+      Try searching for a different keyword or reset your filter to browse all academic calculators.
+    </p>
+    <button
+      type="button"
+      id="reset-search-btn"
+      class="mt-4 px-4 py-2 text-xs font-semibold text-academic-700 bg-academic-50 border border-academic-200 rounded-lg hover:bg-academic-100 transition-colors"
+    >
+      Reset Filters
+    </button>
+  </div>
+</div>
+
+<script>
+  function initToolSearch() {
+    const searchInput = document.getElementById('tool-search-input') as HTMLInputElement | null;
+    const clearBtn = document.getElementById('tool-search-clear') as HTMLButtonElement | null;
+    const noResults = document.getElementById('search-no-results');
+    const resetBtn = document.getElementById('reset-search-btn');
+    const pills = document.querySelectorAll('.filter-pill');
+    const cards = document.querySelectorAll('[data-tool-card]');
+
+    if (!searchInput || !cards.length) return;
+
+    let activeCategory = 'all';
+    let searchQuery = '';
+
+    function filterTools() {
+      let visibleCount = 0;
+      const q = searchQuery.toLowerCase().trim();
+
+      cards.forEach((cardEl) => {
+        const el = cardEl as HTMLElement;
+        const category = el.getAttribute('data-category') || '';
+        const title = el.getAttribute('data-title') || '';
+        const description = el.getAttribute('data-description') || '';
+
+        const matchesCategory = activeCategory === 'all' || category === activeCategory;
+        const matchesQuery = !q || title.includes(q) || description.includes(q);
+
+        if (matchesCategory && matchesQuery) {
+          el.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          el.classList.add('hidden');
+        }
+      });
+
+      if (noResults) {
+        if (visibleCount === 0) {
+          noResults.classList.remove('hidden');
+        } else {
+          noResults.classList.add('hidden');
+        }
+      }
+
+      if (clearBtn) {
+        if (q.length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+      }
+    }
+
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = (e.target as HTMLInputElement).value;
+      filterTools();
+    });
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        filterTools();
+        searchInput.focus();
+      });
+    }
+
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const targetCategory = pill.getAttribute('data-category') || 'all';
+        activeCategory = targetCategory;
+
+        pills.forEach((p) => {
+          p.classList.remove('bg-academic-700', 'text-white', 'border-academic-700');
+          p.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+        });
+
+        pill.classList.add('bg-academic-700', 'text-white', 'border-academic-700');
+        pill.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+
+        filterTools();
+      });
+    });
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        searchQuery = '';
+        activeCategory = 'all';
+
+        pills.forEach((p) => {
+          if (p.getAttribute('data-category') === 'all') {
+            p.classList.add('bg-academic-700', 'text-white', 'border-academic-700');
+            p.classList.remove('bg-white', 'text-slate-600', 'border-slate-200');
+          } else {
+            p.classList.remove('bg-academic-700', 'text-white', 'border-academic-700');
+            p.classList.add('bg-white', 'text-slate-600', 'border-slate-200');
+          }
+        });
+
+        filterTools();
+      });
+    }
+  }
+
+  // Run on initial load
+  initToolSearch();
+  // Support Astro view transitions / page swaps if added in future
+  document.addEventListener('astro:page-load', initToolSearch);
+</script>

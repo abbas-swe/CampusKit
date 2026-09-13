@@ -1,0 +1,54 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('marks-needed-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'How do I calculate total marks needed to pass or get an A?',
+    answer:
+      'Subtract your currently earned weighted marks from your target percentage threshold, then determine the average percentage required across the remaining points or assignments.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Target Marks Planner</h2>
+        <p class="text-xs text-slate-500 mb-4">Calculate points needed across remaining quizzes, papers, or practicals.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <InputField id="points-earned" label="Points Earned So Far" type="number" value="380" />
+          <InputField id="points-possible" label="Points Graded So Far" type="number" value="450" />
+          <InputField id="target-total" label="Target Total Percentage" type="number" suffix="%" value="90" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Points Required"
+        primaryValue="92.7%"
+        primaryLabel="Required Average on Remaining Work"
+        badge="Achievable Target"
+        badgeTone="info"
+        secondaryStats={[
+          { label: 'Current Score', value: '84.4%', subtext: 'Running Average' },
+          { label: 'Target', value: '90.0%', subtext: 'A Grade' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Planning Points & Marks Strategy</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Breaking down required course marks into bite-sized objectives across assignments helps maintain focused motivation throughout the semester.
+    </p>
+  </div>
+</ToolLayout>

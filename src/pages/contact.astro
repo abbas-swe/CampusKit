@@ -1,0 +1,75 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Container from '../components/common/Container.astro';
+import Button from '../components/common/Button.astro';
+import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import InputField from '../components/tools/InputField.astro';
+import SelectField from '../components/tools/SelectField.astro';
+
+const breadcrumbs = [{ name: 'Contact & Feedback', item: '/contact' }];
+
+const subjectOptions = [
+  { value: 'tool-request', label: 'Request a New Tool or Calculator' },
+  { value: 'scale-request', label: 'Suggest an Academic Scale or Formula' },
+  { value: 'bug-report', label: 'Report a Calculation Bug or Issue' },
+  { value: 'general', label: 'General Feedback or Partnership' },
+];
+---
+
+<BaseLayout
+  title="Contact & Feedback"
+  description="Contact CampusKit. Suggest new calculators, report grading scale discrepancies, or share feedback."
+  canonical="/contact"
+  breadcrumbs={breadcrumbs}
+  activeNavPath="/contact"
+>
+  <div class="bg-white border-b border-slate-200">
+    <Container size="lg" class="py-12 sm:py-16">
+      <Breadcrumbs items={breadcrumbs} />
+      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-4">
+        Contact & Feedback
+      </h1>
+      <p class="mt-2 text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
+        Have a specific university grading scale or syllabus calculation you need automated? Send us your suggestions.
+      </p>
+    </Container>
+  </div>
+
+  <div class="py-12 bg-slate-50">
+    <Container size="md">
+      <div class="bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-subtle">
+        <form class="space-y-6" onsubmit="event.preventDefault(); alert('Thank you for your feedback! CampusKit engineering reviews all student submissions.');">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <InputField id="contact-name" label="Your Name (Optional)" placeholder="e.g. Alex" />
+            <InputField id="contact-email" label="Your Email" type="email" placeholder="alex@university.edu" helperText="Only used to follow up on your suggestion." />
+          </div>
+
+          <SelectField
+            id="contact-subject"
+            label="Topic"
+            options={subjectOptions}
+            value="tool-request"
+          />
+
+          <div class="flex flex-col gap-1.5">
+            <label for="contact-message" class="text-xs font-semibold text-slate-700">
+              Message or Tool Details <span class="text-rose-500">*</span>
+            </label>
+            <textarea
+              id="contact-message"
+              name="message"
+              rows="5"
+              required
+              placeholder="Describe the calculator, grading policy, or university formula you would like us to add..."
+              class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+            ></textarea>
+          </div>
+
+          <Button type="submit" variant="primary" size="lg" class="w-full justify-center">
+            Submit Feedback
+          </Button>
+        </form>
+      </div>
+    </Container>
+  </div>
+</BaseLayout>

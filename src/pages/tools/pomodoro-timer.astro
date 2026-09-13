@@ -1,0 +1,76 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import Button from '../../components/common/Button.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('pomodoro-timer')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'Why is the 50/10 study interval recommended for college students?',
+    answer:
+      'While the standard Pomodoro technique uses 25-minute sprints, university-level coursework (such as reading research papers, coding, or mathematical proofs) often requires deeper immersion. A 50-minute study interval with a 10-minute break matches human cognitive ultradian rhythms and college class periods.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-subtle text-center">
+        <!-- Interval Selector -->
+        <div class="inline-flex items-center p-1 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600 mb-8">
+          <button type="button" class="px-4 py-1.5 rounded-md bg-white text-slate-900 shadow-subtle">
+            25m Focus / 5m Break
+          </button>
+          <button type="button" class="px-4 py-1.5 rounded-md text-slate-600 hover:text-slate-900">
+            50m Deep Work / 10m Break
+          </button>
+        </div>
+
+        <!-- Big Timer Display -->
+        <div class="text-7xl sm:text-8xl font-black tracking-tight text-academic-900 font-mono my-4">
+          25:00
+        </div>
+        <p class="text-sm font-medium text-slate-500">Ready to begin study block 1 of 4</p>
+
+        <!-- Timer Controls -->
+        <div class="mt-8 flex items-center justify-center gap-4">
+          <Button variant="primary" size="lg" class="px-8">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Start Session
+          </Button>
+          <Button variant="outline" size="lg">
+            Reset
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Session Statistics"
+        primaryValue="4"
+        primaryLabel="Target Study Intervals Today"
+        badge="Focus Mode"
+        badgeTone="info"
+        secondaryStats={[
+          { label: 'Completed', value: '0 Sessions', subtext: '0 hrs' },
+          { label: 'Target', value: '100 mins', subtext: 'Total Focus' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">The Academic Pomodoro Method</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      The Pomodoro Technique breaks long study marathons into discrete, timed intervals separated by short restorative breaks. This prevents mental burnout during reading-heavy finals preparation.
+    </p>
+  </div>
+</ToolLayout>

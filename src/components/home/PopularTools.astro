@@ -1,0 +1,24 @@
+---
+import Container from '../common/Container.astro';
+import Section from '../common/Section.astro';
+import ToolCard from '../tools/ToolCard.astro';
+import { getPopularTools } from '../../data/tools';
+
+const popularTools = getPopularTools();
+---
+
+<div id="tools" class="bg-slate-50 py-4">
+  <Container size="xl">
+    <Section
+      badge="Essential Tools"
+      title="Most Popular Student Calculators"
+      subtitle="The calculators university students rely on most during midterms, finals, and registration."
+    >
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {popularTools.map((tool) => (
+          <ToolCard tool={tool} />
+        ))}
+      </div>
+    </Section>
+  </Container>
+</div>

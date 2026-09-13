@@ -1,0 +1,53 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('exam-countdown')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'Can I add multiple exam dates?',
+    answer:
+      'Yes, the Exam Countdown tool allows you to save multiple midterms, finals, and assignment deadlines locally in your browser storage so they are always ready when you return.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Upcoming Exam Schedule</h2>
+        <p class="text-xs text-slate-500 mb-4">Set your upcoming midterm or final examination date and time.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <InputField id="exam-title" label="Course / Exam Name" value="Calculus II Final Exam" />
+          <InputField id="exam-date" label="Exam Date & Time" type="text" value="December 14, 2026 - 09:00 AM" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Time Until Exam"
+        primaryValue="42d 14h"
+        primaryLabel="Remaining Before Exam Start"
+        badge="Midterm / Finals Countdown"
+        badgeTone="neutral"
+        secondaryStats={[
+          { label: 'Study Days', value: '30 Days', subtext: 'Excl. Weekends' },
+          { label: 'Weekly Hours', value: '12 hrs', subtext: 'Target Review' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Active Spaced Repetition Planning</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Cognitive science demonstrates that spacing review sessions across weeks rather than cramming the night before finals dramatically increases long-term retention and reduces exam anxiety.
+    </p>
+  </div>
+</ToolLayout>

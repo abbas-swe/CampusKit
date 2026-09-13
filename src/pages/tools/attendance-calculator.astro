@@ -1,0 +1,54 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import ResultCard from '../../components/tools/ResultCard.astro';
+import InputField from '../../components/tools/InputField.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('attendance-calculator')!;
+
+const faqs: FAQItem[] = [
+  {
+    question: 'How do I calculate how many classes I can safely miss?',
+    answer:
+      'To calculate safe absences while staying above an attendance requirement (such as 75% or 80%), use: Safe Absences = Total Classes Held - (Present Classes / Required Percentage). If positive, you can miss that many classes without dropping below the threshold.',
+  },
+];
+---
+
+<ToolLayout tool={tool} faqs={faqs}>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+    <div class="lg:col-span-2 space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
+        <h2 class="text-base font-bold text-slate-900 mb-1">Class Attendance Record</h2>
+        <p class="text-xs text-slate-500 mb-4">Enter total lectures held, classes attended, and required attendance percentage.</p>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <InputField id="classes-attended" label="Classes Attended" type="number" value="32" />
+          <InputField id="total-classes" label="Total Classes Held" type="number" value="36" />
+          <InputField id="required-attendance" label="Required Minimum" type="number" suffix="%" value="75" />
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <ResultCard
+        title="Attendance Status"
+        primaryValue="88.9%"
+        primaryLabel="Current Attendance Percentage"
+        badge="In Safe Zone"
+        badgeTone="success"
+        secondaryStats={[
+          { label: 'Safe Misses', value: '6 Classes', subtext: 'Can Skip' },
+          { label: 'Minimum Req', value: '75%', subtext: 'Policy Target' },
+        ]}
+      />
+    </div>
+  </div>
+
+  <div slot="guide" class="prose prose-slate max-w-none">
+    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">University Attendance Regulations</h2>
+    <p class="text-base text-slate-600 leading-relaxed mt-4">
+      Many universities mandate a 75% or 80% minimum attendance threshold to sit for final examinations or qualify for course credit. Tracking safe absences helps avoid debarment or grade penalties.
+    </p>
+  </div>
+</ToolLayout>

@@ -1,0 +1,74 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  id?: string;
+  disabled?: boolean;
+  target?: string;
+  rel?: string;
+  ariaLabel?: string;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  class: className = '',
+  id,
+  disabled = false,
+  target,
+  rel,
+  ariaLabel,
+} = Astro.props;
+
+const baseStyles =
+  'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer';
+
+const variantStyles = {
+  primary:
+    'bg-academic-700 hover:bg-academic-800 text-white shadow-subtle focus-visible:ring-academic-600 border border-transparent active:bg-academic-900',
+  secondary:
+    'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-200 focus-visible:ring-slate-400 active:bg-slate-300',
+  outline:
+    'bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 shadow-subtle focus-visible:ring-academic-600 active:bg-slate-100',
+  ghost:
+    'bg-transparent hover:bg-slate-100 text-slate-700 hover:text-slate-900 focus-visible:ring-slate-400',
+};
+
+const sizeStyles = {
+  sm: 'text-xs px-3 py-1.5 gap-1.5',
+  md: 'text-sm px-4 py-2 gap-2',
+  lg: 'text-base px-5 py-2.5 gap-2.5',
+};
+
+const combinedClass = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
+---
+
+{
+  href ? (
+    <a
+      href={href}
+      class={combinedClass}
+      id={id}
+      target={target}
+      rel={target === '_blank' ? (rel || 'noopener noreferrer') : rel}
+      aria-label={ariaLabel}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button
+      type={type}
+      class={combinedClass}
+      id={id}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    >
+      <slot />
+    </button>
+  )
+}

@@ -1,0 +1,111 @@
+---
+import type { SEOProps } from '../../types/seo';
+import {
+  formatCanonicalUrl,
+  formatPageTitle,
+  generateBreadcrumbSchema,
+  generateFAQSchema,
+  SITE_NAME,
+  SITE_TAGLINE,
+  SITE_URL,
+  DEFAULT_DESCRIPTION,
+} from '../../utils/seo';
+
+interface Props extends SEOProps {}
+
+const {
+  title,
+  description = DEFAULT_DESCRIPTION,
+  canonical,
+  ogImage = '/og-image.png',
+  ogType = 'website',
+  noindex = false,
+  breadcrumbs,
+  faqs,
+  structuredData,
+} = Astro.props;
+
+const canonicalUrl = canonical ? formatCanonicalUrl(canonical) : formatCanonicalUrl(Astro.url.pathname);
+const fullTitle = formatPageTitle(title);
+const fullOgImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
+
+const baseSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  description: SITE_TAGLINE,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: `${SITE_URL}/?q={search_term_string}`,
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+const schemas: Record<string, unknown>[] = [baseSchema];
+
+if (breadcrumbs && breadcrumbs.length > 0) {
+  schemas.push(generateBreadcrumbSchema(breadcrumbs));
+}
+
+if (faqs && faqs.length > 0) {
+  schemas.push(generateFAQSchema(faqs));
+}
+
+if (structuredData) {
+  if (Array.isArray(structuredData)) {
+    schemas.push(...structuredData);
+  } else {
+    schemas.push(structuredData);
+  }
+}
+---
+
+<!-- Core Technical Meta Tags -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="generator" content={Astro.generator} />
+<meta name="format-detection" content="telephone=no" />
+
+<!-- Title & Description -->
+<title>{fullTitle}</title>
+<meta name="title" content={fullTitle} />
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Crawler Directives -->
+{
+  noindex ? (
+    <meta name="robots" content="noindex, nofollow" />
+  ) : (
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  )
+}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={ogType} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:site_name" content={SITE_NAME} />
+<meta property="og:image" content={fullOgImageUrl} />
+<meta property="og:locale" content="en_US" />
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={fullOgImageUrl} />
+
+<!-- Icons & Manifest -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="theme-color" content="#1e40af" />
+
+<!-- Schema.org JSON-LD Structured Data -->
+{
+  schemas.map((schema) => (
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+  ))
+}
