@@ -1,15 +1,15 @@
 ---
-import Button from '../../common/Button.astro';
-import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../data/gpaScales';
+import { GPA_SCALES, INITIAL_COURSES_DATA } from '../../../data/gpaScales';
+
+const defaultScale = GPA_SCALES['4.0'];
 ---
 
 <div class="w-full max-w-5xl mx-auto" id="gpa-calculator-root">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-    <!-- Main Calculator Form Panel (8 cols on lg) -->
+    <!-- Main Calculator Card (8 cols on desktop) -->
     <div class="lg:col-span-8 space-y-6">
-      <!-- Calculator Card -->
       <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
-        <!-- Card Header -->
+        <!-- Header -->
         <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -23,16 +23,16 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
                 GPA Calculator
               </h2>
               <p class="text-sm text-slate-600 mt-1">
-                Enter your course credits and expected grades. Your GPA recalculates instantly in real time.
+                Enter your course credits and grades below. Your GPA recalculates instantly in your browser.
               </p>
             </div>
 
-            <!-- Action Controls (Top Right) -->
+            <!-- Reset Button -->
             <div class="flex items-center gap-2 self-start sm:self-auto">
               <button
                 type="button"
                 id="reset-gpa-btn"
-                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle"
                 title="Reset calculator to initial state"
               >
                 <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,7 +68,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
                 </div>
               </div>
 
-              <!-- Custom Max Points Field (visible only when custom is selected) -->
+              <!-- Custom Max Points Field -->
               <div id="custom-max-container" class="hidden sm:w-48">
                 <label for="custom-max-points" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
                   Max GPA Scale
@@ -89,13 +89,13 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
               </div>
             </div>
 
-            <!-- Scale Information Callout -->
+            <!-- Scale Information Banner -->
             <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-2.5">
               <svg class="w-4 h-4 text-academic-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <p id="scale-info-banner" class="leading-relaxed">
-                Standard 4.0 scale calibrated for US and Canadian universities (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C = 2.0, D = 1.0, D- = 0.7, F = 0.0). Always check your university handbook for official institutional conversion standards.
+                Standard 4.0 scale (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C+ = 2.3, C = 2.0, C- = 1.7, D+ = 1.3, D = 1.0, D- = 0.7, F = 0.0). Always check your institution’s official conversion standards.
               </p>
             </div>
           </div>
@@ -103,17 +103,97 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
 
         <!-- Course Rows Workspace -->
         <div class="p-6 sm:p-7">
-          <!-- Desktop Table Header (hidden on small screens) -->
+          <!-- Desktop Column Headers (visible on tablet/desktop) -->
           <div class="hidden sm:grid sm:grid-cols-12 gap-3 pb-3 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
             <div class="col-span-5">Course / Subject (Optional)</div>
-            <div class="col-span-3">Letter Grade</div>
+            <div class="col-span-3">Grade</div>
             <div class="col-span-3">Credits</div>
             <div class="col-span-1 text-center">Remove</div>
           </div>
 
-          <!-- Dynamic Courses Container -->
-          <div id="courses-list" class="divide-y divide-slate-100 sm:divide-y-0 sm:space-y-3 pt-2">
-            <!-- Course rows will be injected and managed by client TypeScript -->
+          <!-- Dynamic Courses Container with Pre-rendered HTML -->
+          <div id="courses-list" class="divide-y divide-slate-200 sm:divide-y-0 sm:space-y-3 pt-2">
+            {
+              INITIAL_COURSES_DATA.map((course, idx) => (
+                <div
+                  class="course-row-item p-4 sm:p-0 sm:py-2.5 rounded-xl sm:rounded-none bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 mb-3 sm:mb-0 transition-all"
+                  data-id={`course-${idx + 1}`}
+                >
+                  <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    <!-- Course Name -->
+                    <div class="sm:col-span-5">
+                      <label for={`course-name-${idx + 1}`} class="block sm:sr-only text-xs font-bold text-slate-700 mb-1">
+                        Course {idx + 1} Name
+                      </label>
+                      <input
+                        type="text"
+                        id={`course-name-${idx + 1}`}
+                        value={course.name}
+                        placeholder={`Course ${idx + 1} (e.g. Biology)`}
+                        class="course-name-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle"
+                        aria-label={`Course ${idx + 1} Name`}
+                      />
+                    </div>
+
+                    <!-- Grade Selector -->
+                    <div class="sm:col-span-3 grade-input-container">
+                      <label for={`course-grade-${idx + 1}`} class="block sm:sr-only text-xs font-bold text-slate-700 mb-1">
+                        Letter Grade
+                      </label>
+                      <div class="relative">
+                        <select
+                          id={`course-grade-${idx + 1}`}
+                          class="course-grade-select w-full appearance-none px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle font-semibold text-slate-900"
+                          aria-label={`Course ${idx + 1} Grade`}
+                        >
+                          {defaultScale.grades.map((g) => (
+                            <option value={g.letter} selected={g.letter === course.grade}>
+                              {g.letter} ({g.points.toFixed(1)})
+                            </option>
+                          ))}
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Credits Input -->
+                    <div class="sm:col-span-3">
+                      <label for={`course-credits-${idx + 1}`} class="block sm:sr-only text-xs font-bold text-slate-700 mb-1">
+                        Credits
+                      </label>
+                      <input
+                        type="number"
+                        id={`course-credits-${idx + 1}`}
+                        min="0"
+                        max="30"
+                        step="0.5"
+                        value={course.credits}
+                        placeholder="Credits"
+                        class="course-credits-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900"
+                        aria-label={`Course ${idx + 1} Credits`}
+                      />
+                    </div>
+
+                    <!-- Remove Button -->
+                    <div class="sm:col-span-1 flex items-center justify-end sm:justify-center pt-2 sm:pt-0">
+                      <button
+                        type="button"
+                        class="course-remove-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer"
+                        aria-label={`Remove Course ${idx + 1}: ${course.name}`}
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
           </div>
 
           <!-- Inline Validation Notification Area -->
@@ -137,7 +217,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
               <span>Add Course</span>
             </button>
 
-            <span class="text-xs text-slate-500" id="courses-counter-badge">
+            <span class="text-xs font-semibold text-slate-500" id="courses-counter-badge">
               4 Courses Listed
             </span>
           </div>
@@ -145,7 +225,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
       </div>
     </div>
 
-    <!-- Sticky Results Summary Panel (4 cols on lg) -->
+    <!-- Sticky Results Summary Panel (4 cols on desktop) -->
     <div class="lg:col-span-4 space-y-6">
       <div
         class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
@@ -160,7 +240,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
             id="standing-badge"
             class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200"
           >
-            Dean's List
+            Dean's List / Honors
           </span>
         </div>
 
@@ -192,7 +272,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
           </div>
         </div>
 
-        <!-- Secondary Information / Percentage Equivalent -->
+        <!-- Secondary Information -->
         <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
           <div class="flex items-center justify-between">
             <span class="text-slate-500">Graded Courses:</span>
@@ -209,7 +289,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
           <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
-          <span>100% Private. Runs strictly in your browser.</span>
+          <span>100% Client-Side. No data is stored or logged.</span>
         </div>
       </div>
     </div>
@@ -218,9 +298,9 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
 
 <!-- Reactive Client-Side Calculator Engine -->
 <script>
-  import { GPA_SCALES, INITIAL_COURSES_DATA } from '../../../data/gpaScales';
-  import type { GPAScaleType, GPAScaleDefinition } from '../../../types/gpa';
-  import { calculateGPA, formatGPADisplay } from '../../../utils/gpa';
+  import { GPA_SCALES, INITIAL_COURSES_DATA } from '../../../data/gpaScales.ts';
+  import type { GPAScaleType, GPAScaleDefinition } from '../../../types/gpa.ts';
+  import { calculateGPA, formatGPADisplay } from '../../../utils/gpa.ts';
 
   interface CourseState {
     id: string;
@@ -234,7 +314,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
     const root = document.getElementById('gpa-calculator-root');
     if (!root) return;
 
-    // DOM References
     const scaleSelector = document.getElementById('scale-selector') as HTMLSelectElement | null;
     const customMaxContainer = document.getElementById('custom-max-container');
     const customMaxPointsInput = document.getElementById('custom-max-points') as HTMLInputElement | null;
@@ -256,13 +335,13 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
 
     if (!scaleSelector || !coursesList) return;
 
-    // State
     let currentScaleType: GPAScaleType = '4.0';
     let customMaxPoints = 4.0;
-    let nextRowId = 1;
+    let nextRowId = 5;
 
-    let courses: CourseState[] = INITIAL_COURSES_DATA.map((c) => ({
-      id: `course-${nextRowId++}`,
+    // Initialize course state from pre-rendered rows or data
+    let courses: CourseState[] = INITIAL_COURSES_DATA.map((c, i) => ({
+      id: `course-${i + 1}`,
       name: c.name,
       credits: String(c.credits),
       letterGrade: c.grade,
@@ -313,7 +392,8 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
         nameInput.value = course.name;
         nameInput.placeholder = `Course ${index + 1} (e.g. Biology)`;
         nameInput.className =
-          'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+          'course-name-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+        nameInput.setAttribute('aria-label', `Course ${index + 1} Name`);
         nameInput.addEventListener('input', (e) => {
           course.name = (e.target as HTMLInputElement).value;
         });
@@ -324,7 +404,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
 
         // 2. Grade Selection / Points (3 cols on sm+)
         const gradeCol = document.createElement('div');
-        gradeCol.className = 'sm:col-span-3';
+        gradeCol.className = 'sm:col-span-3 grade-input-container';
 
         const gradeLabel = document.createElement('label');
         gradeLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
@@ -332,7 +412,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
         gradeLabel.textContent = isCustom ? 'Grade Points' : 'Letter Grade';
 
         if (isCustom) {
-          // Numeric Points Input in custom mode
           const pointsInput = document.createElement('input');
           pointsInput.type = 'number';
           pointsInput.id = `course-grade-${course.id}`;
@@ -342,7 +421,8 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
           pointsInput.value = course.gradePoints;
           pointsInput.placeholder = `0 – ${scaleDef.maxPoints}`;
           pointsInput.className =
-            'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+            'course-points-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900';
+          pointsInput.setAttribute('aria-label', `Course ${index + 1} Grade Points`);
           pointsInput.addEventListener('input', (e) => {
             course.gradePoints = (e.target as HTMLInputElement).value;
             recalculate();
@@ -350,14 +430,14 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
           gradeCol.appendChild(gradeLabel);
           gradeCol.appendChild(pointsInput);
         } else {
-          // Dropdown Select for predefined scales
           const gradeSelectWrapper = document.createElement('div');
           gradeSelectWrapper.className = 'relative';
 
           const gradeSelect = document.createElement('select');
           gradeSelect.id = `course-grade-${course.id}`;
           gradeSelect.className =
-            'w-full appearance-none px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle font-medium text-slate-900';
+            'course-grade-select w-full appearance-none px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle font-semibold text-slate-900';
+          gradeSelect.setAttribute('aria-label', `Course ${index + 1} Grade`);
 
           scaleDef.grades.forEach((g) => {
             const opt = document.createElement('option');
@@ -369,7 +449,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
             gradeSelect.appendChild(opt);
           });
 
-          // If current course grade is not in this scale, default to first option
           if (!scaleDef.grades.some((g) => g.letter === course.letterGrade) && scaleDef.grades.length > 0) {
             course.letterGrade = scaleDef.grades[0]?.letter || 'A';
           }
@@ -407,9 +486,10 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
         creditsInput.max = '30';
         creditsInput.step = '0.5';
         creditsInput.value = course.credits;
-        creditsInput.placeholder = 'Credits (e.g. 3)';
+        creditsInput.placeholder = 'Credits';
         creditsInput.className =
-          'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+          'course-credits-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900';
+        creditsInput.setAttribute('aria-label', `Course ${index + 1} Credits`);
         creditsInput.addEventListener('input', (e) => {
           course.credits = (e.target as HTMLInputElement).value;
           recalculate();
@@ -426,7 +506,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.className =
-          'p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer';
+          'course-remove-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer';
         removeBtn.setAttribute('aria-label', `Remove Course ${index + 1}: ${course.name || 'Untitled'}`);
         removeBtn.innerHTML =
           '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>';
@@ -458,7 +538,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
       });
       renderCourses();
 
-      // Focus the newly added course input
       const newCourseInput = document.getElementById(`course-name-course-${nextRowId - 1}`);
       if (newCourseInput) {
         newCourseInput.focus();
@@ -477,8 +556,8 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
       if (customMaxPointsInput) customMaxPointsInput.value = '4.0';
       if (customMaxContainer) customMaxContainer.classList.add('hidden');
 
-      courses = INITIAL_COURSES_DATA.map((c) => ({
-        id: `course-${nextRowId++}`,
+      courses = INITIAL_COURSES_DATA.map((c, i) => ({
+        id: `course-${i + 1}`,
         name: c.name,
         credits: String(c.credits),
         letterGrade: c.grade,
@@ -498,23 +577,22 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
       if (!scaleInfoBanner) return;
       if (currentScaleType === '4.0') {
         scaleInfoBanner.textContent =
-          'Standard 4.0 scale calibrated for US and Canadian universities (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C = 2.0, D = 1.0, D- = 0.7, F = 0.0). Always check your university handbook for official institutional conversion standards.';
+          'Standard 4.0 scale (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C+ = 2.3, C = 2.0, C- = 1.7, D+ = 1.3, D = 1.0, D- = 0.7, F = 0.0). Always check your institution’s official conversion standards.';
       } else if (currentScaleType === '5.0') {
         scaleInfoBanner.textContent =
-          'Weighted 5.0 scale (A+ = 5.0, A = 4.5, B+ = 4.0, B = 3.5, C+ = 3.0, C = 2.5, D = 2.0, F = 0.0). Used primarily in advanced coursework and international honors faculties.';
+          'Weighted 5.0 scale (A+ = 5.0, A = 4.5, B+ = 4.0, B = 3.5, C+ = 3.0, C = 2.5, D = 2.0, F = 0.0). Used primarily in advanced coursework and international honors programs.';
       } else if (currentScaleType === '10.0') {
         scaleInfoBanner.textContent =
-          '10.0 scale (O = 10.0, A+ = 9.0, A = 8.0, B+ = 7.0, B = 6.0, C = 5.0, P = 4.0, F = 0.0). Widely used in international universities and percentage-conversion degree programs.';
+          '10.0 scale (O = 10.0, A+ = 9.0, A = 8.0, B+ = 7.0, B = 6.0, C = 5.0, P = 4.0, F = 0.0). Standard international engineering and cumulative percentage scale.';
       } else {
         scaleInfoBanner.textContent =
-          `Custom Scale with a maximum of ${customMaxPoints.toFixed(1)} points. Enter grade points directly for each course. Check your institution’s official conversion formula.`;
+          `Custom Scale with a maximum of ${customMaxPoints.toFixed(1)} points. Enter grade points directly for each course. Check your institution’s official handbook.`;
       }
     }
 
     function recalculate() {
       const scaleDef = getCurrentScaleDefinition();
 
-      // Convert CourseState into Course type
       const courseObjects = courses.map((c) => ({
         id: c.id,
         name: c.name,
@@ -526,7 +604,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
 
       const result = calculateGPA(courseObjects, scaleDef);
 
-      // Handle Errors Banner
       if (errorsBanner && errorsList) {
         if (result.errors.length > 0) {
           errorsList.innerHTML = result.errors.map((err) => `<div>• ${err}</div>`).join('');
@@ -536,7 +613,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
         }
       }
 
-      // Update Result Area UI
       if (gpaDisplay) {
         if (result.coursesCount === 0 || result.totalCredits === 0) {
           gpaDisplay.textContent = '--.--';
@@ -547,7 +623,7 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
           gpaDisplay.classList.remove('text-slate-400');
           gpaDisplay.classList.add('text-academic-900');
 
-          // Subtle update micro-animation
+          // Subtle number animation
           gpaDisplay.classList.add('scale-[1.02]');
           setTimeout(() => {
             gpaDisplay.classList.remove('scale-[1.02]');
@@ -612,7 +688,6 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
       renderCourses();
     });
 
-    // Custom Max Points Change
     if (customMaxPointsInput) {
       customMaxPointsInput.addEventListener('input', (e) => {
         const val = Number((e.target as HTMLInputElement).value);
@@ -624,21 +699,19 @@ import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../d
       });
     }
 
-    // Add Course Event
     if (addCourseBtn) {
       addCourseBtn.addEventListener('click', addCourse);
     }
 
-    // Reset Event
     if (resetBtn) {
       resetBtn.addEventListener('click', resetCalculator);
     }
 
-    // Initial render
+    // Initial binding to pre-rendered course rows
     renderCourses();
   }
 
-  // Run on page load
+  // Support both direct load and Astro view transitions
   setupGpaCalculator();
   document.addEventListener('astro:page-load', setupGpaCalculator);
 </script>
