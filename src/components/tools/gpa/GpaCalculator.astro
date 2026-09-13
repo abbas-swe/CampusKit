@@ -596,10 +596,10 @@ const defaultScale = GPA_SCALES['4.0'];
       const courseObjects = courses.map((c) => ({
         id: c.id,
         name: c.name,
-        credits: Number(c.credits),
+        credits: c.credits,
         entryMode: (currentScaleType === 'custom' ? 'points' : 'letter') as 'points' | 'letter',
         letterGrade: c.letterGrade,
-        gradePoints: Number(c.gradePoints),
+        gradePoints: c.gradePoints,
       }));
 
       const result = calculateGPA(courseObjects, scaleDef);

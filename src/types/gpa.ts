@@ -19,10 +19,10 @@ export interface GPAScaleDefinition {
 export interface Course {
   id: string;
   name: string;
-  credits: number;
+  credits: number | string;
   entryMode: GradeEntryMode;
   letterGrade: string;
-  gradePoints: number;
+  gradePoints: number | string;
 }
 
 export interface GPACalculationResult {

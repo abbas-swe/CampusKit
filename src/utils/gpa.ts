@@ -15,8 +15,14 @@ export function getPointsForLetterGrade(letter: string, scale: GPAScaleDefinitio
 export function validateCourse(course: Course, maxScalePoints: number): CourseValidationError[] {
   const errors: CourseValidationError[] = [];
 
-  const rawCredits = String(course.credits).trim();
-  if (rawCredits === '' || isNaN(Number(rawCredits))) {
+  const rawCredits = String(course.credits ?? '').trim();
+  if (rawCredits === '') {
+    errors.push({
+      courseId: course.id,
+      field: 'credits',
+      message: 'Credits cannot be empty.',
+    });
+  } else if (isNaN(Number(rawCredits))) {
     errors.push({
       courseId: course.id,
       field: 'credits',
@@ -24,11 +30,11 @@ export function validateCourse(course: Course, maxScalePoints: number): CourseVa
     });
   } else {
     const creditsNum = Number(rawCredits);
-    if (creditsNum < 0) {
+    if (creditsNum <= 0) {
       errors.push({
         courseId: course.id,
         field: 'credits',
-        message: 'Credits cannot be negative.',
+        message: 'Credits must be greater than 0.',
       });
     } else if (creditsNum > 30) {
       errors.push({
@@ -40,8 +46,14 @@ export function validateCourse(course: Course, maxScalePoints: number): CourseVa
   }
 
   if (course.entryMode === 'points') {
-    const rawPoints = String(course.gradePoints).trim();
-    if (rawPoints === '' || isNaN(Number(rawPoints))) {
+    const rawPoints = String(course.gradePoints ?? '').trim();
+    if (rawPoints === '') {
+      errors.push({
+        courseId: course.id,
+        field: 'gradePoints',
+        message: 'Grade points cannot be empty.',
+      });
+    } else if (isNaN(Number(rawPoints))) {
       errors.push({
         courseId: course.id,
         field: 'gradePoints',
