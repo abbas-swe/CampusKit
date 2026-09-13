@@ -1,0 +1,644 @@
+---
+import Button from '../../common/Button.astro';
+import { GPA_SCALES, DEFAULT_SCALE_TYPE, INITIAL_COURSES_DATA } from '../../../data/gpaScales';
+---
+
+<div class="w-full max-w-5xl mx-auto" id="gpa-calculator-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Calculator Form Panel (8 cols on lg) -->
+    <div class="lg:col-span-8 space-y-6">
+      <!-- Calculator Card -->
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Card Header -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span>Interactive Tool</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                GPA Calculator
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Enter your course credits and expected grades. Your GPA recalculates instantly in real time.
+              </p>
+            </div>
+
+            <!-- Action Controls (Top Right) -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                id="reset-gpa-btn"
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer"
+                title="Reset calculator to initial state"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Grading Scale Selection -->
+          <div class="mt-6 pt-5 border-t border-slate-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex-grow">
+                <label for="scale-selector" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  University Grading Scale
+                </label>
+                <div class="relative">
+                  <select
+                    id="scale-selector"
+                    class="w-full sm:w-80 appearance-none bg-slate-50 hover:bg-slate-100/80 border border-slate-300 rounded-xl px-4 py-2.5 pr-10 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle"
+                  >
+                    <option value="4.0" selected>4.0 Scale (Standard US & Canada)</option>
+                    <option value="5.0">5.0 Scale (Honors / Weighted)</option>
+                    <option value="10.0">10.0 Scale (International / SGPA)</option>
+                    <option value="custom">Custom Scale (Direct Grade Points)</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 sm:right-auto sm:left-[18.5rem] flex items-center px-3 text-slate-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Max Points Field (visible only when custom is selected) -->
+              <div id="custom-max-container" class="hidden sm:w-48">
+                <label for="custom-max-points" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Max GPA Scale
+                </label>
+                <div class="relative">
+                  <input
+                    type="number"
+                    id="custom-max-points"
+                    min="1"
+                    max="100"
+                    step="0.1"
+                    value="4.0"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle"
+                    placeholder="e.g. 4.0"
+                  />
+                  <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-slate-400 pointer-events-none">Max</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scale Information Callout -->
+            <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-2.5">
+              <svg class="w-4 h-4 text-academic-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p id="scale-info-banner" class="leading-relaxed">
+                Standard 4.0 scale calibrated for US and Canadian universities (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C = 2.0, D = 1.0, D- = 0.7, F = 0.0). Always check your university handbook for official institutional conversion standards.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Course Rows Workspace -->
+        <div class="p-6 sm:p-7">
+          <!-- Desktop Table Header (hidden on small screens) -->
+          <div class="hidden sm:grid sm:grid-cols-12 gap-3 pb-3 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div class="col-span-5">Course / Subject (Optional)</div>
+            <div class="col-span-3">Letter Grade</div>
+            <div class="col-span-3">Credits</div>
+            <div class="col-span-1 text-center">Remove</div>
+          </div>
+
+          <!-- Dynamic Courses Container -->
+          <div id="courses-list" class="divide-y divide-slate-100 sm:divide-y-0 sm:space-y-3 pt-2">
+            <!-- Course rows will be injected and managed by client TypeScript -->
+          </div>
+
+          <!-- Inline Validation Notification Area -->
+          <div id="validation-errors-banner" class="hidden mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="validation-errors-list" class="space-y-1"></div>
+          </div>
+
+          <!-- Add Course Button Row -->
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+            <button
+              type="button"
+              id="add-course-btn"
+              class="inline-flex items-center gap-2 px-4 py-2.5 bg-academic-50 hover:bg-academic-100 text-academic-800 text-sm font-semibold rounded-xl border border-academic-200 transition-all focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle hover:shadow"
+            >
+              <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Add Course</span>
+            </button>
+
+            <span class="text-xs text-slate-500" id="courses-counter-badge">
+              4 Courses Listed
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Results Summary Panel (4 cols on lg) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
+        id="result-display-card"
+        aria-live="polite"
+      >
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Calculated Term GPA
+          </h3>
+          <span
+            id="standing-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200"
+          >
+            Dean's List
+          </span>
+        </div>
+
+        <!-- Big Metric Callout -->
+        <div class="py-8 text-center">
+          <div
+            class="text-6xl sm:text-7xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-all duration-200"
+            id="gpa-display-value"
+          >
+            3.55
+          </div>
+          <p class="mt-2 text-xs font-medium text-slate-500" id="gpa-scale-ceiling-label">
+            Out of 4.00 Maximum
+          </p>
+        </div>
+
+        <!-- Metric Details Grid -->
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Total Credits</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block" id="total-credits-value">14.0</span>
+            <span class="text-[10px] text-slate-400 block">Attempted</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Quality Points</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block" id="quality-points-value">49.7</span>
+            <span class="text-[10px] text-slate-400 block">Grade Points &times; Cr</span>
+          </div>
+        </div>
+
+        <!-- Secondary Information / Percentage Equivalent -->
+        <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Graded Courses:</span>
+            <span class="font-bold text-slate-800" id="valid-courses-count">4</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Percentage Equivalent:</span>
+            <span class="font-bold text-slate-800" id="percentage-equiv-value">~ 88.8%</span>
+          </div>
+        </div>
+
+        <!-- Privacy Assurance Note -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Private. Runs strictly in your browser.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side Calculator Engine -->
+<script>
+  import { GPA_SCALES, INITIAL_COURSES_DATA } from '../../../data/gpaScales';
+  import type { GPAScaleType, GPAScaleDefinition } from '../../../types/gpa';
+  import { calculateGPA, formatGPADisplay } from '../../../utils/gpa';
+
+  interface CourseState {
+    id: string;
+    name: string;
+    credits: string;
+    letterGrade: string;
+    gradePoints: string;
+  }
+
+  function setupGpaCalculator() {
+    const root = document.getElementById('gpa-calculator-root');
+    if (!root) return;
+
+    // DOM References
+    const scaleSelector = document.getElementById('scale-selector') as HTMLSelectElement | null;
+    const customMaxContainer = document.getElementById('custom-max-container');
+    const customMaxPointsInput = document.getElementById('custom-max-points') as HTMLInputElement | null;
+    const scaleInfoBanner = document.getElementById('scale-info-banner');
+    const coursesList = document.getElementById('courses-list');
+    const addCourseBtn = document.getElementById('add-course-btn');
+    const resetBtn = document.getElementById('reset-gpa-btn');
+    const coursesCounter = document.getElementById('courses-counter-badge');
+    const errorsBanner = document.getElementById('validation-errors-banner');
+    const errorsList = document.getElementById('validation-errors-list');
+
+    const gpaDisplay = document.getElementById('gpa-display-value');
+    const gpaCeilingLabel = document.getElementById('gpa-scale-ceiling-label');
+    const standingBadge = document.getElementById('standing-badge');
+    const totalCreditsDisplay = document.getElementById('total-credits-value');
+    const qualityPointsDisplay = document.getElementById('quality-points-value');
+    const validCoursesDisplay = document.getElementById('valid-courses-count');
+    const percentageEquivDisplay = document.getElementById('percentage-equiv-value');
+
+    if (!scaleSelector || !coursesList) return;
+
+    // State
+    let currentScaleType: GPAScaleType = '4.0';
+    let customMaxPoints = 4.0;
+    let nextRowId = 1;
+
+    let courses: CourseState[] = INITIAL_COURSES_DATA.map((c) => ({
+      id: `course-${nextRowId++}`,
+      name: c.name,
+      credits: String(c.credits),
+      letterGrade: c.grade,
+      gradePoints: '4.0',
+    }));
+
+    function getCurrentScaleDefinition(): GPAScaleDefinition {
+      if (currentScaleType === 'custom') {
+        return {
+          type: 'custom',
+          name: 'Custom Scale',
+          maxPoints: customMaxPoints > 0 ? customMaxPoints : 4.0,
+          description: 'Custom user-defined maximum scale.',
+          grades: [],
+        };
+      }
+      return GPA_SCALES[currentScaleType] || GPA_SCALES['4.0'];
+    }
+
+    function renderCourses() {
+      if (!coursesList) return;
+      coursesList.innerHTML = '';
+
+      const scaleDef = getCurrentScaleDefinition();
+      const isCustom = currentScaleType === 'custom';
+
+      courses.forEach((course, index) => {
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className =
+          'course-row-item p-4 sm:p-0 sm:py-2.5 rounded-xl sm:rounded-none bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 mb-3 sm:mb-0 transition-all';
+        rowWrapper.setAttribute('data-id', course.id);
+
+        const rowGrid = document.createElement('div');
+        rowGrid.className = 'grid grid-cols-1 sm:grid-cols-12 gap-3 items-center';
+
+        // 1. Course Name (5 cols on sm+)
+        const nameCol = document.createElement('div');
+        nameCol.className = 'sm:col-span-5';
+
+        const nameLabel = document.createElement('label');
+        nameLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        nameLabel.setAttribute('for', `course-name-${course.id}`);
+        nameLabel.textContent = `Course ${index + 1} Name`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `course-name-${course.id}`;
+        nameInput.value = course.name;
+        nameInput.placeholder = `Course ${index + 1} (e.g. Biology)`;
+        nameInput.className =
+          'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+        nameInput.addEventListener('input', (e) => {
+          course.name = (e.target as HTMLInputElement).value;
+        });
+
+        nameCol.appendChild(nameLabel);
+        nameCol.appendChild(nameInput);
+        rowGrid.appendChild(nameCol);
+
+        // 2. Grade Selection / Points (3 cols on sm+)
+        const gradeCol = document.createElement('div');
+        gradeCol.className = 'sm:col-span-3';
+
+        const gradeLabel = document.createElement('label');
+        gradeLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        gradeLabel.setAttribute('for', `course-grade-${course.id}`);
+        gradeLabel.textContent = isCustom ? 'Grade Points' : 'Letter Grade';
+
+        if (isCustom) {
+          // Numeric Points Input in custom mode
+          const pointsInput = document.createElement('input');
+          pointsInput.type = 'number';
+          pointsInput.id = `course-grade-${course.id}`;
+          pointsInput.min = '0';
+          pointsInput.max = String(scaleDef.maxPoints);
+          pointsInput.step = '0.01';
+          pointsInput.value = course.gradePoints;
+          pointsInput.placeholder = `0 – ${scaleDef.maxPoints}`;
+          pointsInput.className =
+            'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+          pointsInput.addEventListener('input', (e) => {
+            course.gradePoints = (e.target as HTMLInputElement).value;
+            recalculate();
+          });
+          gradeCol.appendChild(gradeLabel);
+          gradeCol.appendChild(pointsInput);
+        } else {
+          // Dropdown Select for predefined scales
+          const gradeSelectWrapper = document.createElement('div');
+          gradeSelectWrapper.className = 'relative';
+
+          const gradeSelect = document.createElement('select');
+          gradeSelect.id = `course-grade-${course.id}`;
+          gradeSelect.className =
+            'w-full appearance-none px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle font-medium text-slate-900';
+
+          scaleDef.grades.forEach((g) => {
+            const opt = document.createElement('option');
+            opt.value = g.letter;
+            opt.textContent = `${g.letter} (${g.points.toFixed(1)})`;
+            if (g.letter === course.letterGrade) {
+              opt.selected = true;
+            }
+            gradeSelect.appendChild(opt);
+          });
+
+          // If current course grade is not in this scale, default to first option
+          if (!scaleDef.grades.some((g) => g.letter === course.letterGrade) && scaleDef.grades.length > 0) {
+            course.letterGrade = scaleDef.grades[0]?.letter || 'A';
+          }
+
+          gradeSelect.addEventListener('change', (e) => {
+            course.letterGrade = (e.target as HTMLSelectElement).value;
+            recalculate();
+          });
+
+          const chevron = document.createElement('div');
+          chevron.className = 'pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400';
+          chevron.innerHTML =
+            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+
+          gradeSelectWrapper.appendChild(gradeSelect);
+          gradeSelectWrapper.appendChild(chevron);
+          gradeCol.appendChild(gradeLabel);
+          gradeCol.appendChild(gradeSelectWrapper);
+        }
+        rowGrid.appendChild(gradeCol);
+
+        // 3. Credits (3 cols on sm+)
+        const creditsCol = document.createElement('div');
+        creditsCol.className = 'sm:col-span-3';
+
+        const creditsLabel = document.createElement('label');
+        creditsLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        creditsLabel.setAttribute('for', `course-credits-${course.id}`);
+        creditsLabel.textContent = 'Credits';
+
+        const creditsInput = document.createElement('input');
+        creditsInput.type = 'number';
+        creditsInput.id = `course-credits-${course.id}`;
+        creditsInput.min = '0';
+        creditsInput.max = '30';
+        creditsInput.step = '0.5';
+        creditsInput.value = course.credits;
+        creditsInput.placeholder = 'Credits (e.g. 3)';
+        creditsInput.className =
+          'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle';
+        creditsInput.addEventListener('input', (e) => {
+          course.credits = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        creditsCol.appendChild(creditsLabel);
+        creditsCol.appendChild(creditsInput);
+        rowGrid.appendChild(creditsCol);
+
+        // 4. Remove Button (1 col on sm+)
+        const removeCol = document.createElement('div');
+        removeCol.className = 'sm:col-span-1 flex items-center justify-end sm:justify-center pt-2 sm:pt-0';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className =
+          'p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer';
+        removeBtn.setAttribute('aria-label', `Remove Course ${index + 1}: ${course.name || 'Untitled'}`);
+        removeBtn.innerHTML =
+          '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>';
+
+        removeBtn.addEventListener('click', () => {
+          removeCourse(course.id);
+        });
+
+        removeCol.appendChild(removeBtn);
+        rowGrid.appendChild(removeCol);
+
+        rowWrapper.appendChild(rowGrid);
+        coursesList.appendChild(rowWrapper);
+      });
+
+      updateCounter();
+      recalculate();
+    }
+
+    function addCourse() {
+      const scaleDef = getCurrentScaleDefinition();
+      const defaultGrade = scaleDef.grades[0]?.letter || 'A';
+      courses.push({
+        id: `course-${nextRowId++}`,
+        name: '',
+        credits: '3',
+        letterGrade: defaultGrade,
+        gradePoints: String(scaleDef.maxPoints),
+      });
+      renderCourses();
+
+      // Focus the newly added course input
+      const newCourseInput = document.getElementById(`course-name-course-${nextRowId - 1}`);
+      if (newCourseInput) {
+        newCourseInput.focus();
+      }
+    }
+
+    function removeCourse(id: string) {
+      courses = courses.filter((c) => c.id !== id);
+      renderCourses();
+    }
+
+    function resetCalculator() {
+      currentScaleType = '4.0';
+      customMaxPoints = 4.0;
+      if (scaleSelector) scaleSelector.value = '4.0';
+      if (customMaxPointsInput) customMaxPointsInput.value = '4.0';
+      if (customMaxContainer) customMaxContainer.classList.add('hidden');
+
+      courses = INITIAL_COURSES_DATA.map((c) => ({
+        id: `course-${nextRowId++}`,
+        name: c.name,
+        credits: String(c.credits),
+        letterGrade: c.grade,
+        gradePoints: '4.0',
+      }));
+
+      updateScaleDescription();
+      renderCourses();
+    }
+
+    function updateCounter() {
+      if (!coursesCounter) return;
+      coursesCounter.textContent = `${courses.length} ${courses.length === 1 ? 'Course' : 'Courses'} Listed`;
+    }
+
+    function updateScaleDescription() {
+      if (!scaleInfoBanner) return;
+      if (currentScaleType === '4.0') {
+        scaleInfoBanner.textContent =
+          'Standard 4.0 scale calibrated for US and Canadian universities (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C = 2.0, D = 1.0, D- = 0.7, F = 0.0). Always check your university handbook for official institutional conversion standards.';
+      } else if (currentScaleType === '5.0') {
+        scaleInfoBanner.textContent =
+          'Weighted 5.0 scale (A+ = 5.0, A = 4.5, B+ = 4.0, B = 3.5, C+ = 3.0, C = 2.5, D = 2.0, F = 0.0). Used primarily in advanced coursework and international honors faculties.';
+      } else if (currentScaleType === '10.0') {
+        scaleInfoBanner.textContent =
+          '10.0 scale (O = 10.0, A+ = 9.0, A = 8.0, B+ = 7.0, B = 6.0, C = 5.0, P = 4.0, F = 0.0). Widely used in international universities and percentage-conversion degree programs.';
+      } else {
+        scaleInfoBanner.textContent =
+          `Custom Scale with a maximum of ${customMaxPoints.toFixed(1)} points. Enter grade points directly for each course. Check your institution’s official conversion formula.`;
+      }
+    }
+
+    function recalculate() {
+      const scaleDef = getCurrentScaleDefinition();
+
+      // Convert CourseState into Course type
+      const courseObjects = courses.map((c) => ({
+        id: c.id,
+        name: c.name,
+        credits: Number(c.credits),
+        entryMode: (currentScaleType === 'custom' ? 'points' : 'letter') as 'points' | 'letter',
+        letterGrade: c.letterGrade,
+        gradePoints: Number(c.gradePoints),
+      }));
+
+      const result = calculateGPA(courseObjects, scaleDef);
+
+      // Handle Errors Banner
+      if (errorsBanner && errorsList) {
+        if (result.errors.length > 0) {
+          errorsList.innerHTML = result.errors.map((err) => `<div>• ${err}</div>`).join('');
+          errorsBanner.classList.remove('hidden');
+        } else {
+          errorsBanner.classList.add('hidden');
+        }
+      }
+
+      // Update Result Area UI
+      if (gpaDisplay) {
+        if (result.coursesCount === 0 || result.totalCredits === 0) {
+          gpaDisplay.textContent = '--.--';
+          gpaDisplay.classList.add('text-slate-400');
+          gpaDisplay.classList.remove('text-academic-900');
+        } else {
+          gpaDisplay.textContent = formatGPADisplay(result.gpa);
+          gpaDisplay.classList.remove('text-slate-400');
+          gpaDisplay.classList.add('text-academic-900');
+
+          // Subtle update micro-animation
+          gpaDisplay.classList.add('scale-[1.02]');
+          setTimeout(() => {
+            gpaDisplay.classList.remove('scale-[1.02]');
+          }, 150);
+        }
+      }
+
+      if (gpaCeilingLabel) {
+        gpaCeilingLabel.textContent = `Out of ${scaleDef.maxPoints.toFixed(2)} Maximum`;
+      }
+
+      if (totalCreditsDisplay) {
+        totalCreditsDisplay.textContent = result.totalCredits.toFixed(1);
+      }
+
+      if (qualityPointsDisplay) {
+        qualityPointsDisplay.textContent = result.totalGradePoints.toFixed(1);
+      }
+
+      if (validCoursesDisplay) {
+        validCoursesDisplay.textContent = String(result.coursesCount);
+      }
+
+      if (percentageEquivDisplay) {
+        if (result.coursesCount === 0 || result.totalCredits === 0) {
+          percentageEquivDisplay.textContent = '--%';
+        } else {
+          percentageEquivDisplay.textContent = `~ ${result.percentageEquivalent?.toFixed(1)}%`;
+        }
+      }
+
+      if (standingBadge) {
+        standingBadge.textContent = result.academicStanding;
+        if (result.academicStanding.includes('Honors') || result.academicStanding.includes("Dean's")) {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200';
+        } else if (result.academicStanding.includes('Good')) {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200';
+        } else if (result.academicStanding.includes('Warning')) {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+        } else {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-slate-100 text-slate-700 border-slate-200';
+        }
+      }
+    }
+
+    // Scale Switcher Event
+    scaleSelector.addEventListener('change', (e) => {
+      const selectedScale = (e.target as HTMLSelectElement).value as GPAScaleType;
+      currentScaleType = selectedScale;
+
+      if (currentScaleType === 'custom') {
+        customMaxContainer?.classList.remove('hidden');
+      } else {
+        customMaxContainer?.classList.add('hidden');
+      }
+
+      updateScaleDescription();
+      renderCourses();
+    });
+
+    // Custom Max Points Change
+    if (customMaxPointsInput) {
+      customMaxPointsInput.addEventListener('input', (e) => {
+        const val = Number((e.target as HTMLInputElement).value);
+        if (!isNaN(val) && val > 0) {
+          customMaxPoints = val;
+          updateScaleDescription();
+          renderCourses();
+        }
+      });
+    }
+
+    // Add Course Event
+    if (addCourseBtn) {
+      addCourseBtn.addEventListener('click', addCourse);
+    }
+
+    // Reset Event
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetCalculator);
+    }
+
+    // Initial render
+    renderCourses();
+  }
+
+  // Run on page load
+  setupGpaCalculator();
+  document.addEventListener('astro:page-load', setupGpaCalculator);
+</script>

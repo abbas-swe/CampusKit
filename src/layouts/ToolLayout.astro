@@ -10,12 +10,13 @@ import { TOOLS } from '../data/tools';
 
 interface Props {
   tool: ToolMetadata;
+  pageTitle?: string;
   faqs?: FAQItem[];
   canonical?: string;
   metaDescription?: string;
 }
 
-const { tool, faqs = [], canonical, metaDescription } = Astro.props;
+const { tool, pageTitle, faqs = [], canonical, metaDescription } = Astro.props;
 
 const breadcrumbs = [
   { name: 'Tools', item: '/#tools' },
@@ -36,7 +37,7 @@ const relatedTools = TOOLS.filter(
 ---
 
 <BaseLayout
-  title={tool.name}
+  title={pageTitle || tool.name}
   description={metaDescription || tool.description}
   canonical={canonical || `/tools/${tool.slug}`}
   breadcrumbs={breadcrumbs}

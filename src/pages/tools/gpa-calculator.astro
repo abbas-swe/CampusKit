@@ -1,254 +1,233 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import Button from '../../components/common/Button.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import SelectField from '../../components/tools/SelectField.astro';
-import InputField from '../../components/tools/InputField.astro';
+import GpaCalculator from '../../components/tools/gpa/GpaCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
-import { GPA_SCALES, DEFAULT_SCALE_TYPE, DEFAULT_INITIAL_COURSES } from '../../data/gpaScales';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('gpa-calculator')!;
 
+// Targeted, student-centric FAQs addressing high-intent academic questions
 const gpaFaqs: FAQItem[] = [
   {
-    question: 'How is university GPA calculated?',
+    question: 'How do you calculate your college GPA manually?',
     answer:
-      'GPA is calculated by multiplying the grade points earned in each course by the course credit hours to obtain total Quality Points, then dividing that sum by the total number of credit hours attempted: GPA = (Total Quality Points) / (Total Credits).',
+      'To calculate your college GPA manually, convert each letter grade into its corresponding grade points (e.g. A = 4.0, B = 3.0), multiply each grade point value by the course credit hours to obtain Quality Points, sum all Quality Points across your courses, and divide that sum by the total number of credit hours attempted: GPA = Σ(Grade Points × Credits) ÷ Σ(Credits).',
   },
   {
-    question: 'What is the difference between a 4.0 and 5.0 GPA scale?',
+    question: 'What is the difference between semester GPA and cumulative GPA (CGPA)?',
     answer:
-      'A 4.0 scale is the standard unweighted grading system across US and Canadian universities, where an A represents 4.0 points. A 5.0 scale is typically used for honors, AP, or specialized international curricula, awarding an extra point (up to 5.0) for advanced coursework.',
+      'Semester GPA reflects your academic standing for a single term (such as Fall or Spring semester). Cumulative GPA (CGPA) aggregates all credit hours and quality points earned across every completed semester throughout your entire university degree.',
   },
   {
-    question: 'Do Pass/Fail or Withdrawn (W) courses affect my GPA?',
+    question: 'Do Pass/Fail or audit courses affect college GPA?',
     answer:
-      'At most institutions, courses graded as Pass/Fail, Satisfactory/Unsatisfactory (S/U), or Withdrawn (W) do not impact your GPA and are excluded from the grade point calculation, although they may satisfy degree credit requirements.',
+      'In most university systems across the US, Canada, and the UK, courses taken on a Pass/Fail (P/F), Satisfactory/Unsatisfactory (S/U), or audit basis do not award grade points and are excluded from the GPA calculation. However, they may satisfy degree credit requirements.',
   },
   {
-    question: 'What is considered a good GPA in college?',
+    question: 'What is considered a good GPA in university?',
     answer:
-      'A GPA of 3.0 (B average) is generally considered good standing. A 3.5 or higher typically qualifies students for the Dean’s List, academic honors, and competitive graduate programs. Most graduate schools require a minimum GPA of 3.0 for admission.',
+      'A 3.00 GPA (B average) is generally considered solid academic standing. A 3.50 or higher frequently earns honors or Dean’s List recognition, and a 3.70+ is typically competitive for selective graduate programs, medical school, and law school admissions.',
+  },
+  {
+    question: 'Can I calculate a custom or weighted GPA with this tool?',
+    answer:
+      'Yes. CampusKit supports 4.0, 5.0, and 10.0 scale standards as well as a flexible Custom Scale mode where you can define your institution’s maximum GPA ceiling and enter course grade points directly.',
   },
 ];
-
-const scaleOptions = Object.values(GPA_SCALES).map((s) => ({
-  value: s.type,
-  label: s.name,
-}));
-
-const gradeOptions = GPA_SCALES['4.0'].grades.map((g) => ({
-  value: g.letter,
-  label: `${g.letter} (${g.points.toFixed(1)})`,
-}));
 ---
 
 <ToolLayout
   tool={tool}
+  pageTitle="GPA Calculator – Calculate Your Grade Point Average"
   faqs={gpaFaqs}
-  metaDescription="Free college GPA calculator supporting 4.0, 5.0, 10.0, and custom scales. Calculate semester and cumulative GPA with credit hours and letter grades."
+  canonical="/tools/gpa-calculator"
+  metaDescription="Calculate your college GPA instantly with CampusKit. Free university GPA calculator supporting 4.0, 5.0, 10.0, and custom scales with letter grades and credit hours."
 >
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <!-- Left / Calculator Configuration & Courses (2 Cols) -->
-    <div class="lg:col-span-2 space-y-6">
-      <!-- Scale Selection Card -->
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <h2 class="text-base font-bold text-slate-900">Grading Scale</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Select the scale used by your college or university.</p>
-          </div>
-          <div class="w-full sm:w-64">
-            <SelectField
-              id="gpa-scale-select"
-              label="Grading Scale"
-              value={DEFAULT_SCALE_TYPE}
-              options={scaleOptions}
-            />
-          </div>
-        </div>
+  <!-- Interactive Calculator Container -->
+  <GpaCalculator />
 
-        <div class="mt-4 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs text-slate-600 bg-slate-50/80 p-3 rounded-lg">
-          <svg class="w-4 h-4 text-academic-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <span id="scale-description-text">
-            Standard North American 4.0 unweighted scale. A = 4.0, B = 3.0, C = 2.0, D = 1.0, F = 0.0.
-          </span>
-        </div>
-      </div>
+  <!-- Comprehensive Educational SEO Guide Section (Pure Semantic HTML, fully readable without JS) -->
+  <div slot="guide" class="space-y-12">
+    <!-- What is GPA? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What is GPA (Grade Point Average)?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        A <strong>Grade Point Average (GPA)</strong> is the universally recognized numerical summary of your academic achievement in higher education. Rather than evaluating courses on raw percentages or test scores alone, universities convert letter grades into standardized numerical grade points.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Because different courses carry different academic workloads, college GPA is <strong>credit-weighted</strong>. A 4-credit laboratory science course has double the influence on your final GPA compared to a 2-credit elective seminar. This weighting ensures that your overall average accurately reflects your academic dedication across substantial coursework.
+      </p>
+    </div>
 
-      <!-- Course Entry Table Card (Architecture Shell for Phase 2) -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-subtle overflow-hidden">
-        <div class="p-6 pb-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 class="text-base font-bold text-slate-900">Course Grades & Credits</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Enter your courses, expected letter grades, and credit hours.</p>
-          </div>
-          <div class="flex items-center gap-2">
-            <Button variant="outline" size="sm" id="reset-courses-btn">
-              <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              Reset
-            </Button>
-            <Button variant="primary" size="sm" id="add-course-btn">
-              <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-              </svg>
-              Add Course
-            </Button>
-          </div>
-        </div>
+    <!-- How to Calculate GPA Formula -->
+    <div class="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200">
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+        How to Calculate GPA
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+        Calculating your grade point average involves three straightforward steps:
+      </p>
 
-        <!-- Course Rows Container -->
-        <div class="p-6">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-sm" id="courses-table">
-              <thead>
-                <tr class="border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  <th class="pb-3 pl-1 font-medium">Course Name</th>
-                  <th class="pb-3 px-3 font-medium w-36 sm:w-44">Grade</th>
-                  <th class="pb-3 px-3 font-medium w-24 sm:w-32">Credits</th>
-                  <th class="pb-3 pr-1 font-medium w-12 text-center">Remove</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100" id="courses-body">
-                {
-                  DEFAULT_INITIAL_COURSES.map((course, idx) => (
-                    <tr class="course-row group" data-course-id={course.id}>
-                      <td class="py-3 pl-1">
-                        <input
-                          type="text"
-                          value={course.name}
-                          placeholder={`Course ${idx + 1}`}
-                          class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
-                          aria-label={`Course ${idx + 1} Name`}
-                        />
-                      </td>
-                      <td class="py-3 px-3">
-                        <select
-                          class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer"
-                          aria-label={`Course ${idx + 1} Grade`}
-                        >
-                          {gradeOptions.map((opt) => (
-                            <option value={opt.value} selected={opt.value === course.letterGrade}>
-                              {opt.label}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td class="py-3 px-3">
-                        <input
-                          type="number"
-                          min="0"
-                          max="20"
-                          step="0.5"
-                          value={course.credits}
-                          class="w-full px-3 py-1.5 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
-                          aria-label={`Course ${idx + 1} Credits`}
-                        />
-                      </td>
-                      <td class="py-3 pr-1 text-center">
-                        <button
-                          type="button"
-                          class="p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-rose-50 transition-colors"
-                          aria-label={`Remove Course ${idx + 1}`}
-                        >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                          </svg>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </table>
-          </div>
+      <ol class="mt-4 space-y-2.5 text-sm sm:text-base text-slate-700 list-decimal list-inside leading-relaxed">
+        <li><strong>Convert each letter grade to grade points</strong> according to your university’s official scale (e.g., A = 4.0, B = 3.0).</li>
+        <li><strong>Calculate Quality Points for each course</strong> by multiplying the grade points by the course’s credit hours.</li>
+        <li><strong>Divide total Quality Points by total Credits</strong> attempted during the term.</li>
+      </ol>
+
+      <div class="mt-6 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">The Weighted GPA Formula</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-academic-900 font-mono tracking-tight">
+          GPA = &Sigma; (Grade Points &times; Credits) &divide; &Sigma; (Credits)
         </div>
       </div>
     </div>
 
-    <!-- Right / Results Card & Summary (1 Col) -->
-    <div class="space-y-6">
-      <ResultCard
-        title="Term GPA Result"
-        primaryValue="3.73"
-        primaryLabel="Grade Point Average (4.0 Scale)"
-        badge="Dean's List / Honors"
-        badgeTone="success"
-        secondaryStats={[
-          { label: 'Total Credits', value: '13.0', subtext: 'Attempted' },
-          { label: 'Quality Points', value: '48.5', subtext: 'Earned' },
-          { label: 'Academic Standing', value: 'Honors', subtext: 'Top Tier' },
-        ]}
-      >
-        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col gap-2 text-xs text-slate-500">
-          <div class="flex justify-between items-center">
-            <span>Percentage Equivalent:</span>
-            <span class="font-bold text-slate-700">~ 93.3%</span>
-          </div>
-          <div class="flex justify-between items-center">
-            <span>Scale Ceiling:</span>
-            <span class="font-bold text-slate-700">4.00 Max</span>
-          </div>
-        </div>
-      </ResultCard>
+    <!-- Worked Example -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        Step-by-Step Worked GPA Example
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Consider a university student enrolled in four courses during a 14-credit semester on the standard 4.0 scale:
+      </p>
 
-      <!-- Quick Guidance Card -->
-      <div class="p-5 rounded-xl bg-academic-50/70 border border-academic-200/80 text-academic-900">
-        <h3 class="text-sm font-bold flex items-center gap-1.5">
-          <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Phase 2 Foundation Ready
-        </h3>
-        <p class="mt-2 text-xs text-academic-800 leading-relaxed">
-          The mathematical engine in <code class="px-1 py-0.5 bg-white/80 rounded font-mono text-[11px]">src/utils/gpa.ts</code> and scale definitions in <code class="px-1 py-0.5 bg-white/80 rounded font-mono text-[11px]">src/data/gpaScales.ts</code> are fully prepared for interactive DOM bindings in the upcoming phase.
-        </p>
+      <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 shadow-subtle">
+        <table class="w-full text-left text-sm border-collapse bg-white">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+              <th class="py-3 px-4">Course</th>
+              <th class="py-3 px-4">Credits</th>
+              <th class="py-3 px-4">Letter Grade</th>
+              <th class="py-3 px-4">Grade Points</th>
+              <th class="py-3 px-4 text-right">Quality Points</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">Introduction to Psychology</td>
+              <td class="py-3 px-4">3</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-xs">A</span></td>
+              <td class="py-3 px-4 font-mono">4.0</td>
+              <td class="py-3 px-4 font-mono text-right">3 &times; 4.0 = <strong>12.0</strong></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">General Chemistry I & Lab</td>
+              <td class="py-3 px-4">4</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-xs">B+</span></td>
+              <td class="py-3 px-4 font-mono">3.3</td>
+              <td class="py-3 px-4 font-mono text-right">4 &times; 3.3 = <strong>13.2</strong></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">Calculus I</td>
+              <td class="py-3 px-4">4</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-xs">A-</span></td>
+              <td class="py-3 px-4 font-mono">3.7</td>
+              <td class="py-3 px-4 font-mono text-right">4 &times; 3.7 = <strong>14.8</strong></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">College Composition</td>
+              <td class="py-3 px-4">3</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold text-xs">B</span></td>
+              <td class="py-3 px-4 font-mono">3.0</td>
+              <td class="py-3 px-4 font-mono text-right">3 &times; 3.0 = <strong>9.0</strong></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="border-t-2 border-slate-300 bg-slate-50/80 font-bold text-slate-900">
+              <td class="py-3 px-4">Total Semester Workload</td>
+              <td class="py-3 px-4 font-mono">14 Credits</td>
+              <td class="py-3 px-4" colspan="2">Total Quality Points</td>
+              <td class="py-3 px-4 font-mono text-right">49.0 Quality Points</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="mt-4 p-4 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900">
+        <strong>Calculation:</strong> GPA = 49.0 &divide; 14 = <strong>3.50</strong>. This places the student within Dean’s List / Honors eligibility for the academic term.
       </div>
     </div>
-  </div>
 
-  <!-- Educational Guide Slot (High-Value SEO Content) -->
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">
-      How University GPA is Calculated
-    </h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Your Grade Point Average (GPA) is the official metric colleges and universities use to quantify your overall academic achievement. Rather than a simple average of course grades, a university GPA is <strong>credit-weighted</strong>: courses that carry more credit hours contribute proportionally more to your final score than lower-credit electives.
-    </p>
+    <!-- How to Use This GPA Calculator -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        How to Use This GPA Calculator
+      </h2>
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">1</span>
+          <h3 class="text-base font-bold text-slate-900">Select Your Grading Scale</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Choose between standard 4.0, weighted 5.0, international 10.0, or Custom Scale based on your university’s grading policy.
+          </p>
+        </div>
 
-    <h3 class="text-lg font-bold text-slate-900 mt-6">The Standard GPA Formula</h3>
-    <div class="my-4 p-4 rounded-xl bg-slate-100 border border-slate-200 font-mono text-sm text-slate-800 text-center">
-      GPA = &Sigma; (Course Grade Points &times; Course Credit Hours) &divide; &Sigma; (Total Credit Hours)
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">2</span>
+          <h3 class="text-base font-bold text-slate-900">Enter Course Details</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Optionally input course titles, specify credit hours, and select your letter grade or direct grade points from the dropdown.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">3</span>
+          <h3 class="text-base font-bold text-slate-900">Add or Remove Rows</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Click <strong>Add Course</strong> to calculate additional subjects, or use the trash icon to remove dropped or audited classes.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">4</span>
+          <h3 class="text-base font-bold text-slate-900">View Instant Results</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Watch your term GPA, total credits, quality points, and estimated academic standing update immediately with zero lag.
+          </p>
+        </div>
+      </div>
     </div>
 
-    <h3 class="text-lg font-bold text-slate-900 mt-6">Standard 4.0 Scale Letter Grade Conversion Chart</h3>
-    <div class="mt-4 overflow-x-auto">
-      <table class="min-w-full text-left text-sm border-collapse">
-        <thead>
-          <tr class="border-b border-slate-300 text-xs font-semibold uppercase text-slate-700 bg-slate-100">
-            <th class="py-2.5 px-4">Letter Grade</th>
-            <th class="py-2.5 px-4">Grade Points (4.0 Scale)</th>
-            <th class="py-2.5 px-4">Standard Percentage</th>
-            <th class="py-2.5 px-4">Academic Meaning</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200 text-slate-600">
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">A+ / A</td><td class="py-2 px-4">4.0</td><td class="py-2 px-4">93 – 100%</td><td class="py-2 px-4">Excellent / High Honors</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">A-</td><td class="py-2 px-4">3.7</td><td class="py-2 px-4">90 – 92%</td><td class="py-2 px-4">Very Good</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">B+</td><td class="py-2 px-4">3.3</td><td class="py-2 px-4">87 – 89%</td><td class="py-2 px-4">Good</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">B</td><td class="py-2 px-4">3.0</td><td class="py-2 px-4">83 – 86%</td><td class="py-2 px-4">Above Average</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">B-</td><td class="py-2 px-4">2.7</td><td class="py-2 px-4">80 – 82%</td><td class="py-2 px-4">Average</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">C+</td><td class="py-2 px-4">2.3</td><td class="py-2 px-4">77 – 79%</td><td class="py-2 px-4">Satisfactory</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">C</td><td class="py-2 px-4">2.0</td><td class="py-2 px-4">73 – 76%</td><td class="py-2 px-4">Minimum Degree Standard</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">D</td><td class="py-2 px-4">1.0</td><td class="py-2 px-4">60 – 69%</td><td class="py-2 px-4">Minimum Passing</td></tr>
-          <tr><td class="py-2 px-4 font-semibold text-slate-900">F</td><td class="py-2 px-4">0.0</td><td class="py-2 px-4">Below 60%</td><td class="py-2 px-4">Failing (Zero Credit)</td></tr>
-        </tbody>
-      </table>
+    <!-- Understanding University GPA Scales -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        Understanding University GPA Scales
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Grading policies differ significantly across higher education institutions worldwide. While the 4.0 scale is predominant throughout the United States and Canada, other systems are widely used:
+      </p>
+
+      <div class="mt-6 space-y-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">The Standard 4.0 Scale (US & Canada)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Grades typically span from A+ / A (4.0) down to F (0.0). Plus and minus modifiers shift point values by 0.3 points (e.g. A- = 3.7, B+ = 3.3). This is an unweighted scale where 4.00 represents perfection.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">The 5.0 Scale (Honors / Weighted Programs)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Certain universities and honors curricula incorporate an extra point tier for advanced, graduate-level, or accelerated coursework, elevating the highest attainable grade to 5.0.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">The 10.0 Scale (International & Engineering Systems)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Utilized throughout Europe, India (AICTE/UGC), and international engineering colleges. Grades are segmented into 10-point bands (e.g., Outstanding O = 10, A+ = 9, A = 8) aligning closely with percentage percentiles.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">Custom Scales & Institutional Autonomy</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Because individual institutions maintain independent academic governance, no online converter can claim universal authority. Always consult your university registrar or syllabus handbook to verify your degree’s exact point multipliers.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </ToolLayout>
