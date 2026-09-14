@@ -1,59 +1,284 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import InputField from '../../components/tools/InputField.astro';
+import FinalGradeCalculator from '../../components/tools/finalGrade/FinalGradeCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('final-grade-calculator')!;
 
-const faqs: FAQItem[] = [
+const finalGradeFaqs: FAQItem[] = [
   {
-    question: 'How do I calculate what I need on my final exam?',
+    question: 'How do I calculate what score I need on my final exam?',
     answer:
-      'Use the final exam formula: Required Final Exam Score = [Target Grade - Current Grade * (1 - Final Exam Weight)] / Final Exam Weight.',
+      'To calculate the grade you need on your final exam, multiply your current coursework grade by its percentage weight (in decimal form), subtract that number from your target overall course grade, and divide the remainder by your final exam weight: Required Exam Score = [Desired Grade - (Current Grade × Current Weight)] ÷ Final Exam Weight.',
   },
   {
-    question: 'What if the required score is over 100%?',
+    question: 'What does it mean if my required final exam grade is below 0%?',
     answer:
-      'If the required score exceeds 100%, achieving that target grade mathematically requires extra credit or a curved grading scale. Our tool highlights feasible and unfeasible target thresholds.',
+      'If your required score is 0% or negative, congratulations: you have already locked in your desired final grade based on your existing coursework alone. Even if you receive a 0% on the final exam, your cumulative points before the exam exceed your target passing or honors threshold.',
+  },
+  {
+    question: 'What should I do if the calculator says I need over 100%?',
+    answer:
+      'A required score above 100% means reaching that specific target grade is mathematically impossible through the final exam alone without bonus opportunities. In this scenario, check whether your syllabus includes extra credit, review whether low quiz or homework scores get dropped, ask if the class will be curved, or recalculate for your next best alternative grade tier (e.g., aiming for a B+ instead of an A-).',
+  },
+  {
+    question: 'Why must the current weight and final exam weight add up to 100%?',
+    answer:
+      'College grading systems are calibrated out of 100 total percentage points. If your current coursework represents 70% of your course evaluation, your final exam must represent the remaining 30% for your cumulative average to reflect an accurate, fully evaluated grade.',
+  },
+  {
+    question: 'How can I find the weight of my final exam?',
+    answer:
+      'The exact percentage weight of your final exam is defined in your professor’s course syllabus, usually under a section titled "Grading Scheme," "Evaluation Criteria," or "Grade Breakdown." You can also check your university learning management system (Canvas, Blackboard, Moodle, or Brightspace).',
+  },
+  {
+    question: 'Can a final exam drop my overall grade from an A to a C?',
+    answer:
+      'Yes, if the final exam carries a high weight (such as 35% to 50%). For example, if you hold a 93% average going into a 40% final exam and score a 50% on the final, your overall grade will drop to 75.8% (a mid C). Understanding your exam weight helps you allocate adequate study hours to protect your GPA.',
   },
 ];
 ---
 
-<ToolLayout tool={tool} faqs={faqs}>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Final Exam Target Parameters</h2>
-        <p class="text-xs text-slate-500 mb-4">Input your current grade, desired course grade, and how much the final exam is worth.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <InputField id="current-grade" label="Current Grade" type="number" suffix="%" value="84" />
-          <InputField id="target-grade" label="Target Desired Grade" type="number" suffix="%" value="90" />
-          <InputField id="final-weight" label="Final Exam Weight" type="number" suffix="%" value="35" />
+<ToolLayout
+  tool={tool}
+  pageTitle="Final Grade Calculator – What Do I Need on My Final? | CampusKit"
+  faqs={finalGradeFaqs}
+  canonical="/tools/final-grade-calculator"
+  metaDescription="Calculate what score you need on your final exam to achieve your desired course grade. Free university final grade calculator with instant weight balancing and feasibility checks."
+>
+  <!-- Interactive Calculator Container -->
+  <FinalGradeCalculator />
+
+  <!-- Comprehensive Educational Guide & SEO Documentation (Semantic HTML) -->
+  <div slot="guide" class="space-y-12">
+    <!-- What is a Final Grade Calculator? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What is a Final Grade Calculator?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        A <strong>Final Grade Calculator</strong> is a strategic academic tool that reverse-engineers the exact percentage score you must earn on your upcoming final exam to lock in your desired overall letter grade for a college or university course.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        During finals week, collegiate schedules become intensely compressed. Rather than studying blindly and experiencing burnout, calculating your exact required scores across every course enables you to triage your study hours efficiently—focusing energy on courses where your final exam grade is the deciding factor between letter grades.
+      </p>
+    </div>
+
+    <!-- How to Calculate the Grade You Need on Your Final Exam -->
+    <div class="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200">
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+        How to Calculate the Grade You Need on Your Final Exam
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+        College courses calculate your final mark using a weighted average. To solve for your required final exam score, we isolate the final exam variable using standard algebraic rearrangement:
+      </p>
+
+      <div class="mt-6 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">The Final Exam Formula</span>
+        <div class="text-lg sm:text-2xl font-extrabold text-academic-900 font-mono tracking-tight">
+          Required Final Grade = [Desired Grade &minus; (Current Grade &times; Current Weight)] &divide; Final Exam Weight
+        </div>
+      </div>
+
+      <div class="mt-6 space-y-3 text-sm text-slate-700">
+        <h3 class="font-bold text-slate-900 text-sm uppercase tracking-wide">Understanding the Variables:</h3>
+        <ul class="space-y-2 list-disc list-inside text-slate-600">
+          <li><strong>Desired Grade (%):</strong> The overall percentage you want to finish with in the class (e.g., 90% for an A, 80% for a B, or 70% to pass).</li>
+          <li><strong>Current Grade (%):</strong> Your running grade percentage across all coursework evaluated so far.</li>
+          <li><strong>Current Coursework Weight (%):</strong> The proportion of your total course grade that has already been completed (in decimal form: 70% = 0.70).</li>
+          <li><strong>Final Exam Weight (%):</strong> How much your upcoming final exam is worth toward your final grade (in decimal form: 30% = 0.30).</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Step-by-Step Worked Final Exam Example -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        Step-by-Step Worked Final Exam Example
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Let’s examine a real-world scenario of an undergraduate biology student preparing for finals week:
+      </p>
+
+      <div class="mt-4 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle space-y-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+          <div class="p-3 bg-slate-50 rounded-lg">
+            <span class="text-xs text-slate-500 block">Current Grade</span>
+            <span class="text-lg font-bold text-slate-900 font-mono">82.0%</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-lg">
+            <span class="text-xs text-slate-500 block">Completed Weight</span>
+            <span class="text-lg font-bold text-slate-900 font-mono">70.0%</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-lg">
+            <span class="text-xs text-slate-500 block">Desired Grade</span>
+            <span class="text-lg font-bold text-academic-700 font-mono">85.0%</span>
+          </div>
+          <div class="p-3 bg-slate-50 rounded-lg">
+            <span class="text-xs text-slate-500 block">Exam Weight</span>
+            <span class="text-lg font-bold text-academic-700 font-mono">30.0%</span>
+          </div>
+        </div>
+
+        <div class="space-y-2 text-sm text-slate-700 border-t border-slate-100 pt-3">
+          <p><strong>Step 1: Calculate points earned so far:</strong></p>
+          <p class="font-mono text-xs sm:text-sm bg-slate-50 p-2.5 rounded text-slate-800">
+            Points Earned = 82.0% &times; 0.70 = 57.4 points
+          </p>
+          <p><strong>Step 2: Determine points still needed to hit the target:</strong></p>
+          <p class="font-mono text-xs sm:text-sm bg-slate-50 p-2.5 rounded text-slate-800">
+            Points Needed = 85.0 (Desired) &minus; 57.4 (Earned) = 27.6 points
+          </p>
+          <p><strong>Step 3: Divide needed points by final exam weight:</strong></p>
+          <p class="font-mono text-xs sm:text-sm bg-academic-50 border border-academic-200 p-2.5 rounded text-academic-900 font-bold">
+            Required Score = 27.6 &divide; 0.30 = 92.0%
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-4 p-4 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900">
+        <strong>Strategic Takeaway:</strong> The student needs a <strong>92.0%</strong> on the final exam to secure an overall course grade of 85.0%. Since 92% is attainable with dedicated preparation, the student can schedule daily revision sessions to hit this threshold.
+      </div>
+    </div>
+
+    <!-- How to Use This Final Grade Calculator -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        How to Use This Final Grade Calculator
+      </h2>
+      <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">1</span>
+          <h3 class="text-base font-bold text-slate-900">Enter Your Current Standing</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Check your university LMS (Canvas/Blackboard) for your current percentage score before taking the final exam.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">2</span>
+          <h3 class="text-base font-bold text-slate-900">Specify Coursework Weight</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Input the total percentage of the course grade that has already been graded (e.g. 70% or 80%).
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">3</span>
+          <h3 class="text-base font-bold text-slate-900">Define Your Target Grade</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Set your desired final score (e.g. 93% for an A, 85% for a B, or your program’s minimum prerequisite threshold).
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">4</span>
+          <h3 class="text-base font-bold text-slate-900">Set Final Exam Weight</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Check your syllabus for how much the final is worth. Notice that coursework weight + exam weight should total 100%.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle sm:col-span-2 lg:col-span-2">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">5</span>
+          <h3 class="text-base font-bold text-slate-900">Review Instant Feasibility Guidance</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Instantly view whether your target is within reach, already secured, or mathematically unachievable without a curve.
+          </p>
         </div>
       </div>
     </div>
 
+    <!-- What If I Need More Than 100% on the Final? -->
     <div>
-      <ResultCard
-        title="Required Exam Score"
-        primaryValue="101.1%"
-        primaryLabel="Score Needed on Final Exam"
-        badge="Needs Extra Credit / Curve"
-        badgeTone="warning"
-        secondaryStats={[
-          { label: 'Current Score', value: '84%', subtext: 'Before Final' },
-          { label: 'Exam Weight', value: '35%', subtext: 'Total Weight' },
-        ]}
-      />
-    </div>
-  </div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        What If I Need More Than 100% on the Final Exam?
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Seeing a required score over 100% can feel disheartening, but it provides crucial clarity during exam prep. It means that under the standard syllabus weightings, a 100% on the final exam is mathematically insufficient to attain that target grade.
+      </p>
 
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Final Exam Formula & Strategy</h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Understanding what score you need on a final exam allows you to triage your study time efficiently across multiple difficult classes during finals week.
-    </p>
+      <div class="mt-6 space-y-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">1. Evaluate Practical Alternative Grade Targets</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            If you need 108% to get an A-, test what you need for a solid B+ or B. Often, settling for the next highest realistic grade saves dozens of study hours that can be invested where they yield higher GPA dividends.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">2. Inspect Your Syllabus for Grade Drop Policies</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Many college professors drop your lowest quiz, homework, or midterm score at the end of the term. Recalculating your current grade without your lowest assessment may significantly lower your final exam requirement.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">3. Inquire About Extra Credit & Class Curves</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            STEM disciplines (Calculus, Organic Chemistry, Physics) frequently apply a statistical curve to the final exam or final course grades. Attend professor office hours to clarify whether grading curves or bonus assignments will be factored in.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- How Much Can My Final Exam Change My Grade? -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        How Much Can My Final Exam Change My Overall Course Grade?
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        The volatility of your final letter grade is directly proportional to the final exam weight. Below is a comparison of how much your overall grade can swing depending on how heavily your professor weights the exam:
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 shadow-subtle">
+        <table class="w-full text-left text-sm border-collapse bg-white">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+              <th class="py-3 px-4">Exam Weight</th>
+              <th class="py-3 px-4">Max Course Grade Jump (Scoring 100%)</th>
+              <th class="py-3 px-4">Max Course Grade Drop (Scoring 50%)</th>
+              <th class="py-3 px-4">Volatility Risk Level</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">15% Final Exam</td>
+              <td class="py-3 px-4 font-mono text-emerald-700">+3.0% to +4.5%</td>
+              <td class="py-3 px-4 font-mono text-amber-700">&minus;4.0% to &minus;6.0%</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-semibold text-xs">Low Volatility</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">25% Final Exam</td>
+              <td class="py-3 px-4 font-mono text-emerald-700">+5.0% to +7.5%</td>
+              <td class="py-3 px-4 font-mono text-amber-700">&minus;7.5% to &minus;10.0%</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-blue-50 text-blue-800 font-semibold text-xs">Moderate Volatility</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">35% Final Exam</td>
+              <td class="py-3 px-4 font-mono text-emerald-700">+7.0% to +11.0%</td>
+              <td class="py-3 px-4 font-mono text-rose-700">&minus;11.0% to &minus;15.0%</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-amber-50 text-amber-800 font-semibold text-xs">High Volatility</span></td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">50% Final Exam</td>
+              <td class="py-3 px-4 font-mono text-emerald-700">+10.0% to +18.0%</td>
+              <td class="py-3 px-4 font-mono text-rose-700">&minus;18.0% to &minus;25.0%</td>
+              <td class="py-3 px-4"><span class="px-2 py-0.5 rounded bg-rose-50 text-rose-800 font-semibold text-xs">Extreme Risk</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-6 p-4 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900 flex items-start gap-3">
+        <svg class="w-5 h-5 text-academic-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <strong>Ready to calculate your term and cumulative GPA?</strong> Once your final grades are locked in, convert your letter grades into cumulative GPA using our official <a href="/tools/gpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">GPA Calculator</a> and multi-term <a href="/tools/cgpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">CGPA Calculator</a>.
+        </div>
+      </div>
+    </div>
   </div>
 </ToolLayout>

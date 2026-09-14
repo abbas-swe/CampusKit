@@ -7,10 +7,20 @@ export const DEFAULT_DESCRIPTION =
   'Fast, free, accessible academic calculators and productivity tools for university students. Calculate GPA, target grades, attendance, and exam countdowns with zero sign-up.';
 
 export function formatPageTitle(title?: string): string {
-  if (!title || title === SITE_NAME) {
+  if (!title || title.trim() === SITE_NAME) {
     return `${SITE_NAME} | ${SITE_TAGLINE}`;
   }
-  return `${title} | ${SITE_NAME}`;
+  const trimmed = title.trim();
+  // Check if brand is already present in title
+  if (
+    trimmed.includes(SITE_NAME) ||
+    trimmed.endsWith(`| ${SITE_NAME}`) ||
+    trimmed.endsWith(`– ${SITE_NAME}`) ||
+    trimmed.endsWith(`- ${SITE_NAME}`)
+  ) {
+    return trimmed;
+  }
+  return `${trimmed} | ${SITE_NAME}`;
 }
 
 export function formatCanonicalUrl(pathname: string): string {

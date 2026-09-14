@@ -6,24 +6,20 @@ const currentYear = new Date().getFullYear();
 const academicTools = [
   { name: 'GPA Calculator', href: '/tools/gpa-calculator' },
   { name: 'CGPA Calculator', href: '/tools/cgpa-calculator' },
-  { name: 'Weighted Grade Calculator', href: '/tools/grade-calculator' },
-  { name: 'Final Grade Calculator', href: '/tools/final-grade-calculator' },
-  { name: 'Attendance Calculator', href: '/tools/attendance-calculator' },
   { name: 'Marks Needed Calculator', href: '/tools/marks-needed-calculator' },
-  { name: 'GPA to Percentage', href: '/tools/percentage-calculator' },
 ];
 
 const productivityTools = [
   { name: 'Study Hours Calculator', href: '/tools/study-hours-calculator' },
   { name: 'Exam Countdown Timer', href: '/tools/exam-countdown' },
-  { name: 'Academic Pomodoro', href: '/tools/pomodoro-timer' },
+  { name: 'Pomodoro Study Timer', href: '/tools/pomodoro-study-timer' },
 ];
 
 const legalLinks = [
   { name: 'About CampusKit', href: '/about' },
-  { name: 'Contact & Feedback', href: '/contact' },
+  { name: 'Contact & Support', href: '/contact' },
   { name: 'Privacy Policy', href: '/privacy' },
-  { name: 'Terms of Service', href: '/terms' },
+  { name: 'Terms of Use', href: '/terms' },
 ];
 ---
 
@@ -129,9 +125,10 @@ const legalLinks = [
     <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
       <p>© {currentYear} CampusKit. Built for university students worldwide.</p>
       <div class="flex items-center gap-6">
+        <a href="/about" class="hover:text-slate-400 transition-colors">About</a>
+        <a href="/contact" class="hover:text-slate-400 transition-colors">Contact</a>
         <a href="/privacy" class="hover:text-slate-400 transition-colors">Privacy</a>
         <a href="/terms" class="hover:text-slate-400 transition-colors">Terms</a>
-        <a href="/contact" class="hover:text-slate-400 transition-colors">Contact</a>
       </div>
     </div>
   </Container>

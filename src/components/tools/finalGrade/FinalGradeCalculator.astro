@@ -1,0 +1,951 @@
+---
+// FinalGradeCalculator.astro
+const DEFAULT_SIMPLE_DATA = {
+  currentGrade: '82',
+  currentWeight: '70',
+  desiredGrade: '85',
+  examWeight: '30',
+};
+
+const DEFAULT_DETAILED_ITEMS = [
+  { id: 'item-1', name: 'Homework & Assignments', score: '88', weight: '20' },
+  { id: 'item-2', name: 'Midterm Exam', score: '78', weight: '25' },
+  { id: 'item-3', name: 'Quizzes & Participation', score: '85', weight: '15' },
+  { id: 'item-4', name: 'Term Project / Lab', score: '82', weight: '10' },
+];
+---
+
+<div class="w-full max-w-5xl mx-auto" id="final-grade-calculator-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Calculator Card (8 cols on desktop) -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Header & Mode Tabs -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+                <span>Interactive Tool</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Final Grade Calculator
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Calculate the exact score you need on your final exam to earn your target overall grade.
+              </p>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                id="reset-final-grade-btn"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle min-h-[40px]"
+                title="Reset calculator to standard example"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Selector Tabs -->
+          <div class="mt-6">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Calculation Format
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-1 bg-slate-100/80 rounded-xl border border-slate-200" role="tablist" aria-label="Calculator Mode">
+              <button
+                type="button"
+                id="mode-tab-simple"
+                role="tab"
+                aria-selected="true"
+                aria-controls="workspace-simple"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all font-medium text-xs sm:text-sm bg-white text-academic-900 shadow-sm border border-slate-200/80 cursor-pointer"
+              >
+                <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Simple Calculator</span>
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-academic-100 text-academic-800">Standard</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 font-normal mt-0.5">Current grade & final exam weight</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                id="mode-tab-detailed"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-detailed"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all font-medium text-xs sm:text-sm text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">Multiple Graded Components</div>
+                  <div class="text-[11px] text-slate-500 font-normal mt-0.5">Assignments, midterms, quizzes breakdown</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 1: Simple Calculator Workspace (Default) -->
+        <div id="workspace-simple" role="tabpanel" aria-labelledby="mode-tab-simple" class="p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- 1. Current Grade -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-current-grade" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Current Grade
+                </label>
+                <span class="text-[11px] text-slate-400">Score so far</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-current-grade"
+                  min="0"
+                  max="150"
+                  step="0.1"
+                  value={DEFAULT_SIMPLE_DATA.currentGrade}
+                  placeholder="e.g. 82"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <!-- 2. Current Grade Weight -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-current-weight" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Current Grade Weight
+                </label>
+                <span class="text-[11px] text-slate-400">Coursework completed</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-current-weight"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value={DEFAULT_SIMPLE_DATA.currentWeight}
+                  placeholder="e.g. 70"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <!-- 3. Desired Final Course Grade -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-desired-grade" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Desired Final Grade
+                </label>
+                <span class="text-[11px] text-slate-400">Target course grade</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-desired-grade"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={DEFAULT_SIMPLE_DATA.desiredGrade}
+                  placeholder="e.g. 85"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <!-- 4. Final Exam Weight -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-exam-weight" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Final Exam Weight
+                </label>
+                <span class="text-[11px] text-slate-400">Exam percentage</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-exam-weight"
+                  min="1"
+                  max="100"
+                  step="0.5"
+                  value={DEFAULT_SIMPLE_DATA.examWeight}
+                  placeholder="e.g. 30"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weight Balance Status Indicator & Helper -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+            <div class="flex items-center gap-2 text-slate-700">
+              <span id="weight-balance-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+              <span id="weight-balance-text" class="font-medium">Weights total: 70% + 30% = 100% (Balanced)</span>
+            </div>
+            <button
+              type="button"
+              id="auto-balance-btn"
+              class="hidden text-xs font-bold text-academic-700 hover:text-academic-900 underline cursor-pointer self-start sm:self-auto"
+            >
+              Auto-balance weights to 100%
+            </button>
+          </div>
+
+          <!-- Friendly Weight Sum Notification Banner (when weights != 100%) -->
+          <div id="weight-mismatch-banner" class="hidden p-3.5 rounded-xl bg-amber-50 border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <p id="weight-mismatch-text" class="leading-relaxed"></p>
+          </div>
+
+          <!-- Validation Errors Banner -->
+          <div id="simple-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="simple-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- MODE 2: Multiple Graded Components Workspace (Hidden initially) -->
+        <div id="workspace-detailed" role="tabpanel" aria-labelledby="mode-tab-detailed" class="hidden p-6 sm:p-7 space-y-6">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">Completed Assessments</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Enter grades and weights for exams, assignments, and quizzes completed before the final.</p>
+            </div>
+            <span class="text-xs font-semibold text-slate-500" id="detailed-count-badge">4 Components</span>
+          </div>
+
+          <!-- Desktop Headers -->
+          <div class="hidden sm:grid sm:grid-cols-12 gap-3 text-xs font-bold uppercase tracking-wider text-slate-500 pb-1">
+            <div class="col-span-5">Component Name</div>
+            <div class="col-span-3">Grade (%)</div>
+            <div class="col-span-3">Weight (%)</div>
+            <div class="col-span-1 text-center">Remove</div>
+          </div>
+
+          <!-- Dynamic Assessment Items List -->
+          <div id="detailed-items-list" class="divide-y divide-slate-200 sm:divide-y-0 sm:space-y-3">
+            <!-- Populated dynamically by script -->
+          </div>
+
+          <!-- Add Component Button -->
+          <div class="pt-2 flex items-center justify-between">
+            <button
+              type="button"
+              id="add-detailed-item-btn"
+              class="inline-flex items-center gap-2 px-3.5 py-2 bg-academic-50 hover:bg-academic-100 text-academic-800 text-xs font-semibold rounded-xl border border-academic-200 transition-all cursor-pointer min-h-[38px]"
+            >
+              <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Add Graded Component</span>
+            </button>
+            <span class="text-xs text-slate-500" id="detailed-completed-weight-sum">Coursework: 70%</span>
+          </div>
+
+          <!-- Final Goals for Detailed Mode -->
+          <div class="pt-5 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="detailed-desired-grade" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Desired Final Course Grade
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="detailed-desired-grade"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value="85"
+                  placeholder="e.g. 85"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-2.5 pr-10 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[44px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <div>
+              <label for="detailed-exam-weight" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Final Exam Weight
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="detailed-exam-weight"
+                  min="1"
+                  max="100"
+                  step="0.5"
+                  value="30"
+                  placeholder="e.g. 30"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-2.5 pr-10 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[44px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detailed Errors Banner -->
+          <div id="detailed-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="detailed-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Results Summary Panel (4 cols on desktop) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
+        id="final-grade-result-card"
+        aria-live="polite"
+      >
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Final Exam Target
+          </h3>
+          <span
+            id="final-status-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200"
+          >
+            Target Achievable
+          </span>
+        </div>
+
+        <!-- Big Metric Display -->
+        <div class="py-8 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2" id="score-header-label">
+            Score Needed on Final
+          </span>
+          <div
+            class="text-5xl sm:text-6xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-transform duration-200"
+            id="required-score-display"
+          >
+            92.0%
+          </div>
+          <p class="mt-3 text-xs font-medium text-slate-600 px-3 leading-relaxed" id="status-headline-text">
+            You need 92.0% on the final exam
+          </p>
+        </div>
+
+        <!-- Feasibility Visual Indicator Bar -->
+        <div class="px-1 mb-5">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-1.5">
+            <span>Exam Difficulty</span>
+            <span id="feasibility-meter-label">Feasible</span>
+          </div>
+          <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex border border-slate-200">
+            <div
+              id="feasibility-meter-fill"
+              class="h-full rounded-full transition-all duration-300 bg-academic-600"
+              style="width: 92%;"
+            ></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        <!-- Metric Details Grid -->
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Current Score</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block font-mono" id="current-score-summary">82.0%</span>
+            <span class="text-[10px] text-slate-400 block" id="current-weight-summary">Weight: 70%</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Target Final</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block font-mono" id="desired-grade-summary">85.0%</span>
+            <span class="text-[10px] text-slate-400 block" id="exam-weight-summary">Weight: 30%</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Context Explanation Box -->
+        <div class="mt-4 p-4 rounded-xl bg-slate-50/80 border border-slate-200/80 text-xs text-slate-600 leading-relaxed" id="dynamic-explanation-box">
+          Scoring 92.0% or higher on your final exam will secure your desired course grade of 85.0%.
+        </div>
+
+        <!-- 100% Client-Side Assurance -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Client-Side. No grade data is stored.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side Engine -->
+<script>
+  import type { GradedAssessment, FinalGradeMode } from '../../../types/finalGrade.ts';
+  import { calculateFinalGradeRequired, calculateDetailedFinalGrade, roundToDecimals } from '../../../utils/finalGrade.ts';
+
+  interface DetailedState {
+    id: string;
+    name: string;
+    score: string;
+    weight: string;
+  }
+
+  function setupFinalGradeCalculator() {
+    const root = document.getElementById('final-grade-calculator-root');
+    if (!root) return;
+
+    // Tabs & Workspaces
+    const modeTabSimple = document.getElementById('mode-tab-simple');
+    const modeTabDetailed = document.getElementById('mode-tab-detailed');
+    const workspaceSimple = document.getElementById('workspace-simple');
+    const workspaceDetailed = document.getElementById('workspace-detailed');
+
+    // Simple Mode Inputs
+    const inputCurrentGrade = document.getElementById('input-current-grade') as HTMLInputElement | null;
+    const inputCurrentWeight = document.getElementById('input-current-weight') as HTMLInputElement | null;
+    const inputDesiredGrade = document.getElementById('input-desired-grade') as HTMLInputElement | null;
+    const inputExamWeight = document.getElementById('input-exam-weight') as HTMLInputElement | null;
+
+    // Simple Mode Weight Helper & Error Elements
+    const weightBalanceDot = document.getElementById('weight-balance-dot');
+    const weightBalanceText = document.getElementById('weight-balance-text');
+    const autoBalanceBtn = document.getElementById('auto-balance-btn');
+    const weightMismatchBanner = document.getElementById('weight-mismatch-banner');
+    const weightMismatchText = document.getElementById('weight-mismatch-text');
+    const simpleErrorsBanner = document.getElementById('simple-errors-banner');
+    const simpleErrorsList = document.getElementById('simple-errors-list');
+
+    // Detailed Mode Elements
+    const detailedItemsList = document.getElementById('detailed-items-list');
+    const addDetailedItemBtn = document.getElementById('add-detailed-item-btn');
+    const detailedCountBadge = document.getElementById('detailed-count-badge');
+    const detailedCompletedWeightSum = document.getElementById('detailed-completed-weight-sum');
+    const detailedDesiredGradeInput = document.getElementById('detailed-desired-grade') as HTMLInputElement | null;
+    const detailedExamWeightInput = document.getElementById('detailed-exam-weight') as HTMLInputElement | null;
+    const detailedErrorsBanner = document.getElementById('detailed-errors-banner');
+    const detailedErrorsList = document.getElementById('detailed-errors-list');
+
+    // Reset Button
+    const resetBtn = document.getElementById('reset-final-grade-btn');
+
+    // Result Card Elements
+    const statusBadge = document.getElementById('final-status-badge');
+    const scoreHeaderLabel = document.getElementById('score-header-label');
+    const requiredScoreDisplay = document.getElementById('required-score-display');
+    const statusHeadlineText = document.getElementById('status-headline-text');
+    const feasibilityMeterLabel = document.getElementById('feasibility-meter-label');
+    const feasibilityMeterFill = document.getElementById('feasibility-meter-fill');
+    const currentScoreSummary = document.getElementById('current-score-summary');
+    const currentWeightSummary = document.getElementById('current-weight-summary');
+    const desiredGradeSummary = document.getElementById('desired-grade-summary');
+    const examWeightSummary = document.getElementById('exam-weight-summary');
+    const explanationBox = document.getElementById('dynamic-explanation-box');
+
+    let activeMode: FinalGradeMode = 'simple';
+    let nextItemId = 5;
+
+    let detailedItems: DetailedState[] = [
+      { id: 'item-1', name: 'Homework & Assignments', score: '88', weight: '20' },
+      { id: 'item-2', name: 'Midterm Exam', score: '78', weight: '25' },
+      { id: 'item-3', name: 'Quizzes & Participation', score: '85', weight: '15' },
+      { id: 'item-4', name: 'Term Project / Lab', score: '82', weight: '10' },
+    ];
+
+    // Mode Switcher
+    function setMode(mode: FinalGradeMode) {
+      activeMode = mode;
+      if (mode === 'simple') {
+        modeTabSimple?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabSimple?.classList.remove('text-slate-600', 'hover:bg-white/60');
+        modeTabSimple?.setAttribute('aria-selected', 'true');
+
+        modeTabDetailed?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabDetailed?.classList.add('text-slate-600', 'hover:bg-white/60');
+        modeTabDetailed?.setAttribute('aria-selected', 'false');
+
+        workspaceSimple?.classList.remove('hidden');
+        workspaceDetailed?.classList.add('hidden');
+      } else {
+        modeTabDetailed?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabDetailed?.classList.remove('text-slate-600', 'hover:bg-white/60');
+        modeTabDetailed?.setAttribute('aria-selected', 'true');
+
+        modeTabSimple?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabSimple?.classList.add('text-slate-600', 'hover:bg-white/60');
+        modeTabSimple?.setAttribute('aria-selected', 'false');
+
+        workspaceDetailed?.classList.remove('hidden');
+        workspaceSimple?.classList.add('hidden');
+      }
+      recalculate();
+    }
+
+    modeTabSimple?.addEventListener('click', () => setMode('simple'));
+    modeTabDetailed?.addEventListener('click', () => setMode('detailed'));
+
+    // RENDER DETAILED ITEMS
+    function renderDetailedItems() {
+      if (!detailedItemsList) return;
+      detailedItemsList.innerHTML = '';
+
+      detailedItems.forEach((item, index) => {
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className =
+          'detailed-item-row p-4 sm:p-0 sm:py-2.5 rounded-xl sm:rounded-none bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 mb-3 sm:mb-0 transition-all';
+        rowWrapper.setAttribute('data-id', item.id);
+
+        const rowGrid = document.createElement('div');
+        rowGrid.className = 'grid grid-cols-1 sm:grid-cols-12 gap-3 items-center';
+
+        // 1. Name Input (5 cols)
+        const nameCol = document.createElement('div');
+        nameCol.className = 'sm:col-span-5';
+
+        const nameLabel = document.createElement('label');
+        nameLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        nameLabel.setAttribute('for', `det-name-${item.id}`);
+        nameLabel.textContent = `Component ${index + 1} Name`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `det-name-${item.id}`;
+        nameInput.value = item.name;
+        nameInput.placeholder = `e.g. Quiz ${index + 1}`;
+        nameInput.className =
+          'w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[42px]';
+        nameInput.setAttribute('aria-label', `Component ${index + 1} Name`);
+        nameInput.addEventListener('input', (e) => {
+          item.name = (e.target as HTMLInputElement).value;
+        });
+
+        nameCol.appendChild(nameLabel);
+        nameCol.appendChild(nameInput);
+        rowGrid.appendChild(nameCol);
+
+        // 2. Score Input (3 cols)
+        const scoreCol = document.createElement('div');
+        scoreCol.className = 'sm:col-span-3';
+
+        const scoreLabel = document.createElement('label');
+        scoreLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        scoreLabel.setAttribute('for', `det-score-${item.id}`);
+        scoreLabel.textContent = `Score (%)`;
+
+        const scoreWrapper = document.createElement('div');
+        scoreWrapper.className = 'relative';
+
+        const scoreInput = document.createElement('input');
+        scoreInput.type = 'number';
+        scoreInput.id = `det-score-${item.id}`;
+        scoreInput.min = '0';
+        scoreInput.max = '150';
+        scoreInput.step = '0.1';
+        scoreInput.value = item.score;
+        scoreInput.placeholder = 'Grade %';
+        scoreInput.className =
+          'w-full px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+        scoreInput.setAttribute('aria-label', `Component ${index + 1} Score`);
+        scoreInput.addEventListener('input', (e) => {
+          item.score = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        const scoreSuffix = document.createElement('span');
+        scoreSuffix.className = 'absolute inset-y-0 right-0 flex items-center pr-2.5 text-xs text-slate-400 pointer-events-none';
+        scoreSuffix.textContent = '%';
+
+        scoreWrapper.appendChild(scoreInput);
+        scoreWrapper.appendChild(scoreSuffix);
+        scoreCol.appendChild(scoreLabel);
+        scoreCol.appendChild(scoreWrapper);
+        rowGrid.appendChild(scoreCol);
+
+        // 3. Weight Input (3 cols)
+        const weightCol = document.createElement('div');
+        weightCol.className = 'sm:col-span-3';
+
+        const weightLabel = document.createElement('label');
+        weightLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        weightLabel.setAttribute('for', `det-weight-${item.id}`);
+        weightLabel.textContent = `Weight (%)`;
+
+        const weightWrapper = document.createElement('div');
+        weightWrapper.className = 'relative';
+
+        const weightInput = document.createElement('input');
+        weightInput.type = 'number';
+        weightInput.id = `det-weight-${item.id}`;
+        weightInput.min = '0.5';
+        weightInput.max = '100';
+        weightInput.step = '0.5';
+        weightInput.value = item.weight;
+        weightInput.placeholder = 'Weight %';
+        weightInput.className =
+          'w-full px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+        weightInput.setAttribute('aria-label', `Component ${index + 1} Weight`);
+        weightInput.addEventListener('input', (e) => {
+          item.weight = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        const weightSuffix = document.createElement('span');
+        weightSuffix.className = 'absolute inset-y-0 right-0 flex items-center pr-2.5 text-xs text-slate-400 pointer-events-none';
+        weightSuffix.textContent = '%';
+
+        weightWrapper.appendChild(weightInput);
+        weightWrapper.appendChild(weightSuffix);
+        weightCol.appendChild(weightLabel);
+        weightCol.appendChild(weightWrapper);
+        rowGrid.appendChild(weightCol);
+
+        // 4. Remove Button (1 col)
+        const removeCol = document.createElement('div');
+        removeCol.className = 'sm:col-span-1 flex items-center justify-end sm:justify-center pt-2 sm:pt-0';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className =
+          'p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center';
+        removeBtn.setAttribute('aria-label', `Remove Component ${index + 1}: ${item.name || 'Untitled'}`);
+        removeBtn.innerHTML =
+          '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>';
+
+        removeBtn.addEventListener('click', () => {
+          removeDetailedItem(item.id);
+        });
+
+        removeCol.appendChild(removeBtn);
+        rowGrid.appendChild(removeCol);
+
+        rowWrapper.appendChild(rowGrid);
+        detailedItemsList.appendChild(rowWrapper);
+      });
+
+      updateDetailedCounters();
+      recalculate();
+    }
+
+    function addDetailedItem() {
+      detailedItems.push({
+        id: `item-${nextItemId++}`,
+        name: `Assessment ${detailedItems.length + 1}`,
+        score: '80',
+        weight: '10',
+      });
+      renderDetailedItems();
+
+      const newInput = document.getElementById(`det-name-item-${nextItemId - 1}`);
+      if (newInput) newInput.focus();
+    }
+
+    function removeDetailedItem(id: string) {
+      if (detailedItems.length <= 1) {
+        detailedItems[0] = { id: detailedItems[0].id, name: '', score: '', weight: '' };
+      } else {
+        detailedItems = detailedItems.filter((it) => it.id !== id);
+      }
+      renderDetailedItems();
+    }
+
+    function updateDetailedCounters() {
+      if (detailedCountBadge) {
+        detailedCountBadge.textContent = `${detailedItems.length} ${detailedItems.length === 1 ? 'Component' : 'Components'}`;
+      }
+      let sumW = 0;
+      detailedItems.forEach((it) => {
+        const w = Number(it.weight);
+        if (!isNaN(w) && w > 0) sumW += w;
+      });
+      if (detailedCompletedWeightSum) {
+        detailedCompletedWeightSum.textContent = `Coursework: ${roundToDecimals(sumW, 1)}%`;
+      }
+    }
+
+    // Auto-balance button in Simple Mode
+    autoBalanceBtn?.addEventListener('click', () => {
+      if (!inputCurrentWeight || !inputExamWeight) return;
+      const examW = Number(inputExamWeight.value);
+      if (!isNaN(examW) && examW > 0 && examW < 100) {
+        inputCurrentWeight.value = String(roundToDecimals(100 - examW, 1));
+      } else {
+        inputCurrentWeight.value = '70';
+        inputExamWeight.value = '30';
+      }
+      recalculate();
+    });
+
+    // Reset Calculator
+    function resetCalculator() {
+      if (inputCurrentGrade) inputCurrentGrade.value = '82';
+      if (inputCurrentWeight) inputCurrentWeight.value = '70';
+      if (inputDesiredGrade) inputDesiredGrade.value = '85';
+      if (inputExamWeight) inputExamWeight.value = '30';
+
+      if (detailedDesiredGradeInput) detailedDesiredGradeInput.value = '85';
+      if (detailedExamWeightInput) detailedExamWeightInput.value = '30';
+
+      detailedItems = [
+        { id: 'item-1', name: 'Homework & Assignments', score: '88', weight: '20' },
+        { id: 'item-2', name: 'Midterm Exam', score: '78', weight: '25' },
+        { id: 'item-3', name: 'Quizzes & Participation', score: '85', weight: '15' },
+        { id: 'item-4', name: 'Term Project / Lab', score: '82', weight: '10' },
+      ];
+
+      setMode('simple');
+      renderDetailedItems();
+      recalculate();
+    }
+
+    resetBtn?.addEventListener('click', resetCalculator);
+
+    // RECALCULATE ENGINE
+    function recalculate() {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let result;
+
+      if (activeMode === 'simple') {
+        const currentG = inputCurrentGrade?.value ?? '';
+        const currentW = inputCurrentWeight?.value ?? '';
+        const desiredG = inputDesiredGrade?.value ?? '';
+        const examW = inputExamWeight?.value ?? '';
+
+        result = calculateFinalGradeRequired({
+          currentGrade: currentG,
+          currentWeight: currentW,
+          desiredGrade: desiredG,
+          examWeight: examW,
+        });
+
+        // Simple validation errors banner
+        if (simpleErrorsBanner && simpleErrorsList) {
+          if (result.errors.length > 0) {
+            simpleErrorsList.innerHTML = result.errors.map((e) => `<div>• ${e}</div>`).join('');
+            simpleErrorsBanner.classList.remove('hidden');
+          } else {
+            simpleErrorsBanner.classList.add('hidden');
+          }
+        }
+
+        // Weight Balance Status
+        const cWNum = Number(currentW);
+        const eWNum = Number(examW);
+        const sumW = roundToDecimals(cWNum + eWNum, 1);
+        const isBalanced = !isNaN(sumW) && Math.abs(sumW - 100) < 0.01;
+
+        if (weightBalanceDot && weightBalanceText) {
+          if (isBalanced) {
+            weightBalanceDot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+            weightBalanceText.textContent = `Weights total: ${cWNum}% + ${eWNum}% = 100% (Balanced)`;
+            autoBalanceBtn?.classList.add('hidden');
+          } else if (!isNaN(cWNum) && !isNaN(eWNum) && cWNum > 0 && eWNum > 0) {
+            weightBalanceDot.className = 'w-2.5 h-2.5 rounded-full bg-amber-500';
+            weightBalanceText.textContent = `Weights total: ${sumW}% (Course weights usually total 100%)`;
+            autoBalanceBtn?.classList.remove('hidden');
+          } else {
+            weightBalanceDot.className = 'w-2.5 h-2.5 rounded-full bg-slate-300';
+            weightBalanceText.textContent = 'Enter coursework and final exam weights (should total 100%)';
+            autoBalanceBtn?.classList.add('hidden');
+          }
+        }
+
+        // Friendly weight mismatch banner
+        if (weightMismatchBanner && weightMismatchText) {
+          if (result.weightNotice && result.errors.length === 0) {
+            weightMismatchText.textContent = result.weightNotice;
+            weightMismatchBanner.classList.remove('hidden');
+          } else {
+            weightMismatchBanner.classList.add('hidden');
+          }
+        }
+      } else {
+        // Detailed Mode
+        const des = detailedDesiredGradeInput?.value ?? '';
+        const examW = detailedExamWeightInput?.value ?? '';
+
+        const assessmentsData: GradedAssessment[] = detailedItems.map((d) => ({
+          id: d.id,
+          name: d.name,
+          score: d.score,
+          weight: d.weight,
+        }));
+
+        result = calculateDetailedFinalGrade(assessmentsData, des, examW);
+
+        // Detailed errors banner
+        if (detailedErrorsBanner && detailedErrorsList) {
+          if (result.errors.length > 0) {
+            detailedErrorsList.innerHTML = result.errors.map((e) => `<div>• ${e}</div>`).join('');
+            detailedErrorsBanner.classList.remove('hidden');
+          } else {
+            detailedErrorsBanner.classList.add('hidden');
+          }
+        }
+      }
+
+      // UPDATE RESULTS CARD
+      updateResultCard(result, prefersReducedMotion);
+    }
+
+    function updateResultCard(result: ReturnType<typeof calculateFinalGradeRequired>, prefersReducedMotion: boolean) {
+      if (!requiredScoreDisplay) return;
+
+      if (!result.isValid) {
+        requiredScoreDisplay.textContent = '--.--%';
+        requiredScoreDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-300 font-sans leading-none transition-transform duration-200';
+        if (scoreHeaderLabel) scoreHeaderLabel.textContent = 'Awaiting Input';
+        if (statusHeadlineText) statusHeadlineText.textContent = result.statusDescription;
+        if (explanationBox) explanationBox.textContent = 'Please enter valid numbers for your grades and weights.';
+        if (statusBadge) {
+          statusBadge.textContent = 'Awaiting Input';
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-slate-100 text-slate-600 border-slate-200';
+        }
+        if (feasibilityMeterFill) feasibilityMeterFill.style.width = '0%';
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = '--';
+        return;
+      }
+
+      // Result-change micro-animation
+      if (!prefersReducedMotion) {
+        requiredScoreDisplay.classList.add('scale-[1.02]');
+        setTimeout(() => requiredScoreDisplay.classList.remove('scale-[1.02]'), 150);
+      }
+
+      if (scoreHeaderLabel) scoreHeaderLabel.textContent = 'Score Needed on Final';
+
+      // Update values based on status
+      if (result.status === 'secured') {
+        requiredScoreDisplay.textContent = '0.0%';
+        requiredScoreDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-emerald-700 font-sans leading-none transition-transform duration-200';
+        if (statusBadge) {
+          statusBadge.textContent = 'Goal Already Secured';
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200';
+        }
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = 'Secured (0% Needed)';
+        if (feasibilityMeterFill) {
+          feasibilityMeterFill.style.width = '100%';
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-emerald-500';
+        }
+      } else if (result.status === 'exact_100') {
+        requiredScoreDisplay.textContent = '100.0%';
+        requiredScoreDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-amber-700 font-sans leading-none transition-transform duration-200';
+        if (statusBadge) {
+          statusBadge.textContent = 'Requires Perfection';
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+        }
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = 'Requires 100%';
+        if (feasibilityMeterFill) {
+          feasibilityMeterFill.style.width = '100%';
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-amber-500';
+        }
+      } else if (result.status === 'unachievable') {
+        requiredScoreDisplay.textContent = `${result.requiredScore.toFixed(1)}%`;
+        requiredScoreDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-rose-600 font-sans leading-none transition-transform duration-200';
+        if (statusBadge) {
+          statusBadge.textContent = 'Mathematically Unachievable';
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-800 border-rose-200';
+        }
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = 'Exceeds 100%';
+        if (feasibilityMeterFill) {
+          feasibilityMeterFill.style.width = '100%';
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-rose-500';
+        }
+      } else if (result.status === 'challenging') {
+        requiredScoreDisplay.textContent = `${result.requiredScore.toFixed(1)}%`;
+        requiredScoreDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-transform duration-200';
+        if (statusBadge) {
+          statusBadge.textContent = 'Challenging Target';
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+        }
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = 'High Score Required';
+        if (feasibilityMeterFill) {
+          feasibilityMeterFill.style.width = `${Math.min(result.requiredScore, 100)}%`;
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-amber-500';
+        }
+      } else {
+        // Achievable
+        requiredScoreDisplay.textContent = `${result.requiredScore.toFixed(1)}%`;
+        requiredScoreDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-transform duration-200';
+        if (statusBadge) {
+          statusBadge.textContent = 'Target Achievable';
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200';
+        }
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = 'In Reach';
+        if (feasibilityMeterFill) {
+          feasibilityMeterFill.style.width = `${Math.min(Math.max(result.requiredScore, 10), 100)}%`;
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-academic-600';
+        }
+      }
+
+      if (statusHeadlineText) statusHeadlineText.textContent = result.statusHeadline;
+      if (explanationBox) explanationBox.textContent = result.statusDescription;
+
+      if (currentScoreSummary) currentScoreSummary.textContent = `${result.currentGrade.toFixed(1)}%`;
+      if (currentWeightSummary) currentWeightSummary.textContent = `Weight: ${result.currentWeight.toFixed(1)}%`;
+      if (desiredGradeSummary) desiredGradeSummary.textContent = `${result.desiredGrade.toFixed(1)}%`;
+      if (examWeightSummary) examWeightSummary.textContent = `Weight: ${result.examWeight.toFixed(1)}%`;
+    }
+
+    // Attach Input Event Listeners for Instant Calculation
+    [inputCurrentGrade, inputCurrentWeight, inputDesiredGrade, inputExamWeight].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    [detailedDesiredGradeInput, detailedExamWeightInput].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    addDetailedItemBtn?.addEventListener('click', addDetailedItem);
+
+    // Initial binding
+    renderDetailedItems();
+    recalculate();
+  }
+
+  // Handle direct load and Astro view transitions
+  setupFinalGradeCalculator();
+  document.addEventListener('astro:page-load', setupFinalGradeCalculator);
+</script>

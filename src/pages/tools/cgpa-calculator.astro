@@ -1,74 +1,337 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import Button from '../../components/common/Button.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import InputField from '../../components/tools/InputField.astro';
+import CgpaCalculator from '../../components/tools/cgpa/CgpaCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('cgpa-calculator')!;
 
-const faqs: FAQItem[] = [
+// Student-centric FAQs addressing real academic intent
+const cgpaFaqs: FAQItem[] = [
   {
     question: 'What is the difference between GPA and CGPA?',
     answer:
-      'GPA (Grade Point Average) typically refers to your academic standing in a single academic semester or term. CGPA (Cumulative Grade Point Average) measures your overall academic performance across all completed semesters throughout your entire degree program.',
+      'GPA (Grade Point Average) represents your academic achievement for a single semester, quarter, or term. CGPA (Cumulative Grade Point Average) is the credit-weighted average of all your semester GPAs combined across your entire degree program.',
   },
   {
-    question: 'How do you calculate Cumulative GPA across semesters?',
+    question: 'How is CGPA calculated from multiple semesters?',
     answer:
-      'To calculate CGPA, sum the total quality points earned across all completed semesters and divide by the total credit hours completed across all semesters: CGPA = (Total Cumulative Quality Points) / (Total Cumulative Credits).',
+      'To calculate CGPA across semesters, multiply each semester’s GPA by that semester’s completed credit hours to get Quality Points. Then add all Quality Points together and divide by the total number of credits completed across all semesters: CGPA = Σ(Semester GPA × Semester Credits) ÷ Σ(Semester Credits).',
+  },
+  {
+    question: 'Why is CGPA credit-weighted instead of a simple average of semester GPAs?',
+    answer:
+      'A simple arithmetic mean treats all semesters identically regardless of workload. In reality, a heavy 18-credit fall semester represents 50% more coursework than a light 12-credit term or a 6-credit summer session. Credit weighting ensures that semesters with more credits have a proportionally greater impact on your cumulative academic standing.',
+  },
+  {
+    question: 'Do Pass/Fail or audited courses affect your CGPA?',
+    answer:
+      'At the vast majority of accredited universities, courses graded on a Pass/Fail (P/F), Satisfactory/Unsatisfactory (S/U), or audit basis do not award grade points and are excluded from your CGPA numerator and denominator. However, passed credits usually count toward graduation requirements.',
+  },
+  {
+    question: 'What is considered a good CGPA in college or university?',
+    answer:
+      'On the standard 4.0 scale, a CGPA of 3.00 to 3.49 is generally considered good standing. A CGPA of 3.50 or higher typically qualifies for Dean’s List, department honors, or Latin honors (Cum Laude, Magna Cum Laude, Summa Cum Laude), while competitive graduate and professional programs often look for a CGPA of 3.60+.',
+  },
+  {
+    question: 'Can you raise your CGPA in your junior or senior year?',
+    answer:
+      'Yes, but the rate of change slows down as you accumulate more credits because earlier credits create mathematical inertia. To make the biggest impact in later years, focus on achieving strong grades in high-credit courses, taking additional summer coursework, or exploring your university’s grade forgiveness or course repeat policies.',
+  },
+  {
+    question: 'How do transfer credits impact Cumulative GPA?',
+    answer:
+      'Most colleges and universities only include credits earned in residence at their institution in the institutional CGPA calculation. Transfer credits usually fulfill degree prerequisites and count toward total earned hours, but the grades themselves typically do not alter your university CGPA. Always verify your specific registrar’s transfer credit policy.',
   },
 ];
 ---
 
-<ToolLayout tool={tool} faqs={faqs}>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Previous Academic Record</h2>
-        <p class="text-xs text-slate-500 mb-4">Enter your existing cumulative GPA and completed credits before the current term.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField id="prev-cgpa" label="Current Cumulative GPA" type="number" step="0.01" value="3.65" placeholder="e.g. 3.65" />
-          <InputField id="prev-credits" label="Total Completed Credits" type="number" step="1" value="45" placeholder="e.g. 45" />
-        </div>
-      </div>
+<ToolLayout
+  tool={tool}
+  pageTitle="CGPA Calculator – Calculate Your Cumulative GPA | CampusKit"
+  faqs={cgpaFaqs}
+  canonical="/tools/cgpa-calculator"
+  metaDescription="Calculate your Cumulative Grade Point Average (CGPA) instantly across semesters or courses. Free college CGPA calculator supporting 4.0, 5.0, 10.0, and custom scales."
+>
+  <!-- Interactive Calculator Container -->
+  <CgpaCalculator />
 
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h2 class="text-base font-bold text-slate-900">Current Semester Projection</h2>
-            <p class="text-xs text-slate-500">Anticipated GPA and credit hours for the active term.</p>
-          </div>
-          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-600">Active Term</span>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField id="term-gpa" label="Estimated Term GPA" type="number" step="0.01" value="3.80" placeholder="e.g. 3.80" />
-          <InputField id="term-credits" label="Current Term Credits" type="number" step="1" value="15" placeholder="e.g. 15" />
-        </div>
-      </div>
-    </div>
-
+  <!-- Comprehensive Educational SEO Guide Section (Pure Semantic HTML, zero JS dependency) -->
+  <div slot="guide" class="space-y-12">
+    <!-- What is CGPA? -->
     <div>
-      <ResultCard
-        title="Projected Cumulative GPA"
-        primaryValue="3.69"
-        primaryLabel="Updated Cumulative GPA"
-        badge="Degree Standing"
-        badgeTone="success"
-        secondaryStats={[
-          { label: 'Total Credits', value: '60.0', subtext: 'Degree Total' },
-          { label: 'Quality Points', value: '221.2', subtext: 'Cumulative' },
-          { label: 'Change', value: '+0.04', subtext: 'From Prior' },
-        ]}
-      />
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What is CGPA (Cumulative Grade Point Average)?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        <strong>Cumulative Grade Point Average (CGPA)</strong> is the official metric higher education institutions use to gauge a student’s overall academic performance across an entire degree or certificate program. While a semester GPA gives you a snapshot of a single four-month term, your CGPA reflects your running track record from your very first college lecture to your final capstone project.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Because universities award degrees based on sustained rigor across dozens of diverse courses, CGPA is the primary metric evaluated by prospective employers, fellowship committees, scholarship foundations, and graduate admissions officers worldwide.
+      </p>
     </div>
-  </div>
 
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Understanding Cumulative GPA (CGPA)</h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Cumulative Grade Point Average (CGPA) reflects your broader undergraduate or graduate academic record. As you advance through university degrees (Freshman, Sophomore, Junior, Senior), each new semester adds to your cumulative credit weighting.
-    </p>
+    <!-- How to Calculate CGPA & The Weighted Formula -->
+    <div class="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200">
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+        How to Calculate CGPA: The Weighted Formula
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+        Calculating cumulative GPA requires <strong>credit weighting</strong>. You cannot simply average your semester GPAs together, because semesters with differing credit hours carry different statistical weights.
+      </p>
+
+      <ol class="mt-4 space-y-2.5 text-sm sm:text-base text-slate-700 list-decimal list-inside leading-relaxed">
+        <li><strong>Calculate Quality Points for each semester:</strong> Multiply the semester’s GPA by the total credits attempted in that semester.</li>
+        <li><strong>Sum all Quality Points:</strong> Add together the Quality Points earned across all completed academic semesters.</li>
+        <li><strong>Sum all Completed Credits:</strong> Total the cumulative credit hours attempted across all semesters.</li>
+        <li><strong>Divide Total Quality Points by Total Credits:</strong> The resulting quotient is your exact cumulative CGPA.</li>
+      </ol>
+
+      <div class="mt-6 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">The Cumulative GPA Formula</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-academic-900 font-mono tracking-tight">
+          CGPA = &Sigma; (Semester GPA &times; Semester Credits) &divide; &Sigma; (Semester Credits)
+        </div>
+      </div>
+
+      <div class="mt-4 text-xs sm:text-sm text-slate-500 leading-relaxed">
+        <strong>Why credit weighting matters:</strong> If you earned a 4.00 in a 6-credit summer session and a 3.00 in an 18-credit fall semester, a simple average would incorrectly suggest a 3.50. With credit weighting, the 18-credit semester properly accounts for 75% of your total credit volume: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-800">((4.0 &times; 6) + (3.0 &times; 18)) &divide; 24 = 3.25 CGPA</code>.
+      </div>
+    </div>
+
+    <!-- CGPA vs GPA Comparison Section -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        CGPA vs GPA: Key Differences Explained
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        While both acronyms describe academic averages, they serve distinctly different functions throughout university life:
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 shadow-subtle">
+        <table class="w-full text-left text-sm border-collapse bg-white">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+              <th class="py-3 px-4">Feature</th>
+              <th class="py-3 px-4 text-academic-800">Semester / Term GPA</th>
+              <th class="py-3 px-4 text-academic-900">Cumulative GPA (CGPA)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-slate-900">Scope of Measurement</td>
+              <td class="py-3.5 px-4">A single academic term (Fall, Spring, or Summer)</td>
+              <td class="py-3.5 px-4 font-medium">All completed semesters throughout the degree</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-slate-900">Sensitivity to Change</td>
+              <td class="py-3.5 px-4">High — a single course grade heavily shifts the term result</td>
+              <td class="py-3.5 px-4">Moderate to Low — changes gradually as total credits grow</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-slate-900">Primary University Use</td>
+              <td class="py-3.5 px-4">Semester Dean’s List honors & immediate academic probation checks</td>
+              <td class="py-3.5 px-4">Graduation eligibility, Latin honors (Cum Laude), & transcript GPA</td>
+            </tr>
+            <tr>
+              <td class="py-3.5 px-4 font-semibold text-slate-900">Graduate Admissions</td>
+              <td class="py-3.5 px-4">Shows academic trajectory and recent performance trends</td>
+              <td class="py-3.5 px-4">Primary initial screening filter for Master’s, PhD, MD, and JD programs</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="mt-4 p-4 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900 flex items-start gap-3">
+        <svg class="w-5 h-5 text-academic-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <strong>Calculating a single semester?</strong> If you want to compute individual course grades for an active term, use our dedicated <a href="/tools/gpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">College GPA Calculator</a> with letter-grade converters.
+        </div>
+      </div>
+    </div>
+
+    <!-- Step-by-Step Worked CGPA Example -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        Step-by-Step Worked CGPA Calculation Example
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Let’s examine a student who has completed four semesters of university coursework across two academic years on the standard 4.0 scale:
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-slate-200 shadow-subtle">
+        <table class="w-full text-left text-sm border-collapse bg-white">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50 text-xs font-bold uppercase tracking-wider text-slate-600">
+              <th class="py-3 px-4">Academic Semester</th>
+              <th class="py-3 px-4">Credits Attempted</th>
+              <th class="py-3 px-4">Term GPA</th>
+              <th class="py-3 px-4 text-right">Calculation</th>
+              <th class="py-3 px-4 text-right">Quality Points</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100 text-slate-700">
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">Freshman Year — Fall Term</td>
+              <td class="py-3 px-4 font-mono">15.0</td>
+              <td class="py-3 px-4 font-mono">3.40</td>
+              <td class="py-3 px-4 font-mono text-right text-slate-500">15.0 &times; 3.40</td>
+              <td class="py-3 px-4 font-mono text-right font-semibold">51.0</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">Freshman Year — Spring Term</td>
+              <td class="py-3 px-4 font-mono">16.0</td>
+              <td class="py-3 px-4 font-mono">3.65</td>
+              <td class="py-3 px-4 font-mono text-right text-slate-500">16.0 &times; 3.65</td>
+              <td class="py-3 px-4 font-mono text-right font-semibold">58.4</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">Sophomore Year — Fall Term</td>
+              <td class="py-3 px-4 font-mono">14.0</td>
+              <td class="py-3 px-4 font-mono">3.80</td>
+              <td class="py-3 px-4 font-mono text-right text-slate-500">14.0 &times; 3.80</td>
+              <td class="py-3 px-4 font-mono text-right font-semibold">53.2</td>
+            </tr>
+            <tr>
+              <td class="py-3 px-4 font-semibold text-slate-900">Sophomore Year — Spring Term</td>
+              <td class="py-3 px-4 font-mono">15.0</td>
+              <td class="py-3 px-4 font-mono">3.90</td>
+              <td class="py-3 px-4 font-mono text-right text-slate-500">15.0 &times; 3.90</td>
+              <td class="py-3 px-4 font-mono text-right font-semibold">58.5</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="border-t-2 border-slate-300 bg-slate-50/90 font-bold text-slate-900">
+              <td class="py-3.5 px-4">Cumulative Total</td>
+              <td class="py-3.5 px-4 font-mono text-academic-900">60.0 Credits</td>
+              <td class="py-3.5 px-4" colspan="2">Total Cumulative Quality Points</td>
+              <td class="py-3.5 px-4 font-mono text-right text-academic-900">221.1 Points</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="mt-4 p-5 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900">
+        <h3 class="font-bold text-base text-academic-950 mb-1">Final CGPA Computation</h3>
+        <p class="leading-relaxed">
+          CGPA = <strong>221.1 Total Quality Points &divide; 60.0 Total Credits</strong> = <strong>3.685</strong> &rarr; rounded to two decimal places: <strong class="text-academic-800 text-base font-mono">3.69 CGPA</strong>.
+        </p>
+        <p class="mt-1.5 text-xs text-academic-700">
+          This solid upward academic trajectory (from 3.40 in semester one to 3.90 in semester four) positions the student comfortably in Magna Cum Laude / Honors standing.
+        </p>
+      </div>
+    </div>
+
+    <!-- How to Use This CGPA Calculator -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        How to Use This CGPA Calculator
+      </h2>
+      <div class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">1</span>
+          <h3 class="text-base font-bold text-slate-900">Choose Your Calculation Mode</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Select <strong>Semester-based</strong> if you already know your term GPAs, or <strong>Course-based</strong> to compute grades from scratch.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">2</span>
+          <h3 class="text-base font-bold text-slate-900">Select Your Grading Scale</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Choose between standard 4.0, weighted 5.0, international 10.0, or set a Custom Scale maximum for specialized university criteria.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">3</span>
+          <h3 class="text-base font-bold text-slate-900">Enter GPAs & Credits</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Input each term’s GPA and credit total. Row names are optional but help you organize your academic timeline chronologically.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">4</span>
+          <h3 class="text-base font-bold text-slate-900">Add or Remove Terms</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Click <strong>Add Semester</strong> to extend your evaluation across two, three, or four academic years, or remove terms as needed.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle sm:col-span-2 lg:col-span-2">
+          <span class="w-7 h-7 rounded-full bg-academic-100 text-academic-800 flex items-center justify-center font-bold text-xs mb-3">5</span>
+          <h3 class="text-base font-bold text-slate-900">Review Instant Cumulative Standing</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Your cumulative CGPA, cumulative credits, total quality points, and estimated academic standing update instantly with zero delay.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Understanding University CGPA Scales -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        Understanding University CGPA Scales Worldwide
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Academic grading systems vary substantially between countries, universities, and individual faculties. Because each institution maintains statutory academic autonomy, no third-party conversion formula can claim universal legal authority. Here is how common standards differ:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">4.0 Scale (North American Standard)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Standard across US and Canadian universities. Letter grades (A, B, C, D, F) correspond to point values from 4.0 to 0.0 with 0.3 increments (A- = 3.7, B+ = 3.3). A 4.00 represents perfection.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">5.0 Scale (Weighted & International Curricula)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Adopted in university honors divisions, advanced graduate tracks, and several national systems (such as select institutions in Nigeria and Singapore). An additional grade point is awarded for higher-tier coursework.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">10.0 Scale (India AICTE/UGC & International SGPA)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Widely used across Indian universities and technical institutes. Grades are segmented into 10-point bands (Outstanding O = 10, A+ = 9, A = 8) aligning closely with percentage percentiles.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">Custom Scales & Institutional Handbooks</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Universities in Germany, the UK, Latin America, and Australia utilize distinct grading frameworks (such as UK Degree Classifications 1st, 2:1, 2:2). Always verify official conversion requirements directly with your university registrar.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Academic Workflows & Next Steps -->
+    <div class="p-6 rounded-xl bg-slate-50 border border-slate-200">
+      <h3 class="text-lg font-bold text-slate-900 mb-2">Next Steps for Multi-Year Degree Planning</h3>
+      <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+        Complement your cumulative CGPA tracking with these active CampusKit calculators:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+        <a href="/tools/gpa-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+          <span>Single-Term GPA Calculator</span>
+          <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+        </a>
+        <a href="/tools/marks-needed-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+          <span>Calculate Marks Needed</span>
+          <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+        </a>
+        <a href="/tools/exam-countdown" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+          <span>Exam Countdown Timer</span>
+          <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+        </a>
+      </div>
+    </div>
   </div>
 </ToolLayout>

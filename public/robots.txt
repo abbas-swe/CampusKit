@@ -1,4 +1,14 @@
 User-agent: *
 Allow: /
 
+# Disallow internal redirect and non-public placeholder routes
+Disallow: /404
+Disallow: /tools/pomodoro-timer
+Disallow: /tools/grade-calculator
+Disallow: /tools/percentage-calculator
+Disallow: /tools/attendance-calculator
+Disallow: /tools/final-grade-calculator
+
+# Production Sitemaps
 Sitemap: https://campuskit.io/sitemap-index.xml
+Sitemap: https://campuskit.io/sitemap.xml

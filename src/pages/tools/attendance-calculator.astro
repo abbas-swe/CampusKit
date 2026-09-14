@@ -1,54 +1,194 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import InputField from '../../components/tools/InputField.astro';
+import AttendanceCalculator from '../../components/tools/attendance/AttendanceCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('attendance-calculator')!;
 
-const faqs: FAQItem[] = [
+const attendanceFaqs: FAQItem[] = [
   {
     question: 'How do I calculate how many classes I can safely miss?',
     answer:
-      'To calculate safe absences while staying above an attendance requirement (such as 75% or 80%), use: Safe Absences = Total Classes Held - (Present Classes / Required Percentage). If positive, you can miss that many classes without dropping below the threshold.',
+      'To calculate the maximum number of classes you can miss while staying above your university’s attendance requirement, use the formula: Safe Absences = ⌊(100 × Classes Attended ÷ Required Percentage) - Total Classes Held⌋. For example, if you attended 45 out of 50 classes and need 75%, you can miss ⌊(100 × 45 ÷ 75) - 50⌋ = 10 additional classes.',
+  },
+  {
+    question: 'How do I calculate how many consecutive classes I need to attend to reach 75% or 80%?',
+    answer:
+      'To determine how many upcoming lectures you must attend consecutively to reach a target percentage, use: Classes to Attend = ⌈[(Target % × Total Classes Held) - (100 × Classes Attended)] ÷ (100 - Target %)⌉. For instance, with 60 attended and 20 missed (75% current), reaching 80% requires attending ⌈[(80 × 80) - (100 × 60)] ÷ 20⌉ = 20 consecutive classes.',
+  },
+  {
+    question: 'Why does my attendance percentage drop faster when I miss a class than it rises when I attend?',
+    answer:
+      'When you attend a class, both your numerator (attended) and denominator (total) increase by 1. Because the denominator is already greater than zero, the percentage gain is gradual. However, when you miss a class, only the denominator increases while the numerator stays flat, pulling down your fraction much more steeply.',
+  },
+  {
+    question: 'Can I reach 100% attendance if I have already missed one lecture?',
+    answer:
+      'No. Mathematically, if you have missed even a single class, your fraction (Attended ÷ Total) will always be strictly less than 1.0 (100%), no matter how many future classes you attend. Your percentage will get closer to 99.9%, but can never hit 100% unless your instructor officially excuses the absence.',
+  },
+  {
+    question: 'What happens if my attendance drops below my university’s minimum threshold?',
+    answer:
+      'At many universities worldwide (such as institutions under India’s AICTE/UGC or European university visa frameworks), falling below 75% or 80% can result in being debarred from sitting for final examinations, receiving an automatic failing grade (FA/NF), or losing academic scholarship eligibility.',
+  },
+  {
+    question: 'How do medical leaves and sanctioned university absences count?',
+    answer:
+      'Institutions handle excused absences differently. Some universities exempt sanctioned absences entirely from the denominator (total classes held), while others grant a 5% to 10% policy concession (e.g., lowering the requirement from 75% to 65% with an approved medical certificate). Always consult your student handbook or academic dean.',
   },
 ];
 ---
 
-<ToolLayout tool={tool} faqs={faqs}>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Class Attendance Record</h2>
-        <p class="text-xs text-slate-500 mb-4">Enter total lectures held, classes attended, and required attendance percentage.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <InputField id="classes-attended" label="Classes Attended" type="number" value="32" />
-          <InputField id="total-classes" label="Total Classes Held" type="number" value="36" />
-          <InputField id="required-attendance" label="Required Minimum" type="number" suffix="%" value="75" />
+<ToolLayout
+  tool={tool}
+  pageTitle="Attendance Calculator – Calculate Your Class Attendance | CampusKit"
+  faqs={attendanceFaqs}
+  canonical="/tools/attendance-calculator"
+  metaDescription="Calculate your college class attendance percentage, find out how many classes you can safely miss (bunks), and see how many classes you need to attend to reach 75% or 80%."
+>
+  <!-- Interactive Calculator Container -->
+  <AttendanceCalculator />
+
+  <!-- Comprehensive Educational Guide & SEO Documentation (Semantic HTML) -->
+  <div slot="guide" class="space-y-12">
+    <!-- What is an Attendance Percentage? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What is an Attendance Percentage?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        An <strong>attendance percentage</strong> is the numerical measure of your lecture and laboratory participation in an academic course. It represents the proportion of scheduled instructional sessions you were physically or virtually present for, relative to the total number of sessions conducted by your professor so far.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Higher education institutions enforce attendance rules to promote student engagement and maintain accreditation standards. Knowing your exact numbers eliminates end-of-semester surprises and helps you make informed choices during illnesses, family emergencies, or heavy project weeks.
+      </p>
+    </div>
+
+    <!-- How to Calculate Attendance Percentage -->
+    <div class="p-6 sm:p-8 rounded-2xl bg-slate-50 border border-slate-200">
+      <h2 class="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+        How to Calculate Attendance Percentage
+      </h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+        The core formula for attendance percentage is straightforward:
+      </p>
+
+      <div class="mt-6 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">The Standard Attendance Formula</span>
+        <div class="text-xl sm:text-2xl font-extrabold text-academic-900 font-mono tracking-tight">
+          Attendance % = (Classes Attended &divide; Total Classes Held) &times; 100
         </div>
+      </div>
+
+      <div class="mt-4 text-xs sm:text-sm text-slate-500 leading-relaxed">
+        <strong>Example:</strong> If 44 lectures have been held this semester and you attended 38 of them while missing 6, your current attendance is: <code class="bg-slate-100 px-1 py-0.5 rounded text-slate-800">(38 &divide; 44) &times; 100 = 86.4%</code>.
       </div>
     </div>
 
+    <!-- How Many Classes Can I Miss? (Safe Bunks Formula) -->
     <div>
-      <ResultCard
-        title="Attendance Status"
-        primaryValue="88.9%"
-        primaryLabel="Current Attendance Percentage"
-        badge="In Safe Zone"
-        badgeTone="success"
-        secondaryStats={[
-          { label: 'Safe Misses', value: '6 Classes', subtext: 'Can Skip' },
-          { label: 'Minimum Req', value: '75%', subtext: 'Policy Target' },
-        ]}
-      />
-    </div>
-  </div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        How Many Classes Can I Miss? (The Safe Bunking Formula)
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Many students make the mistake of using simplistic percentage subtraction to calculate absences. However, when you miss future classes, the <strong>total number of classes held increases</strong>. To remain mathematically at or above your required threshold ($R\%$), we use:
+      </p>
 
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">University Attendance Regulations</h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Many universities mandate a 75% or 80% minimum attendance threshold to sit for final examinations or qualify for course credit. Tracking safe absences helps avoid debarment or grade penalties.
-    </p>
+      <div class="mt-5 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">The Safe Absences Formula</span>
+        <div class="text-lg sm:text-xl font-extrabold text-academic-900 font-mono tracking-tight">
+          Safe Absences = &lfloor; (100 &times; Attended &divide; Required %) &minus; Total Classes Held &rfloor;
+        </div>
+      </div>
+
+      <div class="mt-4 p-5 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900 space-y-2">
+        <p class="font-bold">Worked Example:</p>
+        <p>Suppose you have attended <strong>45 out of 50 classes</strong>, and your university requires a <strong>75% minimum</strong>.</p>
+        <p class="font-mono text-xs sm:text-sm bg-white p-2.5 rounded border border-academic-200">
+          Safe Absences = &lfloor; (100 &times; 45 &divide; 75) &minus; 50 &rfloor; = &lfloor; 60 &minus; 50 &rfloor; = <strong>10 Classes</strong>
+        </p>
+        <p class="text-xs text-academic-700">
+          If you skip 10 consecutive future classes, your new record will be 45 attended out of 60 total held: <code class="font-semibold">45 &divide; 60 = exactly 75.0%</code>. Missing 11 would drop you to 73.8%.
+        </p>
+      </div>
+    </div>
+
+    <!-- How Many Classes Do I Need to Attend to Reach a Target? -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        How Many Classes Do I Need to Attend to Reach a Target?
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        If your attendance has slipped below your target (such as falling to 70% when you need 80%), every upcoming class you attend increases both your attended count and the total count. To find the exact number of consecutive classes ($y$) you must attend:
+      </p>
+
+      <div class="mt-5 p-5 rounded-xl bg-white border border-slate-200 shadow-subtle text-center">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block mb-1">The Target Attendance Formula</span>
+        <div class="text-lg sm:text-xl font-extrabold text-academic-900 font-mono tracking-tight">
+          Classes to Attend = &lceil; [(Target % &times; Total Classes) &minus; (100 &times; Attended)] &divide; (100 &minus; Target %) &rceil;
+        </div>
+      </div>
+
+      <div class="mt-4 p-5 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900 space-y-2">
+        <p class="font-bold">Worked Catch-Up Example:</p>
+        <p>Suppose you attended <strong>60 classes</strong> and missed <strong>20 classes</strong> (Total = 80, Current = 75.0%). Your goal is to reach <strong>80.0%</strong>.</p>
+        <p class="font-mono text-xs sm:text-sm bg-white p-2.5 rounded border border-academic-200">
+          Classes to Attend = &lceil; [(80 &times; 80) &minus; (100 &times; 60)] &divide; (100 &minus; 80) &rceil; = &lceil; [6400 &minus; 6000] &divide; 20 &rceil; = &lceil; 400 &divide; 20 &rceil; = <strong>20 Classes</strong>
+        </p>
+        <p class="text-xs text-academic-700">
+          Attending the next 20 consecutive classes gives you 80 attended out of 100 total held: <code class="font-semibold">80 &divide; 100 = 80.0%</code>.
+        </p>
+      </div>
+    </div>
+
+    <!-- Understanding University Attendance Requirements Worldwide -->
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight text-slate-900">
+        Understanding University Attendance Requirements Worldwide
+      </h2>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Attendance enforcement policies differ substantially across countries, degree programs, and academic governing bodies:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">The 75% Rule (India & South Asia)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Statutory bodies like AICTE, UGC, and Anna/VTU/Mumbai universities strictly enforce a 75% attendance minimum. Students below 75% risk detention, exam debarment, or repeat semesters unless granted condonation for documented medical reasons.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">The 80% Rule (UK & European Visa Compliance)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            International students holding UK Student Visas or European study permits must typically maintain 80%+ contact hour compliance. Unexcused absence patterns can trigger university immigration reporting and visa curtailment.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">Professor Autonomy & Lab Rules (US & Canada)</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            In North America, individual instructors set attendance policies in their syllabi. Laboratory sessions, clinical rotations, and discussion seminars frequently enforce a strict maximum of 2 unexcused absences before grade deductions apply.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl bg-white border border-slate-200 shadow-subtle">
+          <h3 class="text-base font-bold text-slate-900">Financial Aid & Title IV Verification</h3>
+          <p class="mt-1 text-sm text-slate-600 leading-relaxed">
+            Federal student aid programs require professors to verify attendance during the first weeks of the term. Complete non-attendance can lead to automatic administrative course drops and financial aid clawbacks.
+          </p>
+        </div>
+      </div>
+
+      <div class="mt-6 p-4 rounded-xl bg-academic-50/60 border border-academic-200 text-sm text-academic-900 flex items-start gap-3">
+        <svg class="w-5 h-5 text-academic-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <div>
+          <strong>Balancing course workloads and exam preparation?</strong> Calculate required scores on upcoming exams with our <a href="/tools/final-grade-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">Final Grade Calculator</a>, or track your term standing using our <a href="/tools/gpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">College GPA Calculator</a> and <a href="/tools/cgpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">CGPA Calculator</a>.
+        </div>
+      </div>
+    </div>
   </div>
 </ToolLayout>

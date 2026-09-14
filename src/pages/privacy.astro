@@ -4,52 +4,248 @@ import Container from '../components/common/Container.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
 
 const breadcrumbs = [{ name: 'Privacy Policy', item: '/privacy' }];
-const lastUpdated = 'September 2026';
+const lastUpdated = 'September 14, 2026';
 ---
 
 <BaseLayout
-  title="Privacy Policy"
-  description="CampusKit's privacy policy. We believe academic tools should not harvest student data. All grade calculations run entirely on your device."
+  title="Privacy Policy | CampusKit"
+  description="CampusKit's Privacy Policy. Learn how we protect student privacy with client-side calculation, zero account friction, and transparent data practices."
   canonical="/privacy"
   breadcrumbs={breadcrumbs}
 >
+  <!-- Header Banner -->
   <div class="bg-white border-b border-slate-200">
     <Container size="lg" class="py-12 sm:py-16">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-700 border border-academic-200/80 mt-4 mb-4">
+        <span>Legal & Privacy</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
         Privacy Policy
       </h1>
-      <p class="mt-2 text-sm text-slate-500">Last updated: {lastUpdated}</p>
+      <p class="mt-3 text-sm text-slate-500">
+        Last updated: {lastUpdated}
+      </p>
+      <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+        At CampusKit, we believe academic tools should never harvest student data. This Privacy Policy details our data practices, our client-side computing model, and how technical information is handled.
+      </p>
     </Container>
   </div>
 
-  <div class="py-12 bg-slate-50">
+  <!-- Policy Content -->
+  <div class="py-12 sm:py-16 bg-slate-50">
     <Container size="lg">
-      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-subtle prose prose-slate max-w-none">
-        <h2>1. Our Privacy Philosophy</h2>
-        <p>
-          At CampusKit, we believe student software should be fast, accessible, and respectful of personal privacy. We do not require accounts, logins, or personal profile creation to access any of our tools.
-        </p>
+      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-subtle space-y-12">
+        <!-- Quick Summary Box -->
+        <div class="p-6 rounded-xl bg-academic-50 border border-academic-200/80">
+          <h2 class="text-base font-bold text-academic-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            Summary: Privacy by Design
+          </h2>
+          <ul class="mt-3 text-xs sm:text-sm text-academic-800 space-y-1.5 list-disc list-inside">
+            <li><strong>No Accounts:</strong> You do not need to register, log in, or provide personal credentials to use any calculator.</li>
+            <li><strong>Local Calculation:</strong> All grades, GPA figures, credit hours, and attendance stats are processed in your browser’s temporary memory. We never store them on remote servers.</li>
+            <li><strong>Zero Invasive Tracking:</strong> We do not sell student data, run fingerprinting trackers, or deploy intrusive cross-site monitoring.</li>
+          </ul>
+        </div>
 
-        <h2>2. Client-Side Calculation & Grade Data</h2>
-        <p>
-          All academic data you enter into our tools—including course names, letter grades, credit hours, percentage scores, and attendance numbers—is processed <strong>locally within your web browser</strong> using client-side JavaScript. This data is never transmitted to, recorded by, or stored on our servers or third-party databases.
-        </p>
+        <!-- 1. Information Users Provide -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            1. Information Users Provide
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            CampusKit is engineered to function without requiring personal registration or student account creation.
+          </p>
+          <div class="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p>
+              <strong>Academic & Calculation Data:</strong> When you enter course names, grades, credit hours, percentage weights, attendance records, or target GPA figures into our calculators, this data is processed solely within your device's web browser via client-side JavaScript. This academic information is not transmitted to, collected by, or saved on any remote CampusKit server or database.
+            </p>
+            <p>
+              <strong>Voluntary Communications:</strong> If you choose to contact us directly (such as to submit feedback, report a calculation issue, or suggest a new tool via our <a href="/contact" class="text-academic-700 font-medium underline hover:text-academic-800">Contact page</a>), you may provide your name, email address, inquiry topic, and message content. This information is used strictly to reply to your inquiry and evaluate tool improvements.
+            </p>
+          </div>
+        </section>
 
-        <h2>3. Local Storage</h2>
-        <p>
-          Certain tools (such as the Exam Countdown Timer and GPA course drafts) may save preferences to your browser's local storage (<code class="font-mono text-xs">localStorage</code>) solely to preserve your work between browser sessions. You can clear this data at any time by clearing your browser cache.
-        </p>
+        <!-- 2. Technical Information Automatically Collected -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            2. Technical Information That May Be Automatically Collected
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Like virtually all websites, when you access CampusKit over the internet, standard technical connection data is automatically processed by our web hosting infrastructure and content delivery network (CDN) providers (such as GitHub Pages, Cloudflare, or similar hosting services).
+          </p>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            These standard server logs may include:
+          </p>
+          <ul class="text-sm sm:text-base text-slate-600 space-y-1.5 list-disc list-inside pl-2">
+            <li>Internet Protocol (IP) address</li>
+            <li>Browser type and version</li>
+            <li>Operating system and device category</li>
+            <li>Referring website addresses and navigation paths</li>
+            <li>Date, time, and duration of requests</li>
+          </ul>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            This technical information is collected automatically by hosting platforms solely to route web traffic, mitigate Distributed Denial of Service (DDoS) attacks, detect security anomalies, and ensure system uptime.
+          </p>
+        </section>
 
-        <h2>4. Analytics & Cookies</h2>
-        <p>
-          CampusKit does not employ invasive user-tracking cookies. Standard, privacy-preserving server logs (such as HTTP request paths, browser user agents, and IP addresses) may be temporarily processed by infrastructure providers solely for DDoS mitigation, performance caching, and site security.
-        </p>
+        <!-- 3. Cookies and Local Storage -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            3. Cookies and Browser Local Storage
+          </h2>
+          <div class="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p>
+              <strong>Cookies:</strong> CampusKit does not currently set first-party tracking cookies or third-party profiling cookies.
+            </p>
+            <p>
+              <strong>Local Storage (<code class="font-mono text-xs px-1.5 py-0.5 bg-slate-100 rounded text-slate-800">localStorage</code>):</strong> Some tools (such as draft course lists in the GPA Calculator, saved targets, or countdown deadlines) may utilize your browser’s local storage to preserve your progress between page refreshes. Local storage data resides entirely on your device, is never transmitted across the network, and can be cleared at any time by clearing your browser cache or site data.
+            </p>
+          </div>
+        </section>
 
-        <h2>5. Changes to This Policy</h2>
-        <p>
-          Any updates to this policy will be reflected on this page with an updated revision date.
-        </p>
+        <!-- 4. Advertising & Google AdSense -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            4. Advertising & Google AdSense
+          </h2>
+          <div class="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p>
+              <strong>Current Status:</strong> CampusKit does not currently display third-party commercial advertisements or run advertising networks such as Google AdSense.
+            </p>
+            <p>
+              <strong>Future Advertising Practices:</strong> In the future, in order to keep all calculators completely free for students without introducing paywalls or subscription tiers, CampusKit may partner with reputable third-party advertising networks, such as Google AdSense, to display non-intrusive advertisements.
+            </p>
+            <p>
+              If and when advertising services (such as Google AdSense) are activated:
+            </p>
+            <ul class="text-sm sm:text-base text-slate-600 space-y-2 list-disc list-inside pl-2">
+              <li>Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites.</li>
+              <li>Google's use of advertising cookies enables it and its partners to serve ads to users based on their visits to sites on the internet.</li>
+              <li>Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" class="text-academic-700 underline font-medium">Google Ads Settings</a> or through industry opt-out portals such as <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" class="text-academic-700 underline font-medium">AboutAds.info</a>.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 5. Analytics -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            5. Analytics
+          </h2>
+          <div class="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p>
+              <strong>Current Status:</strong> CampusKit does not currently load third-party analytics scripts, session replay recorders, or user behavior tracking tools.
+            </p>
+            <p>
+              If privacy-preserving analytics (such as aggregate, cookie-free web metrics) are introduced in the future to understand which calculators are most helpful, they will be configured strictly for aggregate page-view counts without tracking individual student identities or recording calculation inputs.
+            </p>
+          </div>
+        </section>
+
+        <!-- 6. Third-Party Services & Links -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            6. Third-Party Services & Links
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            CampusKit may contain links to external websites, university resources, or third-party documentation for reference purposes. We are not responsible for the privacy practices, content, or data collection policies of external third-party sites. We encourage you to review the privacy policies of any external destination you visit.
+          </p>
+        </section>
+
+        <!-- 7. How Information May Be Used -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            7. How Information May Be Used
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Any technical or communication data handled by CampusKit is used solely for the following legitimate purposes:
+          </p>
+          <ul class="text-sm sm:text-base text-slate-600 space-y-1.5 list-disc list-inside pl-2">
+            <li>Providing, maintaining, and delivering our academic calculators and web pages;</li>
+            <li>Responding directly to inquiries, feedback, and bug reports sent by users;</li>
+            <li>Detecting, preventing, and addressing technical faults, security vulnerabilities, or DDoS attacks;</li>
+            <li>Ensuring fast, reliable page load performance across desktop and mobile devices.</li>
+          </ul>
+        </section>
+
+        <!-- 8. Data Retention -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            8. Data Retention
+          </h2>
+          <div class="space-y-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p>
+              <strong>Calculator Inputs:</strong> Kept in active browser memory only while you interact with the page. Once you close or reload the browser tab, in-memory data is discarded. Any optional data stored in <code class="font-mono text-xs px-1.5 py-0.5 bg-slate-100 rounded text-slate-800">localStorage</code> remains until you clear your browser cache.
+            </p>
+            <p>
+              <strong>Direct Correspondence:</strong> Emails or feedback messages sent to us are retained only as long as necessary to address your feedback or resolve reported calculation issues.
+            </p>
+            <p>
+              <strong>Infrastructure Logs:</strong> Automated web server logs collected by hosting infrastructure are retained according to the host provider’s standard security retention schedules and rotated periodically.
+            </p>
+          </div>
+        </section>
+
+        <!-- 9. Data Security -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            9. Data Security
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            We employ modern security standards to safeguard CampusKit. All traffic is served exclusively over HTTPS using modern Transport Layer Security (TLS) encryption. Because our calculators execute calculations directly within your device's browser, your academic grades and credit numbers are never exposed in transit to remote databases.
+          </p>
+        </section>
+
+        <!-- 10. User Choices & Rights -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            10. User Choices & Controls
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Students have full control over their browser environment:
+          </p>
+          <ul class="text-sm sm:text-base text-slate-600 space-y-1.5 list-disc list-inside pl-2">
+            <li><strong>Clear Local Storage:</strong> You can clear all saved course drafts and preferences at any time through your browser’s "Clear Browsing Data" or "Site Settings" panel.</li>
+            <li><strong>Private Browsing:</strong> You can access CampusKit in Incognito or Private Browsing mode, which automatically purges all temporary session data upon window closure.</li>
+            <li><strong>Disable Scripts/Cookies:</strong> You can adjust browser cookie and content security settings according to your preference.</li>
+          </ul>
+        </section>
+
+        <!-- 11. Children's Privacy -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            11. Children's Privacy
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            CampusKit is designed for university, college, and secondary school students navigating higher education coursework. CampusKit does not intentionally target, market to, or knowingly collect personal information from children under the age of 13 (or under 16 in applicable jurisdictions). If you believe a child has provided us with personal data, please contact us and we will promptly delete it.
+          </p>
+        </section>
+
+        <!-- 12. Changes to This Privacy Policy -->
+        <section class="space-y-4">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            12. Changes to This Privacy Policy
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            We may update this Privacy Policy from time to time to reflect modifications in our tools, legal requirements, or future infrastructure updates (such as the integration of advertising or analytics services). Any revisions will be published on this page with an updated revision date at the top of the policy.
+          </p>
+        </section>
+
+        <!-- 13. Contact Information -->
+        <section class="space-y-4 pt-4 border-t border-slate-200">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            13. Contact Information
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, you can reach out via our dedicated <a href="/contact" class="text-academic-700 font-medium underline hover:text-academic-800">Contact Page</a>.
+          </p>
+          <p class="text-xs text-slate-500 italic">
+            [Administrative Contact Placeholder: inquiries may be directed through the site contact form or administrator email placeholder: contact@example.com]
+          </p>
+        </section>
       </div>
     </Container>
   </div>

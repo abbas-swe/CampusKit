@@ -1,0 +1,456 @@
+---
+// ExamCountdown.astro
+---
+
+<div class="w-full max-w-5xl mx-auto" id="exam-countdown-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Left Configuration Column (5 cols on desktop) -->
+    <div class="lg:col-span-5 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Exam Schedule</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Enter your syllabus date & time</p>
+          </div>
+          <button
+            type="button"
+            id="reset-countdown-btn"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors cursor-pointer shadow-subtle min-h-[36px]"
+            title="Reset to default example"
+          >
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span>Reset</span>
+          </button>
+        </div>
+
+        <!-- Exam Name -->
+        <div>
+          <label for="input-exam-name" class="block text-xs font-bold text-slate-800 mb-1.5">
+            Exam Name <span class="text-slate-400 font-normal">(optional)</span>
+          </label>
+          <input
+            type="text"
+            id="input-exam-name"
+            placeholder="e.g. Calculus Final Exam"
+            value="Calculus Final"
+            class="w-full px-3.5 py-2.5 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-medium text-slate-900 min-h-[42px]"
+          />
+        </div>
+
+        <!-- Date & Time Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Date Picker -->
+          <div>
+            <label for="input-exam-date" class="block text-xs font-bold text-slate-800 mb-1.5">
+              Exam Date
+            </label>
+            <input
+              type="date"
+              id="input-exam-date"
+              class="w-full px-3 py-2 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px] cursor-pointer"
+            />
+          </div>
+
+          <!-- Time Picker -->
+          <div>
+            <label for="input-exam-time" class="block text-xs font-bold text-slate-800 mb-1.5">
+              Exam Time
+            </label>
+            <input
+              type="time"
+              id="input-exam-time"
+              value="09:00"
+              class="w-full px-3 py-2 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px] cursor-pointer"
+            />
+          </div>
+        </div>
+
+        <!-- Timezone Indicator -->
+        <div class="flex items-center gap-1.5 text-[11px] text-slate-500 bg-slate-50 px-3 py-2 rounded-lg border border-slate-200">
+          <svg class="w-3.5 h-3.5 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Time Zone: <strong id="timezone-label" class="text-slate-700 font-semibold">Local Time</strong></span>
+        </div>
+
+        <!-- Quick Date Presets -->
+        <div>
+          <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+            Quick Date Presets
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              class="quick-date-btn px-3 py-2 rounded-lg text-xs font-semibold bg-slate-50 hover:bg-academic-50 text-slate-700 hover:text-academic-900 border border-slate-200 hover:border-academic-200 transition-all text-left flex items-center justify-between cursor-pointer"
+              data-days="1"
+            >
+              <span>Tomorrow</span>
+              <span class="text-[10px] text-slate-400 font-normal">+1d</span>
+            </button>
+            <button
+              type="button"
+              class="quick-date-btn px-3 py-2 rounded-lg text-xs font-semibold bg-slate-50 hover:bg-academic-50 text-slate-700 hover:text-academic-900 border border-slate-200 hover:border-academic-200 transition-all text-left flex items-center justify-between cursor-pointer"
+              data-days="3"
+            >
+              <span>In 3 Days</span>
+              <span class="text-[10px] text-slate-400 font-normal">+3d</span>
+            </button>
+            <button
+              type="button"
+              class="quick-date-btn px-3 py-2 rounded-lg text-xs font-semibold bg-slate-50 hover:bg-academic-50 text-slate-700 hover:text-academic-900 border border-slate-200 hover:border-academic-200 transition-all text-left flex items-center justify-between cursor-pointer"
+              data-days="7"
+            >
+              <span>In 7 Days</span>
+              <span class="text-[10px] text-slate-400 font-normal">1 wk</span>
+            </button>
+            <button
+              type="button"
+              class="quick-date-btn px-3 py-2 rounded-lg text-xs font-semibold bg-slate-50 hover:bg-academic-50 text-slate-700 hover:text-academic-900 border border-slate-200 hover:border-academic-200 transition-all text-left flex items-center justify-between cursor-pointer"
+              data-days="14"
+            >
+              <span>In 14 Days</span>
+              <span class="text-[10px] text-slate-400 font-normal">2 wks</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Alert Banner for Invalid or Past Date -->
+        <div id="countdown-alert-banner" class="hidden p-3.5 rounded-xl border text-xs flex items-start gap-2.5">
+          <svg class="w-4 h-4 flex-shrink-0 mt-0.5" id="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          <div id="countdown-alert-text" class="leading-relaxed"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Live Countdown Hero Column (7 cols on desktop) -->
+    <div class="lg:col-span-7 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-8 text-center relative overflow-hidden"
+        id="countdown-card-hero"
+        aria-live="polite"
+      >
+        <!-- Top Exam Badge & Title -->
+        <div class="flex flex-col items-center mb-6">
+          <span
+            id="countdown-status-badge"
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-3"
+          >
+            <span class="w-2 h-2 rounded-full bg-academic-600 animate-pulse"></span>
+            <span id="badge-label">Live Exam Countdown</span>
+          </span>
+          <h3
+            id="display-exam-title"
+            class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight max-w-md truncate"
+          >
+            Calculus Final
+          </h3>
+          <p
+            id="display-exam-full-datetime"
+            class="text-xs sm:text-sm text-slate-500 mt-1 font-medium"
+          >
+            Loading schedule...
+          </p>
+        </div>
+
+        <!-- 4-Unit Big Clock Grid -->
+        <div class="grid grid-cols-4 gap-2 sm:gap-4 my-6 sm:my-8 max-w-lg mx-auto" id="clock-units-container">
+          <!-- Days Unit -->
+          <div class="p-3 sm:p-4 rounded-xl bg-slate-50/90 border border-slate-200 shadow-subtle flex flex-col items-center justify-center">
+            <span
+              id="clock-days"
+              class="text-3xl sm:text-5xl font-extrabold text-academic-900 font-mono tracking-tight"
+            >
+              12
+            </span>
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mt-1 sm:mt-1.5">
+              Days
+            </span>
+          </div>
+
+          <!-- Hours Unit -->
+          <div class="p-3 sm:p-4 rounded-xl bg-slate-50/90 border border-slate-200 shadow-subtle flex flex-col items-center justify-center">
+            <span
+              id="clock-hours"
+              class="text-3xl sm:text-5xl font-extrabold text-academic-900 font-mono tracking-tight"
+            >
+              04
+            </span>
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mt-1 sm:mt-1.5">
+              Hours
+            </span>
+          </div>
+
+          <!-- Minutes Unit -->
+          <div class="p-3 sm:p-4 rounded-xl bg-slate-50/90 border border-slate-200 shadow-subtle flex flex-col items-center justify-center">
+            <span
+              id="clock-minutes"
+              class="text-3xl sm:text-5xl font-extrabold text-academic-900 font-mono tracking-tight"
+            >
+              32
+            </span>
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 mt-1 sm:mt-1.5">
+              Mins
+            </span>
+          </div>
+
+          <!-- Seconds Unit -->
+          <div class="p-3 sm:p-4 rounded-xl bg-academic-50/70 border border-academic-200 shadow-subtle flex flex-col items-center justify-center">
+            <span
+              id="clock-seconds"
+              class="text-3xl sm:text-5xl font-extrabold text-academic-700 font-mono tracking-tight"
+            >
+              18
+            </span>
+            <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-academic-800 mt-1 sm:mt-1.5">
+              Secs
+            </span>
+          </div>
+        </div>
+
+        <!-- Verbal Time Remaining Sentence -->
+        <p
+          id="verbal-time-remaining"
+          class="text-sm sm:text-base font-semibold text-slate-700 max-w-lg mx-auto leading-relaxed"
+        >
+          12 days, 4 hours, 32 minutes, and 18 seconds until your exam.
+        </p>
+
+        <!-- Optional Study Planning Indicator -->
+        <div class="mt-6 pt-5 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div class="flex items-center gap-2 text-slate-600 justify-center sm:justify-start">
+            <div class="w-7 h-7 rounded-lg bg-academic-100 text-academic-700 flex items-center justify-center flex-shrink-0">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <span id="study-days-pill" class="font-semibold text-slate-800">
+              13 Calendar Study Days Remaining
+            </span>
+          </div>
+
+          <a
+            href="/tools/study-hours-calculator"
+            class="inline-flex items-center justify-center gap-1 text-academic-700 hover:text-academic-900 font-semibold hover:underline"
+          >
+            <span>Plan Daily Study Hours</span>
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Countdown Timer Script -->
+<script>
+  import {
+    calculateTimeRemaining,
+    parseLocalDateTime,
+    formatPadZero,
+    formatDisplayDateTime,
+    getQuickDateStrings,
+  } from '../../../utils/examCountdown.ts';
+
+  let countdownInterval: ReturnType<typeof setInterval> | null = null;
+
+  function setupExamCountdown() {
+    const root = document.getElementById('exam-countdown-root');
+    if (!root) return;
+
+    // Clear any previous interval when re-initializing
+    if (countdownInterval) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+
+    // Input Elements
+    const inputExamName = document.getElementById('input-exam-name') as HTMLInputElement | null;
+    const inputExamDate = document.getElementById('input-exam-date') as HTMLInputElement | null;
+    const inputExamTime = document.getElementById('input-exam-time') as HTMLInputElement | null;
+    const timezoneLabel = document.getElementById('timezone-label');
+    const resetBtn = document.getElementById('reset-countdown-btn');
+    const quickDateBtns = document.querySelectorAll('.quick-date-btn');
+
+    // Display Elements
+    const displayExamTitle = document.getElementById('display-exam-title');
+    const displayExamFullDatetime = document.getElementById('display-exam-full-datetime');
+    const countdownStatusBadge = document.getElementById('countdown-status-badge');
+    const badgeLabel = document.getElementById('badge-label');
+    const clockDays = document.getElementById('clock-days');
+    const clockHours = document.getElementById('clock-hours');
+    const clockMinutes = document.getElementById('clock-minutes');
+    const clockSeconds = document.getElementById('clock-seconds');
+    const verbalTimeRemaining = document.getElementById('verbal-time-remaining');
+    const studyDaysPill = document.getElementById('study-days-pill');
+    const countdownAlertBanner = document.getElementById('countdown-alert-banner');
+    const countdownAlertText = document.getElementById('countdown-alert-text');
+    const alertIcon = document.getElementById('alert-icon');
+    const clockUnitsContainer = document.getElementById('clock-units-container');
+
+    // Set User's Local Timezone in UI
+    try {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timezoneLabel && tz) {
+        timezoneLabel.textContent = tz.replace('_', ' ');
+      }
+    } catch {
+      if (timezoneLabel) timezoneLabel.textContent = 'Browser Local Time';
+    }
+
+    // Initialize Default Date to 12 days in the future at 09:00 AM if empty
+    if (inputExamDate && !inputExamDate.value) {
+      const defaultPreset = getQuickDateStrings(12, '09:00');
+      inputExamDate.value = defaultPreset.dateStr;
+      if (inputExamTime) inputExamTime.value = defaultPreset.timeStr;
+    }
+
+    function tick() {
+      const examName = inputExamName?.value.trim() || 'Upcoming Exam';
+      const dateVal = inputExamDate?.value ?? '';
+      const timeVal = inputExamTime?.value ?? '09:00';
+
+      const parsedTarget = parseLocalDateTime(dateVal, timeVal);
+
+      if (displayExamTitle) {
+        displayExamTitle.textContent = examName;
+      }
+
+      if (!parsedTarget) {
+        // Invalid date state
+        if (countdownAlertBanner && countdownAlertText) {
+          countdownAlertBanner.className =
+            'p-3.5 rounded-xl border bg-rose-50 border-rose-200 text-xs text-rose-800 flex items-start gap-2.5';
+          countdownAlertText.textContent = 'Please enter a valid exam date and time.';
+          countdownAlertBanner.classList.remove('hidden');
+        }
+        if (displayExamFullDatetime) displayExamFullDatetime.textContent = 'Invalid schedule';
+        if (verbalTimeRemaining) verbalTimeRemaining.textContent = 'Please specify a valid exam date above.';
+        if (clockDays) clockDays.textContent = '--';
+        if (clockHours) clockHours.textContent = '--';
+        if (clockMinutes) clockMinutes.textContent = '--';
+        if (clockSeconds) clockSeconds.textContent = '--';
+        return;
+      }
+
+      // Format schedule text
+      if (displayExamFullDatetime) {
+        displayExamFullDatetime.textContent = `Scheduled for: ${formatDisplayDateTime(parsedTarget)}`;
+      }
+
+      const now = new Date();
+      const res = calculateTimeRemaining(parsedTarget, now);
+
+      if (res.status === 'passed') {
+        // Date in the past
+        if (countdownAlertBanner && countdownAlertText) {
+          countdownAlertBanner.className =
+            'p-3.5 rounded-xl border bg-amber-50 border-amber-200 text-xs text-amber-800 flex items-start gap-2.5';
+          countdownAlertText.textContent =
+            'This exam date has already passed. Please select a future date to start a new countdown.';
+          countdownAlertBanner.classList.remove('hidden');
+        }
+        if (countdownStatusBadge && badgeLabel) {
+          countdownStatusBadge.className =
+            'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 mb-3';
+          badgeLabel.textContent = 'Exam Date Passed';
+        }
+        if (clockDays) clockDays.textContent = '00';
+        if (clockHours) clockHours.textContent = '00';
+        if (clockMinutes) clockMinutes.textContent = '00';
+        if (clockSeconds) clockSeconds.textContent = '00';
+        if (verbalTimeRemaining) {
+          verbalTimeRemaining.textContent = `The scheduled time for ${examName} has already passed.`;
+        }
+        if (studyDaysPill) studyDaysPill.textContent = '0 Study Days Remaining';
+        return;
+      }
+
+      if (res.status === 'due-now') {
+        // Exam is happening right now!
+        if (countdownAlertBanner) countdownAlertBanner.classList.add('hidden');
+        if (countdownStatusBadge && badgeLabel) {
+          countdownStatusBadge.className =
+            'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 mb-3';
+          badgeLabel.textContent = 'Exam Time Reached!';
+        }
+        if (clockDays) clockDays.textContent = '00';
+        if (clockHours) clockHours.textContent = '00';
+        if (clockMinutes) clockMinutes.textContent = '00';
+        if (clockSeconds) clockSeconds.textContent = '00';
+        if (verbalTimeRemaining) {
+          verbalTimeRemaining.innerHTML = `<span class="text-emerald-700 font-bold">Your exam is now! Take a deep breath and good luck!</span>`;
+        }
+        if (studyDaysPill) studyDaysPill.textContent = 'Exam Day!';
+        return;
+      }
+
+      // Normal Upcoming State
+      if (countdownAlertBanner) countdownAlertBanner.classList.add('hidden');
+
+      if (countdownStatusBadge && badgeLabel) {
+        countdownStatusBadge.className =
+          'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-3';
+        badgeLabel.textContent = `${res.days} Days Remaining`;
+      }
+
+      if (clockDays) clockDays.textContent = formatPadZero(res.days);
+      if (clockHours) clockHours.textContent = formatPadZero(res.hours);
+      if (clockMinutes) clockMinutes.textContent = formatPadZero(res.minutes);
+      if (clockSeconds) clockSeconds.textContent = formatPadZero(res.seconds);
+
+      if (verbalTimeRemaining) {
+        const parts: string[] = [];
+        if (res.days > 0) parts.push(`${res.days} day${res.days === 1 ? '' : 's'}`);
+        parts.push(`${res.hours} hour${res.hours === 1 ? '' : 's'}`);
+        parts.push(`${res.minutes} minute${res.minutes === 1 ? '' : 's'}`);
+        parts.push(`${res.seconds} second${res.seconds === 1 ? '' : 's'}`);
+
+        verbalTimeRemaining.textContent = `${parts.join(', ')} until your exam.`;
+      }
+
+      if (studyDaysPill) {
+        studyDaysPill.textContent = `${res.studyDaysRemaining} Calendar Study Day${
+          res.studyDaysRemaining === 1 ? '' : 's'
+        } Remaining`;
+      }
+    }
+
+    // Attach Listeners
+    inputExamName?.addEventListener('input', tick);
+    inputExamDate?.addEventListener('input', tick);
+    inputExamTime?.addEventListener('input', tick);
+
+    // Quick Date Presets
+    quickDateBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const days = parseInt(btn.getAttribute('data-days') || '1', 10);
+        const preset = getQuickDateStrings(days, inputExamTime?.value || '09:00');
+        if (inputExamDate) inputExamDate.value = preset.dateStr;
+        tick();
+      });
+    });
+
+    // Reset Button
+    resetBtn?.addEventListener('click', () => {
+      if (inputExamName) inputExamName.value = 'Calculus Final';
+      const defaultPreset = getQuickDateStrings(12, '09:00');
+      if (inputExamDate) inputExamDate.value = defaultPreset.dateStr;
+      if (inputExamTime) inputExamTime.value = defaultPreset.timeStr;
+      tick();
+    });
+
+    // Run initial tick and start interval
+    tick();
+    countdownInterval = setInterval(tick, 1000);
+  }
+
+  // Support direct page load and Astro view transitions
+  setupExamCountdown();
+  document.addEventListener('astro:page-load', setupExamCountdown);
+</script>

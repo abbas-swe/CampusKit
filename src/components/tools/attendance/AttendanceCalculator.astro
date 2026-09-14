@@ -1,0 +1,792 @@
+---
+// AttendanceCalculator.astro
+const DEFAULT_ATTENDANCE = {
+  attended: '38',
+  missed: '6',
+};
+
+const DEFAULT_BUNKS = {
+  attended: '45',
+  totalHeld: '50',
+  required: '75',
+};
+
+const DEFAULT_TARGET = {
+  attended: '60',
+  missed: '20',
+  target: '80',
+};
+---
+
+<div class="w-full max-w-5xl mx-auto" id="attendance-calculator-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Calculator Card (8 cols on desktop) -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Header & Mode Selector -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>Interactive Tool</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Attendance Calculator
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Track lecture attendance, calculate safe bunks, or determine how many classes you must attend to meet policy.
+              </p>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                id="reset-attendance-btn"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle min-h-[40px]"
+                title="Reset calculator to standard example"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 3 Mode Tabs -->
+          <div class="mt-6">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Select Attendance Goal
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-1 bg-slate-100/80 rounded-xl border border-slate-200" role="tablist" aria-label="Attendance Calculator Modes">
+              <!-- Tab 1: Percentage -->
+              <button
+                type="button"
+                id="tab-percentage"
+                role="tab"
+                aria-selected="true"
+                aria-controls="workspace-percentage"
+                class="attendance-tab flex items-center gap-3 px-3.5 py-3 rounded-lg text-left transition-all font-medium text-xs bg-white text-academic-900 shadow-sm border border-slate-200/80 cursor-pointer"
+              >
+                <div class="w-7 h-7 rounded-lg bg-academic-100 text-academic-700 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">Current %</div>
+                  <div class="text-[11px] text-slate-500 font-normal">Attendance rate</div>
+                </div>
+              </button>
+
+              <!-- Tab 2: Safe Bunks -->
+              <button
+                type="button"
+                id="tab-bunks"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-bunks"
+                class="attendance-tab flex items-center gap-3 px-3.5 py-3 rounded-lg text-left transition-all font-medium text-xs text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">Safe Absences</div>
+                  <div class="text-[11px] text-slate-500 font-normal">Classes you can miss</div>
+                </div>
+              </button>
+
+              <!-- Tab 3: Target -->
+              <button
+                type="button"
+                id="tab-target"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-target"
+                class="attendance-tab flex items-center gap-3 px-3.5 py-3 rounded-lg text-left transition-all font-medium text-xs text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">Reach Target</div>
+                  <div class="text-[11px] text-slate-500 font-normal">Classes to attend</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKSPACE 1: Current Attendance Percentage (Default) -->
+        <div id="workspace-percentage" role="tabpanel" aria-labelledby="tab-percentage" class="p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-att-attended" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Classes Attended
+                </label>
+                <span class="text-[11px] text-slate-400">Lectures present</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-att-attended"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value={DEFAULT_ATTENDANCE.attended}
+                  placeholder="e.g. 38"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-14 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">Attended</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-att-missed" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Classes Missed
+                </label>
+                <span class="text-[11px] text-slate-400">Lectures absent</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-att-missed"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value={DEFAULT_ATTENDANCE.missed}
+                  placeholder="e.g. 6"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-14 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">Missed</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Classes Held Indicator Banner -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+            <span class="text-slate-600">Total Classes Conducted:</span>
+            <span class="font-bold text-slate-900 font-mono text-sm" id="att-total-display">44 Classes</span>
+          </div>
+
+          <!-- Errors banner -->
+          <div id="att-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="att-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- WORKSPACE 2: Classes I Can Miss (Safe Bunks) -->
+        <div id="workspace-bunks" role="tabpanel" aria-labelledby="tab-bunks" class="hidden p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-bunk-attended" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Classes Attended
+                </label>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-bunk-attended"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value={DEFAULT_BUNKS.attended}
+                  placeholder="e.g. 45"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[46px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-bunk-total" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Total Held So Far
+                </label>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-bunk-total"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value={DEFAULT_BUNKS.totalHeld}
+                  placeholder="e.g. 50"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[46px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-bunk-required" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Required Minimum
+                </label>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-bunk-required"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={DEFAULT_BUNKS.required}
+                  placeholder="e.g. 75"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Policy Presets -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Policy Presets:</span>
+            <button
+              type="button"
+              class="bunk-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="75"
+            >
+              75% Standard (India / Asia)
+            </button>
+            <button
+              type="button"
+              class="bunk-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="80"
+            >
+              80% Strict Policy
+            </button>
+            <button
+              type="button"
+              class="bunk-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="85"
+            >
+              85% Honors / Prerequisite
+            </button>
+          </div>
+
+          <!-- Errors banner -->
+          <div id="bunk-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="bunk-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- WORKSPACE 3: Classes Needed for Target -->
+        <div id="workspace-target" role="tabpanel" aria-labelledby="tab-target" class="hidden p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-target-attended" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Classes Attended
+                </label>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-target-attended"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value={DEFAULT_TARGET.attended}
+                  placeholder="e.g. 60"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[46px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-target-missed" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Classes Missed
+                </label>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-target-missed"
+                  min="0"
+                  max="500"
+                  step="1"
+                  value={DEFAULT_TARGET.missed}
+                  placeholder="e.g. 20"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[46px]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-target-percent" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Target Attendance
+                </label>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-target-percent"
+                  min="1"
+                  max="100"
+                  step="1"
+                  value={DEFAULT_TARGET.target}
+                  placeholder="e.g. 80"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Presets -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Quick Targets:</span>
+            <button
+              type="button"
+              class="target-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="75"
+            >
+              75% (Minimum Pass)
+            </button>
+            <button
+              type="button"
+              class="target-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="80"
+            >
+              80% (Safe Buffer)
+            </button>
+            <button
+              type="button"
+              class="target-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="85"
+            >
+              85% (Honors Standing)
+            </button>
+            <button
+              type="button"
+              class="target-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="90"
+            >
+              90% (Distinction)
+            </button>
+          </div>
+
+          <!-- Errors banner -->
+          <div id="target-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="target-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Results Summary Panel (4 cols on desktop) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
+        id="attendance-result-card"
+        aria-live="polite"
+      >
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500" id="result-header-title">
+            Attendance Status
+          </h3>
+          <span
+            id="attendance-status-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200"
+          >
+            In Safe Zone
+          </span>
+        </div>
+
+        <!-- Big Metric Display -->
+        <div class="py-8 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2" id="metric-caption-label">
+            Current Attendance
+          </span>
+          <div
+            class="text-5xl sm:text-6xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-transform duration-200"
+            id="primary-metric-display"
+          >
+            86.4%
+          </div>
+          <p class="mt-3 text-xs font-medium text-slate-600 px-3 leading-relaxed" id="status-headline-text">
+            Current attendance: 86.4%
+          </p>
+        </div>
+
+        <!-- Progress Indicator Bar -->
+        <div class="px-1 mb-5">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-1.5">
+            <span>Attendance Meter</span>
+            <span id="meter-percent-label">86.4%</span>
+          </div>
+          <div class="relative w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex border border-slate-200">
+            <div
+              id="attendance-meter-fill"
+              class="h-full rounded-full transition-all duration-300 bg-emerald-500"
+              style="width: 86.4%;"
+            ></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span>0%</span>
+            <span class="font-medium text-slate-500">75% Policy</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        <!-- Metric Details Grid -->
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Attended</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block font-mono" id="stat-attended">38</span>
+            <span class="text-[10px] text-slate-400 block" id="stat-attended-label">Lectures</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider" id="stat-secondary-title">Total Held</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block font-mono" id="stat-secondary-value">44</span>
+            <span class="text-[10px] text-slate-400 block" id="stat-secondary-sub">Classes</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Context Explanation Box -->
+        <div class="mt-4 p-4 rounded-xl bg-slate-50/80 border border-slate-200/80 text-xs text-slate-600 leading-relaxed" id="dynamic-explanation-box">
+          You have attended 38 of 44 classes (86.4%), safely above university attendance minimums.
+        </div>
+
+        <!-- Privacy Assurance Note -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Client-Side. No academic data is stored.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side Calculator Engine -->
+<script>
+  import type { AttendanceMode } from '../../../types/attendance.ts';
+  import {
+    calculateAttendancePercentage,
+    calculateClassesCanMiss,
+    calculateClassesNeeded,
+  } from '../../../utils/attendance.ts';
+
+  function setupAttendanceCalculator() {
+    const root = document.getElementById('attendance-calculator-root');
+    if (!root) return;
+
+    // Tabs
+    const tabPercentage = document.getElementById('tab-percentage');
+    const tabBunks = document.getElementById('tab-bunks');
+    const tabTarget = document.getElementById('tab-target');
+
+    // Workspaces
+    const wsPercentage = document.getElementById('workspace-percentage');
+    const wsBunks = document.getElementById('workspace-bunks');
+    const wsTarget = document.getElementById('workspace-target');
+
+    // Mode 1 Inputs
+    const inputAttAttended = document.getElementById('input-att-attended') as HTMLInputElement | null;
+    const inputAttMissed = document.getElementById('input-att-missed') as HTMLInputElement | null;
+    const attTotalDisplay = document.getElementById('att-total-display');
+    const attErrorsBanner = document.getElementById('att-errors-banner');
+    const attErrorsList = document.getElementById('att-errors-list');
+
+    // Mode 2 Inputs
+    const inputBunkAttended = document.getElementById('input-bunk-attended') as HTMLInputElement | null;
+    const inputBunkTotal = document.getElementById('input-bunk-total') as HTMLInputElement | null;
+    const inputBunkRequired = document.getElementById('input-bunk-required') as HTMLInputElement | null;
+    const bunkErrorsBanner = document.getElementById('bunk-errors-banner');
+    const bunkErrorsList = document.getElementById('bunk-errors-list');
+    const bunkPresetBtns = document.querySelectorAll('.bunk-preset-btn');
+
+    // Mode 3 Inputs
+    const inputTargetAttended = document.getElementById('input-target-attended') as HTMLInputElement | null;
+    const inputTargetMissed = document.getElementById('input-target-missed') as HTMLInputElement | null;
+    const inputTargetPercent = document.getElementById('input-target-percent') as HTMLInputElement | null;
+    const targetErrorsBanner = document.getElementById('target-errors-banner');
+    const targetErrorsList = document.getElementById('target-errors-list');
+    const targetPresetBtns = document.querySelectorAll('.target-preset-btn');
+
+    // Reset Button
+    const resetBtn = document.getElementById('reset-attendance-btn');
+
+    // Results Card Elements
+    const statusBadge = document.getElementById('attendance-status-badge');
+    const metricCaptionLabel = document.getElementById('metric-caption-label');
+    const primaryMetricDisplay = document.getElementById('primary-metric-display');
+    const statusHeadlineText = document.getElementById('status-headline-text');
+    const meterPercentLabel = document.getElementById('meter-percent-label');
+    const attendanceMeterFill = document.getElementById('attendance-meter-fill');
+    const statAttended = document.getElementById('stat-attended');
+    const statAttendedLabel = document.getElementById('stat-attended-label');
+    const statSecondaryTitle = document.getElementById('stat-secondary-title');
+    const statSecondaryValue = document.getElementById('stat-secondary-value');
+    const statSecondarySub = document.getElementById('stat-secondary-sub');
+    const explanationBox = document.getElementById('dynamic-explanation-box');
+
+    let activeMode: AttendanceMode = 'percentage';
+
+    function setMode(mode: AttendanceMode) {
+      activeMode = mode;
+
+      const tabs = [
+        { btn: tabPercentage, ws: wsPercentage, m: 'percentage' },
+        { btn: tabBunks, ws: wsBunks, m: 'bunks' },
+        { btn: tabTarget, ws: wsTarget, m: 'target' },
+      ];
+
+      tabs.forEach(({ btn, ws, m }) => {
+        if (m === mode) {
+          btn?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+          btn?.classList.remove('text-slate-600', 'hover:bg-white/60');
+          btn?.setAttribute('aria-selected', 'true');
+          ws?.classList.remove('hidden');
+        } else {
+          btn?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+          btn?.classList.add('text-slate-600', 'hover:bg-white/60');
+          btn?.setAttribute('aria-selected', 'false');
+          ws?.classList.add('hidden');
+        }
+      });
+
+      recalculate();
+    }
+
+    tabPercentage?.addEventListener('click', () => setMode('percentage'));
+    tabBunks?.addEventListener('click', () => setMode('bunks'));
+    tabTarget?.addEventListener('click', () => setMode('target'));
+
+    // Bunk Presets
+    bunkPresetBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const val = (e.currentTarget as HTMLButtonElement).dataset.val;
+        if (val && inputBunkRequired) {
+          inputBunkRequired.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    // Target Presets
+    targetPresetBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const val = (e.currentTarget as HTMLButtonElement).dataset.val;
+        if (val && inputTargetPercent) {
+          inputTargetPercent.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    // Reset Calculator
+    function resetCalculator() {
+      if (inputAttAttended) inputAttAttended.value = '38';
+      if (inputAttMissed) inputAttMissed.value = '6';
+
+      if (inputBunkAttended) inputBunkAttended.value = '45';
+      if (inputBunkTotal) inputBunkTotal.value = '50';
+      if (inputBunkRequired) inputBunkRequired.value = '75';
+
+      if (inputTargetAttended) inputTargetAttended.value = '60';
+      if (inputTargetMissed) inputTargetMissed.value = '20';
+      if (inputTargetPercent) inputTargetPercent.value = '80';
+
+      recalculate();
+    }
+
+    resetBtn?.addEventListener('click', resetCalculator);
+
+    // RECALCULATE ENGINE
+    function recalculate() {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let result;
+
+      if (activeMode === 'percentage') {
+        const a = inputAttAttended?.value ?? '';
+        const m = inputAttMissed?.value ?? '';
+        result = calculateAttendancePercentage(a, m);
+
+        if (attTotalDisplay) {
+          const tot = result.totalClasses;
+          attTotalDisplay.textContent = `${tot} ${tot === 1 ? 'Class' : 'Classes'}`;
+        }
+
+        if (attErrorsBanner && attErrorsList) {
+          if (result.errors.length > 0) {
+            attErrorsList.innerHTML = result.errors.map((e) => `<div>• ${e}</div>`).join('');
+            attErrorsBanner.classList.remove('hidden');
+          } else {
+            attErrorsBanner.classList.add('hidden');
+          }
+        }
+      } else if (activeMode === 'bunks') {
+        const a = inputBunkAttended?.value ?? '';
+        const t = inputBunkTotal?.value ?? '';
+        const r = inputBunkRequired?.value ?? '';
+        result = calculateClassesCanMiss(a, t, r);
+
+        if (bunkErrorsBanner && bunkErrorsList) {
+          if (result.errors.length > 0) {
+            bunkErrorsList.innerHTML = result.errors.map((e) => `<div>• ${e}</div>`).join('');
+            bunkErrorsBanner.classList.remove('hidden');
+          } else {
+            bunkErrorsBanner.classList.add('hidden');
+          }
+        }
+      } else {
+        // Target Mode
+        const a = inputTargetAttended?.value ?? '';
+        const m = inputTargetMissed?.value ?? '';
+        const tgt = inputTargetPercent?.value ?? '';
+        result = calculateClassesNeeded(a, m, tgt);
+
+        if (targetErrorsBanner && targetErrorsList) {
+          if (result.errors.length > 0) {
+            targetErrorsList.innerHTML = result.errors.map((e) => `<div>• ${e}</div>`).join('');
+            targetErrorsBanner.classList.remove('hidden');
+          } else {
+            targetErrorsBanner.classList.add('hidden');
+          }
+        }
+      }
+
+      // Update Result Card
+      updateResultCard(result, prefersReducedMotion);
+    }
+
+    function updateResultCard(result: ReturnType<typeof calculateAttendancePercentage>, prefersReducedMotion: boolean) {
+      if (!primaryMetricDisplay) return;
+
+      // Animation
+      if (!prefersReducedMotion) {
+        primaryMetricDisplay.classList.add('scale-[1.02]');
+        setTimeout(() => primaryMetricDisplay.classList.remove('scale-[1.02]'), 150);
+      }
+
+      if (!result.isValid) {
+        primaryMetricDisplay.textContent = '--';
+        primaryMetricDisplay.className =
+          'text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-300 font-sans leading-none transition-transform duration-200';
+        if (metricCaptionLabel) metricCaptionLabel.textContent = 'Invalid Input';
+        if (statusHeadlineText) statusHeadlineText.textContent = result.headline;
+        if (explanationBox) explanationBox.textContent = result.description;
+        if (statusBadge) {
+          statusBadge.textContent = result.statusBadge;
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-slate-100 text-slate-600 border-slate-200';
+        }
+        if (attendanceMeterFill) attendanceMeterFill.style.width = '0%';
+        if (meterPercentLabel) meterPercentLabel.textContent = '--%';
+        return;
+      }
+
+      primaryMetricDisplay.textContent = result.primaryMetric;
+      if (metricCaptionLabel) metricCaptionLabel.textContent = result.primaryLabel;
+      if (statusHeadlineText) statusHeadlineText.textContent = result.headline;
+      if (explanationBox) explanationBox.textContent = result.description;
+
+      // Status Badge & Colors
+      if (statusBadge) {
+        statusBadge.textContent = result.statusBadge;
+        if (result.status === 'safe' || result.status === 'achieved') {
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200';
+          primaryMetricDisplay.className =
+            'text-5xl sm:text-6xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-transform duration-200';
+        } else if (result.status === 'warning') {
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+          primaryMetricDisplay.className =
+            'text-5xl sm:text-6xl font-extrabold tracking-tight text-amber-800 font-sans leading-none transition-transform duration-200';
+        } else {
+          // Critical or Impossible
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-800 border-rose-200';
+          primaryMetricDisplay.className =
+            'text-5xl sm:text-6xl font-extrabold tracking-tight text-rose-600 font-sans leading-none transition-transform duration-200';
+        }
+      }
+
+      // Progress Meter
+      const meterVal = Math.min(Math.max(result.currentPercentage, 0), 100);
+      if (attendanceMeterFill) {
+        attendanceMeterFill.style.width = `${meterVal}%`;
+        if (meterVal >= 75) {
+          attendanceMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-emerald-500';
+        } else if (meterVal >= 65) {
+          attendanceMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-amber-500';
+        } else {
+          attendanceMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-rose-500';
+        }
+      }
+      if (meterPercentLabel) {
+        meterPercentLabel.textContent = `${result.currentPercentage.toFixed(1)}%`;
+      }
+
+      // Summary Grid
+      if (statAttended) statAttended.textContent = String(result.attendedClasses);
+      if (statAttendedLabel) statAttendedLabel.textContent = 'Attended';
+
+      if (statSecondaryTitle && statSecondaryValue && statSecondarySub) {
+        if (activeMode === 'percentage') {
+          statSecondaryTitle.textContent = 'Missed';
+          statSecondaryValue.textContent = String(result.missedClasses);
+          statSecondarySub.textContent = `Of ${result.totalClasses} Total`;
+        } else if (activeMode === 'bunks') {
+          statSecondaryTitle.textContent = 'Required';
+          statSecondaryValue.textContent = `${result.thresholdPercentage ?? 75}%`;
+          statSecondarySub.textContent = `Policy Threshold`;
+        } else {
+          statSecondaryTitle.textContent = 'Target';
+          statSecondaryValue.textContent = `${result.thresholdPercentage ?? 80}%`;
+          statSecondarySub.textContent = `Goal Threshold`;
+        }
+      }
+    }
+
+    // Attach Input Event Listeners
+    [inputAttAttended, inputAttMissed].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    [inputBunkAttended, inputBunkTotal, inputBunkRequired].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    [inputTargetAttended, inputTargetMissed, inputTargetPercent].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    // Initial render
+    recalculate();
+  }
+
+  // Support direct page load and Astro view transitions
+  setupAttendanceCalculator();
+  document.addEventListener('astro:page-load', setupAttendanceCalculator);
+</script>

@@ -1,0 +1,848 @@
+---
+// MarksNeededCalculator.astro
+const DEFAULT_POINTS_DATA = {
+  earned: '72',
+  possible: '100',
+  upcoming: '50',
+  target: '80',
+};
+
+const DEFAULT_WEIGHTED_DATA = {
+  current: '82',
+  compWeight: '70',
+  upWeight: '30',
+  target: '85',
+};
+---
+
+<div class="w-full max-w-5xl mx-auto" id="marks-needed-calculator-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Calculator Card (8 cols on desktop) -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Header & Mode Tabs -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+                <span>Interactive Tool</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Marks Needed Calculator
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Calculate the minimum score or marks you need on an upcoming assessment to achieve your target grade.
+              </p>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                id="reset-marks-btn"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle min-h-[40px]"
+                title="Reset calculator to standard example"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Selector Tabs -->
+          <div class="mt-6">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Calculation Format
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-1 bg-slate-100/80 rounded-xl border border-slate-200" role="tablist" aria-label="Calculator Mode">
+              <!-- Tab 1: Marks / Points (Default) -->
+              <button
+                type="button"
+                id="mode-tab-points"
+                role="tab"
+                aria-selected="true"
+                aria-controls="workspace-points"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all font-medium text-xs sm:text-sm bg-white text-academic-900 shadow-sm border border-slate-200/80 cursor-pointer"
+              >
+                <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Marks / Points Mode</span>
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-academic-100 text-academic-800">Points</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 font-normal mt-0.5">e.g. 72 / 100 + upcoming 50 marks</div>
+                </div>
+              </button>
+
+              <!-- Tab 2: Weighted Assessment -->
+              <button
+                type="button"
+                id="mode-tab-weighted"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-weighted"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all font-medium text-xs sm:text-sm text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">Weighted Assessment Mode</div>
+                  <div class="text-[11px] text-slate-500 font-normal mt-0.5">e.g. 82% current with 30% weight</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKSPACE 1: Marks / Points Mode (Default) -->
+        <div id="workspace-points" role="tabpanel" aria-labelledby="mode-tab-points" class="p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- 1. Current Marks Earned -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-points-earned" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Current Marks Earned
+                </label>
+                <span class="text-[11px] text-slate-400">Points scored so far</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-points-earned"
+                  min="0"
+                  max="10000"
+                  step="0.5"
+                  value={DEFAULT_POINTS_DATA.earned}
+                  placeholder="e.g. 72"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-14 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">Marks</span>
+              </div>
+            </div>
+
+            <!-- 2. Current Marks Possible -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-points-possible" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Current Marks Possible
+                </label>
+                <span class="text-[11px] text-slate-400">Total graded points so far</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-points-possible"
+                  min="1"
+                  max="10000"
+                  step="0.5"
+                  value={DEFAULT_POINTS_DATA.possible}
+                  placeholder="e.g. 100"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-14 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">Marks</span>
+              </div>
+            </div>
+
+            <!-- 3. Upcoming Assessment Marks Possible -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-points-upcoming" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Upcoming Assessment Total
+                </label>
+                <span class="text-[11px] text-slate-400">Points available on next task</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-points-upcoming"
+                  min="1"
+                  max="10000"
+                  step="0.5"
+                  value={DEFAULT_POINTS_DATA.upcoming}
+                  placeholder="e.g. 50"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-14 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">Marks</span>
+              </div>
+            </div>
+
+            <!-- 4. Desired Final Percentage -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-points-target" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Desired Final Percentage
+                </label>
+                <span class="text-[11px] text-slate-400">Target course grade</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-points-target"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value={DEFAULT_POINTS_DATA.target}
+                  placeholder="e.g. 80"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Target Quick Presets -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Target Presets:</span>
+            <button
+              type="button"
+              class="points-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="70"
+            >
+              70% (Pass / C-)
+            </button>
+            <button
+              type="button"
+              class="points-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="75"
+            >
+              75% (C+ Average)
+            </button>
+            <button
+              type="button"
+              class="points-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="80"
+            >
+              80% (Solid B)
+            </button>
+            <button
+              type="button"
+              class="points-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="85"
+            >
+              85% (B+ Honors)
+            </button>
+            <button
+              type="button"
+              class="points-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="90"
+            >
+              90% (A Distinction)
+            </button>
+          </div>
+
+          <!-- Total Marks Context Banner -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+            <span class="text-slate-600">Combined Course Total (Graded + Upcoming):</span>
+            <span class="font-bold text-slate-900 font-mono text-sm" id="points-total-combined">150 Total Marks</span>
+          </div>
+
+          <!-- Validation Errors Banner -->
+          <div id="points-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="points-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- WORKSPACE 2: Weighted Assessment Mode -->
+        <div id="workspace-weighted" role="tabpanel" aria-labelledby="mode-tab-weighted" class="hidden p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- 1. Current Overall Percentage -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-weight-current" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Current Overall %
+                </label>
+                <span class="text-[11px] text-slate-400">Running course score</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-weight-current"
+                  min="0"
+                  max="150"
+                  step="0.1"
+                  value={DEFAULT_WEIGHTED_DATA.current}
+                  placeholder="e.g. 82"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <!-- 2. Course Completed Weight -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-weight-comp" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Completed Coursework Weight
+                </label>
+                <span class="text-[11px] text-slate-400">Weight graded so far</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-weight-comp"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value={DEFAULT_WEIGHTED_DATA.compWeight}
+                  placeholder="e.g. 70"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <!-- 3. Upcoming Assessment Weight -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-weight-upcoming" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Upcoming Assessment Weight
+                </label>
+                <span class="text-[11px] text-slate-400">Weight of this exam/task</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-weight-upcoming"
+                  min="0.5"
+                  max="100"
+                  step="0.5"
+                  value={DEFAULT_WEIGHTED_DATA.upWeight}
+                  placeholder="e.g. 30"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+
+            <!-- 4. Desired Final Percentage -->
+            <div>
+              <div class="flex items-center justify-between mb-1.5">
+                <label for="input-weight-target" class="text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Desired Final Percentage
+                </label>
+                <span class="text-[11px] text-slate-400">Target course grade</span>
+              </div>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-weight-target"
+                  min="0"
+                  max="100"
+                  step="0.5"
+                  value={DEFAULT_WEIGHTED_DATA.target}
+                  placeholder="e.g. 85"
+                  class="w-full bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-xl px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[46px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-sm font-semibold text-slate-400 pointer-events-none">%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weight Presets -->
+          <div class="flex flex-wrap items-center gap-2 pt-1">
+            <span class="text-xs font-semibold text-slate-500 mr-1">Target Presets:</span>
+            <button
+              type="button"
+              class="weight-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="75"
+            >
+              75% (C+ Average)
+            </button>
+            <button
+              type="button"
+              class="weight-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="80"
+            >
+              80% (Solid B)
+            </button>
+            <button
+              type="button"
+              class="weight-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="85"
+            >
+              85% (B+ Honors)
+            </button>
+            <button
+              type="button"
+              class="weight-preset-btn px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors cursor-pointer"
+              data-val="90"
+            >
+              90% (A Distinction)
+            </button>
+          </div>
+
+          <!-- Weight Summary Indicator -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+            <span class="text-slate-600">Weight Evaluated (Completed + Upcoming):</span>
+            <span class="font-bold text-slate-900 font-mono text-sm" id="weighted-weight-sum">100.0% of Course</span>
+          </div>
+
+          <!-- Validation Errors Banner -->
+          <div id="weight-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="weight-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Results Summary Panel (4 cols on desktop) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
+        id="marks-result-card"
+        aria-live="polite"
+      >
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500" id="result-header-title">
+            Assessment Goal
+          </h3>
+          <span
+            id="marks-status-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200"
+          >
+            Achievable Target
+          </span>
+        </div>
+
+        <!-- Big Metric Callout -->
+        <div class="py-8 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-2" id="metric-caption-label">
+            Required Marks
+          </span>
+          <div
+            class="text-4xl sm:text-5xl font-extrabold tracking-tight text-academic-900 font-sans leading-tight transition-transform duration-200"
+            id="primary-marks-display"
+          >
+            48 / 50 Marks
+          </div>
+          <div class="mt-2 text-sm font-bold text-academic-700 font-mono" id="required-percentage-callout">
+            Required score: 96.0%
+          </div>
+          <p class="mt-3 text-xs font-medium text-slate-600 px-2 leading-relaxed" id="status-headline-text">
+            You need 48 / 50 marks
+          </p>
+        </div>
+
+        <!-- Feasibility Visual Meter -->
+        <div class="px-1 mb-5">
+          <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 mb-1.5">
+            <span>Score Feasibility</span>
+            <span id="feasibility-meter-label">96.0% Needed</span>
+          </div>
+          <div class="relative w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex border border-slate-200">
+            <div
+              id="feasibility-meter-fill"
+              class="h-full rounded-full transition-all duration-300 bg-amber-500"
+              style="width: 96%;"
+            ></div>
+          </div>
+          <div class="flex justify-between text-[10px] text-slate-400 mt-1">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        <!-- Metric Details Grid -->
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Current Standing</span>
+            <span class="text-base font-bold text-slate-900 mt-0.5 block font-mono" id="stat-current-score">72 / 100</span>
+            <span class="text-[10px] text-slate-400 block" id="stat-current-sub">72.0%</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Target Course Grade</span>
+            <span class="text-base font-bold text-slate-900 mt-0.5 block font-mono" id="stat-target-score">80.0%</span>
+            <span class="text-[10px] text-slate-400 block">Overall Target</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Context Explanation Box -->
+        <div class="mt-4 p-4 rounded-xl bg-slate-50/80 border border-slate-200/80 text-xs text-slate-600 leading-relaxed" id="dynamic-explanation-box">
+          Scoring 48 out of 50 marks (96.0%) on your upcoming assessment will secure your target overall grade of 80.0%.
+        </div>
+
+        <!-- Privacy Assurance Note -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Client-Side. No grade data is stored.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side Calculator Engine -->
+<script>
+  import type { MarksNeededMode } from '../../../types/marksNeeded.ts';
+  import {
+    calculateMarksNeededPoints,
+    calculateMarksNeededWeighted,
+    roundToDecimals,
+  } from '../../../utils/marksNeeded.ts';
+
+  function setupMarksNeededCalculator() {
+    const root = document.getElementById('marks-needed-calculator-root');
+    if (!root) return;
+
+    // Tabs
+    const modeTabPoints = document.getElementById('mode-tab-points');
+    const modeTabWeighted = document.getElementById('mode-tab-weighted');
+    const wsPoints = document.getElementById('workspace-points');
+    const wsWeighted = document.getElementById('workspace-weighted');
+
+    // Points Mode Inputs
+    const inputEarned = document.getElementById('input-points-earned') as HTMLInputElement | null;
+    const inputPossible = document.getElementById('input-points-possible') as HTMLInputElement | null;
+    const inputUpcoming = document.getElementById('input-points-upcoming') as HTMLInputElement | null;
+    const inputPointsTarget = document.getElementById('input-points-target') as HTMLInputElement | null;
+    const pointsTotalCombined = document.getElementById('points-total-combined');
+    const pointsErrorsBanner = document.getElementById('points-errors-banner');
+    const pointsErrorsList = document.getElementById('points-errors-list');
+    const pointsPresetBtns = document.querySelectorAll('.points-preset-btn');
+
+    // Weighted Mode Inputs
+    const inputWeightCurrent = document.getElementById('input-weight-current') as HTMLInputElement | null;
+    const inputWeightComp = document.getElementById('input-weight-comp') as HTMLInputElement | null;
+    const inputWeightUpcoming = document.getElementById('input-weight-upcoming') as HTMLInputElement | null;
+    const inputWeightTarget = document.getElementById('input-weight-target') as HTMLInputElement | null;
+    const weightedWeightSum = document.getElementById('weighted-weight-sum');
+    const weightErrorsBanner = document.getElementById('weight-errors-banner');
+    const weightErrorsList = document.getElementById('weight-errors-list');
+    const weightPresetBtns = document.querySelectorAll('.weight-preset-btn');
+
+    // Reset Button
+    const resetBtn = document.getElementById('reset-marks-btn');
+
+    // Results Card Elements
+    const statusBadge = document.getElementById('marks-status-badge');
+    const metricCaptionLabel = document.getElementById('metric-caption-label');
+    const primaryMarksDisplay = document.getElementById('primary-marks-display');
+    const requiredPercentageCallout = document.getElementById('required-percentage-callout');
+    const statusHeadlineText = document.getElementById('status-headline-text');
+    const feasibilityMeterLabel = document.getElementById('feasibility-meter-label');
+    const feasibilityMeterFill = document.getElementById('feasibility-meter-fill');
+    const statCurrentScore = document.getElementById('stat-current-score');
+    const statCurrentSub = document.getElementById('stat-current-sub');
+    const statTargetScore = document.getElementById('stat-target-score');
+    const explanationBox = document.getElementById('dynamic-explanation-box');
+
+    let activeMode: MarksNeededMode = 'points';
+
+    function setMode(mode: MarksNeededMode) {
+      activeMode = mode;
+      if (mode === 'points') {
+        modeTabPoints?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabPoints?.classList.remove('text-slate-600', 'hover:bg-white/60');
+        modeTabPoints?.setAttribute('aria-selected', 'true');
+
+        modeTabWeighted?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabWeighted?.classList.add('text-slate-600', 'hover:bg-white/60');
+        modeTabWeighted?.setAttribute('aria-selected', 'false');
+
+        wsPoints?.classList.remove('hidden');
+        wsWeighted?.classList.add('hidden');
+      } else {
+        modeTabWeighted?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabWeighted?.classList.remove('text-slate-600', 'hover:bg-white/60');
+        modeTabWeighted?.setAttribute('aria-selected', 'true');
+
+        modeTabPoints?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabPoints?.classList.add('text-slate-600', 'hover:bg-white/60');
+        modeTabPoints?.setAttribute('aria-selected', 'false');
+
+        wsWeighted?.classList.remove('hidden');
+        wsPoints?.classList.add('hidden');
+      }
+      recalculate();
+    }
+
+    modeTabPoints?.addEventListener('click', () => setMode('points'));
+    modeTabWeighted?.addEventListener('click', () => setMode('weighted'));
+
+    // Preset Buttons
+    pointsPresetBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const val = (e.currentTarget as HTMLButtonElement).dataset.val;
+        if (val && inputPointsTarget) {
+          inputPointsTarget.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    weightPresetBtns.forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const val = (e.currentTarget as HTMLButtonElement).dataset.val;
+        if (val && inputWeightTarget) {
+          inputWeightTarget.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    // Reset Calculator
+    function resetCalculator() {
+      if (inputEarned) inputEarned.value = '72';
+      if (inputPossible) inputPossible.value = '100';
+      if (inputUpcoming) inputUpcoming.value = '50';
+      if (inputPointsTarget) inputPointsTarget.value = '80';
+
+      if (inputWeightCurrent) inputWeightCurrent.value = '82';
+      if (inputWeightComp) inputWeightComp.value = '70';
+      if (inputWeightUpcoming) inputWeightUpcoming.value = '30';
+      if (inputWeightTarget) inputWeightTarget.value = '85';
+
+      recalculate();
+    }
+
+    resetBtn?.addEventListener('click', resetCalculator);
+
+    // RECALCULATE ENGINE
+    function recalculate() {
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let result;
+
+      if (activeMode === 'points') {
+        const e = inputEarned?.value ?? '';
+        const p = inputPossible?.value ?? '';
+        const u = inputUpcoming?.value ?? '';
+        const t = inputPointsTarget?.value ?? '';
+
+        result = calculateMarksNeededPoints({
+          earnedMarks: e,
+          possibleMarks: p,
+          upcomingMarks: u,
+          targetPercent: t,
+        });
+
+        // Combined Total Points Banner
+        if (pointsTotalCombined) {
+          const pNum = Number(p);
+          const uNum = Number(u);
+          if (!isNaN(pNum) && !isNaN(uNum) && pNum > 0 && uNum > 0) {
+            pointsTotalCombined.textContent = `${pNum + uNum} Total Marks`;
+          } else {
+            pointsTotalCombined.textContent = '-- Total Marks';
+          }
+        }
+
+        // Points Errors Banner
+        if (pointsErrorsBanner && pointsErrorsList) {
+          if (result.errors.length > 0) {
+            pointsErrorsList.innerHTML = result.errors.map((err) => `<div>• ${err}</div>`).join('');
+            pointsErrorsBanner.classList.remove('hidden');
+          } else {
+            pointsErrorsBanner.classList.add('hidden');
+          }
+        }
+      } else {
+        // Weighted Mode
+        const c = inputWeightCurrent?.value ?? '';
+        const comp = inputWeightComp?.value ?? '';
+        const up = inputWeightUpcoming?.value ?? '';
+        const t = inputWeightTarget?.value ?? '';
+
+        result = calculateMarksNeededWeighted({
+          currentPercent: c,
+          completedWeight: comp,
+          upcomingWeight: up,
+          targetPercent: t,
+        });
+
+        // Weight Sum Banner
+        if (weightedWeightSum) {
+          const cNum = Number(comp);
+          const uNum = Number(up);
+          if (!isNaN(cNum) && !isNaN(uNum)) {
+            weightedWeightSum.textContent = `${roundToDecimals(cNum + uNum, 1)}% of Course`;
+          } else {
+            weightedWeightSum.textContent = '--% of Course';
+          }
+        }
+
+        // Weight Errors Banner
+        if (weightErrorsBanner && weightErrorsList) {
+          if (result.errors.length > 0) {
+            weightErrorsList.innerHTML = result.errors.map((err) => `<div>• ${err}</div>`).join('');
+            weightErrorsBanner.classList.remove('hidden');
+          } else {
+            weightErrorsBanner.classList.add('hidden');
+          }
+        }
+      }
+
+      // Update Result Card
+      updateResultCard(result, prefersReducedMotion);
+    }
+
+    function updateResultCard(result: ReturnType<typeof calculateMarksNeededPoints>, prefersReducedMotion: boolean) {
+      if (!primaryMarksDisplay) return;
+
+      // Animation
+      if (!prefersReducedMotion) {
+        primaryMarksDisplay.classList.add('scale-[1.02]');
+        setTimeout(() => primaryMarksDisplay.classList.remove('scale-[1.02]'), 150);
+      }
+
+      if (!result.isValid) {
+        primaryMarksDisplay.textContent = '--';
+        primaryMarksDisplay.className =
+          'text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-300 font-sans leading-tight transition-transform duration-200';
+        if (requiredPercentageCallout) requiredPercentageCallout.textContent = 'Required score: --%';
+        if (metricCaptionLabel) metricCaptionLabel.textContent = 'Awaiting Input';
+        if (statusHeadlineText) statusHeadlineText.textContent = result.statusHeadline;
+        if (explanationBox) explanationBox.textContent = result.statusDescription;
+        if (statusBadge) {
+          statusBadge.textContent = result.statusBadge;
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-slate-100 text-slate-600 border-slate-200';
+        }
+        if (feasibilityMeterFill) feasibilityMeterFill.style.width = '0%';
+        if (feasibilityMeterLabel) feasibilityMeterLabel.textContent = '--%';
+        return;
+      }
+
+      // Format Primary Metric based on mode
+      if (activeMode === 'points') {
+        if (result.status === 'secured') {
+          primaryMarksDisplay.textContent = '0 Marks Needed';
+          if (requiredPercentageCallout) requiredPercentageCallout.textContent = 'Target already achieved';
+        } else if (result.status === 'impossible') {
+          primaryMarksDisplay.textContent = `${result.requiredMarks} / ${result.upcomingMaxMarks} Marks`;
+          if (requiredPercentageCallout) requiredPercentageCallout.textContent = `Required score: ${result.requiredPercentage.toFixed(1)}%`;
+        } else {
+          primaryMarksDisplay.textContent = `${result.requiredMarks} / ${result.upcomingMaxMarks} Marks`;
+          if (requiredPercentageCallout) requiredPercentageCallout.textContent = `Required score: ${result.requiredPercentage.toFixed(1)}%`;
+        }
+        if (metricCaptionLabel) metricCaptionLabel.textContent = 'Required Assessment Marks';
+      } else {
+        // Weighted Mode
+        if (result.status === 'secured') {
+          primaryMarksDisplay.textContent = '0.0% Needed';
+          if (requiredPercentageCallout) requiredPercentageCallout.textContent = 'Target already achieved';
+        } else {
+          primaryMarksDisplay.textContent = `${result.requiredPercentage.toFixed(1)}%`;
+          if (requiredPercentageCallout) requiredPercentageCallout.textContent = 'Required assessment score';
+        }
+        if (metricCaptionLabel) metricCaptionLabel.textContent = 'Required Assessment Score';
+      }
+
+      if (statusHeadlineText) statusHeadlineText.textContent = result.statusHeadline;
+      if (explanationBox) explanationBox.textContent = result.statusDescription;
+
+      // Status Badge & Colors
+      if (statusBadge) {
+        statusBadge.textContent = result.statusBadge;
+        if (result.status === 'secured' || result.status === 'achievable') {
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200';
+          primaryMarksDisplay.className =
+            'text-4xl sm:text-5xl font-extrabold tracking-tight text-academic-900 font-sans leading-tight transition-transform duration-200';
+        } else if (result.status === 'challenging') {
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+          primaryMarksDisplay.className =
+            'text-4xl sm:text-5xl font-extrabold tracking-tight text-amber-800 font-sans leading-tight transition-transform duration-200';
+        } else {
+          // Impossible
+          statusBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-800 border-rose-200';
+          primaryMarksDisplay.className =
+            'text-4xl sm:text-5xl font-extrabold tracking-tight text-rose-600 font-sans leading-tight transition-transform duration-200';
+        }
+      }
+
+      // Feasibility Visual Meter
+      const meterPercent = Math.min(Math.max(result.requiredPercentage, 0), 100);
+      if (feasibilityMeterFill) {
+        feasibilityMeterFill.style.width = `${meterPercent}%`;
+        if (result.status === 'impossible') {
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-rose-500';
+        } else if (result.status === 'challenging') {
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-amber-500';
+        } else if (result.status === 'secured') {
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-emerald-500';
+        } else {
+          feasibilityMeterFill.className = 'h-full rounded-full transition-all duration-300 bg-academic-600';
+        }
+      }
+      if (feasibilityMeterLabel) {
+        if (result.status === 'impossible') {
+          feasibilityMeterLabel.textContent = `Exceeds 100% (${result.requiredPercentage.toFixed(1)}%)`;
+        } else if (result.status === 'secured') {
+          feasibilityMeterLabel.textContent = 'Secured (0% Needed)';
+        } else {
+          feasibilityMeterLabel.textContent = `${result.requiredPercentage.toFixed(1)}% Needed`;
+        }
+      }
+
+      // Summary Details Grid
+      if (statCurrentScore) {
+        if (activeMode === 'points') {
+          const e = inputEarned?.value ?? '0';
+          const p = inputPossible?.value ?? '0';
+          statCurrentScore.textContent = `${e} / ${p}`;
+          const pNum = Number(p);
+          const eNum = Number(e);
+          if (statCurrentSub) {
+            statCurrentSub.textContent = pNum > 0 ? `${roundToDecimals((eNum / pNum) * 100, 1)}% Average` : '--%';
+          }
+        } else {
+          const c = inputWeightCurrent?.value ?? '0';
+          const comp = inputWeightComp?.value ?? '0';
+          statCurrentScore.textContent = `${c}%`;
+          if (statCurrentSub) {
+            statCurrentSub.textContent = `${comp}% of Course`;
+          }
+        }
+      }
+
+      if (statTargetScore) {
+        if (activeMode === 'points') {
+          statTargetScore.textContent = `${inputPointsTarget?.value ?? '0'}%`;
+        } else {
+          statTargetScore.textContent = `${inputWeightTarget?.value ?? '0'}%`;
+        }
+      }
+    }
+
+    // Attach Event Listeners
+    [inputEarned, inputPossible, inputUpcoming, inputPointsTarget].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    [inputWeightCurrent, inputWeightComp, inputWeightUpcoming, inputWeightTarget].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    // Initial render
+    recalculate();
+  }
+
+  // Support direct page load and Astro view transitions
+  setupMarksNeededCalculator();
+  document.addEventListener('astro:page-load', setupMarksNeededCalculator);
+</script>

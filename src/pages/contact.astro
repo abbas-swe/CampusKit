@@ -3,73 +3,469 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Button from '../components/common/Button.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
-import InputField from '../components/tools/InputField.astro';
-import SelectField from '../components/tools/SelectField.astro';
 
-const breadcrumbs = [{ name: 'Contact & Feedback', item: '/contact' }];
+const breadcrumbs = [{ name: 'Contact & Support', item: '/contact' }];
 
-const subjectOptions = [
-  { value: 'tool-request', label: 'Request a New Tool or Calculator' },
-  { value: 'scale-request', label: 'Suggest an Academic Scale or Formula' },
+const inquiryTopics = [
+  { value: 'feedback', label: 'General Feedback & Thoughts' },
   { value: 'bug-report', label: 'Report a Calculation Bug or Issue' },
-  { value: 'general', label: 'General Feedback or Partnership' },
+  { value: 'tool-suggestion', label: 'Suggest a New Calculator or Tool' },
+  { value: 'general', label: 'General Inquiry & Support' },
 ];
 ---
 
 <BaseLayout
-  title="Contact & Feedback"
-  description="Contact CampusKit. Suggest new calculators, report grading scale discrepancies, or share feedback."
+  title="Contact CampusKit | Student Tools & Support"
+  description="Contact CampusKit. Share feedback, report calculation bugs, suggest new academic calculators, or submit general inquiries."
   canonical="/contact"
   breadcrumbs={breadcrumbs}
   activeNavPath="/contact"
 >
+  <!-- Header Banner -->
   <div class="bg-white border-b border-slate-200">
     <Container size="lg" class="py-12 sm:py-16">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-4">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-700 border border-academic-200/80 mt-4 mb-4">
+        <span>Support & Feedback</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
         Contact & Feedback
       </h1>
-      <p class="mt-2 text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed">
-        Have a specific university grading scale or syllabus calculation you need automated? Send us your suggestions.
+      <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
+        Have a question, noticed a calculation discrepancy, or want to suggest a new university grading scale? Let us know below.
       </p>
     </Container>
   </div>
 
-  <div class="py-12 bg-slate-50">
-    <Container size="md">
-      <div class="bg-white p-8 sm:p-10 rounded-2xl border border-slate-200 shadow-subtle">
-        <form class="space-y-6" onsubmit="event.preventDefault(); alert('Thank you for your feedback! CampusKit engineering reviews all student submissions.');">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <InputField id="contact-name" label="Your Name (Optional)" placeholder="e.g. Alex" />
-            <InputField id="contact-email" label="Your Email" type="email" placeholder="alex@university.edu" helperText="Only used to follow up on your suggestion." />
+  <!-- Form & Guidance Grid -->
+  <div class="py-12 sm:py-16 bg-slate-50">
+    <Container size="lg">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <!-- Left: Contact Form UI -->
+        <div class="lg:col-span-7">
+          <div class="bg-white p-6 sm:p-10 rounded-2xl border border-slate-200 shadow-subtle">
+            <h2 class="text-xl font-bold text-slate-900 tracking-tight mb-2">
+              Send a Message
+            </h2>
+            <p class="text-sm text-slate-600 mb-6">
+              Fill out the details below. All fields marked with an asterisk (<span class="text-rose-500 font-semibold">*</span>) are required.
+            </p>
+
+            <!-- 
+              CONNECTING A FORM BACKEND:
+              CampusKit is built as a static application. To connect live form delivery,
+              set the 'action' attribute below to your form handler URL (e.g. Formspree, Netlify Forms,
+              Formkeep, or a serverless endpoint):
+              action="https://formspree.io/f/your-form-id"
+            -->
+            <form id="contact-form" action="" method="POST" class="space-y-5" novalidate>
+              <!-- Name field -->
+              <div>
+                <label for="contact-name" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Your Name <span class="text-rose-500" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="contact-name"
+                  name="name"
+                  required
+                  placeholder="e.g. Jordan Smith"
+                  class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+                  aria-describedby="contact-name-error"
+                />
+                <p id="contact-name-error" class="hidden mt-1.5 text-xs font-medium text-rose-600" role="alert"></p>
+              </div>
+
+              <!-- Email field -->
+              <div>
+                <label for="contact-email" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Your Email Address <span class="text-rose-500" aria-hidden="true">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="contact-email"
+                  name="email"
+                  required
+                  placeholder="e.g. student@university.edu"
+                  class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+                  aria-describedby="contact-email-error contact-email-helper"
+                />
+                <p id="contact-email-helper" class="mt-1 text-xs text-slate-500">
+                  Used solely to reply to your inquiry. We do not send marketing newsletters.
+                </p>
+                <p id="contact-email-error" class="hidden mt-1.5 text-xs font-medium text-rose-600" role="alert"></p>
+              </div>
+
+              <!-- Topic / Category dropdown -->
+              <div>
+                <label for="contact-topic" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Inquiry Topic <span class="text-rose-500" aria-hidden="true">*</span>
+                </label>
+                <div class="relative">
+                  <select
+                    id="contact-topic"
+                    name="topic"
+                    required
+                    class="w-full appearance-none px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer"
+                  >
+                    {
+                      inquiryTopics.map((topic) => (
+                        <option value={topic.value}>{topic.label}</option>
+                      ))
+                    }
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Message textarea -->
+              <div>
+                <label for="contact-message" class="block text-xs font-semibold text-slate-700 mb-1.5">
+                  Message Details <span class="text-rose-500" aria-hidden="true">*</span>
+                </label>
+                <textarea
+                  id="contact-message"
+                  name="message"
+                  rows="5"
+                  required
+                  placeholder="Describe your question, formula details, calculator suggestion, or bug report..."
+                  class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
+                  aria-describedby="contact-message-error"
+                ></textarea>
+                <p id="contact-message-error" class="hidden mt-1.5 text-xs font-medium text-rose-600" role="alert"></p>
+              </div>
+
+              <!-- Submit button -->
+              <div class="pt-2">
+                <Button type="submit" id="submit-btn" variant="primary" size="lg" class="w-full justify-center">
+                  <span id="submit-btn-text">Submit Message</span>
+                </Button>
+              </div>
+            </form>
+
+            <!-- Honest Static Submission / Next-Step State (Shown when valid) -->
+            <div id="static-result-panel" class="hidden mt-6 p-6 rounded-xl border transition-all" role="region" aria-live="polite">
+              <div class="flex items-start gap-3">
+                <div id="status-icon" class="flex-shrink-0 mt-0.5">
+                  <!-- Dynamic icon populated by JS -->
+                </div>
+                <div class="flex-grow">
+                  <h3 id="status-heading" class="text-base font-bold text-slate-900"></h3>
+                  <p id="status-message" class="mt-1 text-sm text-slate-600 leading-relaxed"></p>
+
+                  <div id="static-action-buttons" class="mt-4 flex flex-wrap gap-2.5">
+                    <a
+                      id="mailto-link"
+                      href="#"
+                      class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-academic-700 text-white hover:bg-academic-800 transition-colors shadow-subtle"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      Open Email App
+                    </a>
+                    <button
+                      type="button"
+                      id="copy-message-btn"
+                      class="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors border border-slate-300"
+                    >
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      <span id="copy-btn-text">Copy Formatted Message</span>
+                    </button>
+                    <button
+                      type="button"
+                      id="edit-again-btn"
+                      class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg text-slate-500 hover:text-slate-800 transition-colors"
+                    >
+                      Edit Form
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Inquiry Information & Guidelines -->
+        <div class="lg:col-span-5 space-y-6">
+          <!-- Card 1: How to Report Calculation Discrepancies -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-subtle">
+            <div class="flex items-center gap-2.5 mb-3 text-academic-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <h3 class="text-base font-bold text-slate-900">Reporting a Calculation Bug</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+              If you notice a mathematical discrepancy in any tool, please include:
+            </p>
+            <ul class="text-xs text-slate-600 space-y-1.5 list-disc list-inside">
+              <li>The specific calculator used (e.g. GPA Calculator or Marks Needed)</li>
+              <li>The exact inputs you entered</li>
+              <li>The calculated output you received</li>
+              <li>The expected formula or university syllabus rule</li>
+            </ul>
           </div>
 
-          <SelectField
-            id="contact-subject"
-            label="Topic"
-            options={subjectOptions}
-            value="tool-request"
-          />
-
-          <div class="flex flex-col gap-1.5">
-            <label for="contact-message" class="text-xs font-semibold text-slate-700">
-              Message or Tool Details <span class="text-rose-500">*</span>
-            </label>
-            <textarea
-              id="contact-message"
-              name="message"
-              rows="5"
-              required
-              placeholder="Describe the calculator, grading policy, or university formula you would like us to add..."
-              class="w-full px-3 py-2 text-sm text-slate-900 bg-white border border-slate-300 rounded-lg shadow-subtle focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all"
-            ></textarea>
+          <!-- Card 2: Suggesting New Tools -->
+          <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-subtle">
+            <div class="flex items-center gap-2.5 mb-3 text-academic-700">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <h3 class="text-base font-bold text-slate-900">Suggesting a New Tool</h3>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+              We frequently review suggestions for university calculations. If your program uses a unique formula, honor point scale, or credit system, describe it and we will evaluate it for future releases.
+            </p>
           </div>
 
-          <Button type="submit" variant="primary" size="lg" class="w-full justify-center">
-            Submit Feedback
-          </Button>
-        </form>
+          <!-- Card 3: Static Platform Transparency Notice -->
+          <div class="p-5 rounded-2xl bg-academic-50 border border-academic-200/80">
+            <div class="flex gap-3">
+              <div class="flex-shrink-0 text-academic-700">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-academic-900 uppercase tracking-wider">Static Site Transparency</h4>
+                <p class="mt-1 text-xs text-academic-800 leading-relaxed">
+                  CampusKit is hosted as a static web application with no remote database backend. When you submit this form, your formatted message is prepared locally on your device for direct email delivery or clipboard copying.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </Container>
   </div>
 </BaseLayout>
+
+<script>
+  // DOM Elements
+  const form = document.getElementById('contact-form') as HTMLFormElement | null;
+  const nameInput = document.getElementById('contact-name') as HTMLInputElement | null;
+  const emailInput = document.getElementById('contact-email') as HTMLInputElement | null;
+  const topicSelect = document.getElementById('contact-topic') as HTMLSelectElement | null;
+  const messageInput = document.getElementById('contact-message') as HTMLTextAreaElement | null;
+  
+  const nameError = document.getElementById('contact-name-error');
+  const emailError = document.getElementById('contact-email-error');
+  const messageError = document.getElementById('contact-message-error');
+  
+  const resultPanel = document.getElementById('static-result-panel');
+  const statusIcon = document.getElementById('status-icon');
+  const statusHeading = document.getElementById('status-heading');
+  const statusMessage = document.getElementById('status-message');
+  const staticButtons = document.getElementById('static-action-buttons');
+  const mailtoLink = document.getElementById('mailto-link') as HTMLAnchorElement | null;
+  const copyBtn = document.getElementById('copy-message-btn');
+  const copyBtnText = document.getElementById('copy-btn-text');
+  const editAgainBtn = document.getElementById('edit-again-btn');
+
+  // Fallback contact placeholder (clearly marked)
+  const CONTACT_RECIPIENT_PLACEHOLDER = 'contact@example.com';
+
+  function validateEmail(email: string): boolean {
+    // Standard RFC-compliant email pattern check
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email.trim());
+  }
+
+  function clearErrors() {
+    [nameError, emailError, messageError].forEach((el) => {
+      if (el) {
+        el.textContent = '';
+        el.classList.add('hidden');
+      }
+    });
+    [nameInput, emailInput, messageInput].forEach((input) => {
+      if (input) {
+        input.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        input.setAttribute('aria-invalid', 'false');
+      }
+    });
+  }
+
+  function setError(input: HTMLInputElement | HTMLTextAreaElement | null, errorEl: HTMLElement | null, message: string) {
+    if (input) {
+      input.classList.add('border-rose-400', 'focus:ring-rose-500');
+      input.setAttribute('aria-invalid', 'true');
+    }
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  if (form && nameInput && emailInput && topicSelect && messageInput && resultPanel) {
+    // Real-time error clearing on input
+    nameInput.addEventListener('input', () => {
+      if (nameInput.value.trim().length > 0) {
+        nameInput.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        nameInput.setAttribute('aria-invalid', 'false');
+        if (nameError) nameError.classList.add('hidden');
+      }
+    });
+
+    emailInput.addEventListener('input', () => {
+      if (validateEmail(emailInput.value)) {
+        emailInput.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        emailInput.setAttribute('aria-invalid', 'false');
+        if (emailError) emailError.classList.add('hidden');
+      }
+    });
+
+    messageInput.addEventListener('input', () => {
+      if (messageInput.value.trim().length >= 10) {
+        messageInput.classList.remove('border-rose-400', 'focus:ring-rose-500');
+        messageInput.setAttribute('aria-invalid', 'false');
+        if (messageError) messageError.classList.add('hidden');
+      }
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const topicValue = topicSelect.value;
+      const topicLabel = topicSelect.options[topicSelect.selectedIndex]?.text || topicValue;
+      const message = messageInput.value.trim();
+
+      let hasErrors = false;
+
+      if (!name) {
+        setError(nameInput, nameError, 'Please enter your name.');
+        hasErrors = true;
+      }
+
+      if (!email) {
+        setError(emailInput, emailError, 'Please enter your email address.');
+        hasErrors = true;
+      } else if (!validateEmail(email)) {
+        setError(emailInput, emailError, 'Please enter a valid email address (e.g. name@university.edu).');
+        hasErrors = true;
+      }
+
+      if (!message) {
+        setError(messageInput, messageError, 'Please enter your message.');
+        hasErrors = true;
+      } else if (message.length < 10) {
+        setError(messageInput, messageError, 'Please enter at least 10 characters so we can understand your request.');
+        hasErrors = true;
+      }
+
+      if (hasErrors) {
+        // Focus first field with error
+        if (!name) nameInput.focus();
+        else if (!email || !validateEmail(email)) emailInput.focus();
+        else messageInput.focus();
+        return;
+      }
+
+      // Check if a live backend action has been configured
+      const actionUrl = form.getAttribute('action')?.trim();
+      const hasLiveBackend = actionUrl && actionUrl !== '#' && actionUrl.startsWith('http');
+
+      if (hasLiveBackend) {
+        // Submit to live backend endpoint
+        const submitBtnText = document.getElementById('submit-btn-text');
+        if (submitBtnText) submitBtnText.textContent = 'Sending...';
+
+        try {
+          const response = await fetch(actionUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({ name, email, topic: topicLabel, message }),
+          });
+
+          if (response.ok) {
+            resultPanel.className = 'mt-6 p-6 rounded-xl border border-emerald-200 bg-emerald-50';
+            if (statusIcon) {
+              statusIcon.innerHTML = `<svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>`;
+            }
+            if (statusHeading) statusHeading.textContent = 'Message Submitted Successfully';
+            if (statusMessage) statusMessage.textContent = 'Thank you! Your message has been received through the configured form service.';
+            if (staticButtons) staticButtons.classList.add('hidden');
+            form.reset();
+          } else {
+            throw new Error('Server returned an error');
+          }
+        } catch (err) {
+          resultPanel.className = 'mt-6 p-6 rounded-xl border border-rose-200 bg-rose-50';
+          if (statusIcon) {
+            statusIcon.innerHTML = `<svg class="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`;
+          }
+          if (statusHeading) statusHeading.textContent = 'Submission Issue';
+          if (statusMessage) statusMessage.textContent = 'We were unable to reach the form service. You can send your message directly via email below.';
+          if (staticButtons) staticButtons.classList.remove('hidden');
+        } finally {
+          if (submitBtnText) submitBtnText.textContent = 'Submit Message';
+        }
+      } else {
+        // Honest Static Workflow: Format message for email or clipboard without false claims
+        resultPanel.className = 'mt-6 p-6 rounded-xl border border-academic-200 bg-academic-50';
+        if (statusIcon) {
+          statusIcon.innerHTML = `<svg class="w-6 h-6 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`;
+        }
+        if (statusHeading) statusHeading.textContent = 'Message Formatted & Ready to Send';
+        if (statusMessage) {
+          statusMessage.textContent = `CampusKit is running as a static site without a remote database. To ensure your message reaches us without being lost, you can open it directly in your email app or copy the formatted text below.`;
+        }
+
+        // Configure Mailto link
+        if (mailtoLink) {
+          const subject = encodeURIComponent(`[CampusKit ${topicLabel}] from ${name}`);
+          const body = encodeURIComponent(
+            `Name: ${name}\nEmail: ${email}\nTopic: ${topicLabel}\n\nMessage:\n${message}`
+          );
+          mailtoLink.href = `mailto:${CONTACT_RECIPIENT_PLACEHOLDER}?subject=${subject}&body=${body}`;
+        }
+
+        if (staticButtons) staticButtons.classList.remove('hidden');
+      }
+
+      resultPanel.classList.remove('hidden');
+      resultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    });
+
+    // Copy to clipboard handler
+    if (copyBtn && copyBtnText) {
+      copyBtn.addEventListener('click', async () => {
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim();
+        const topicLabel = topicSelect.options[topicSelect.selectedIndex]?.text || topicSelect.value;
+        const message = messageInput.value.trim();
+
+        const formatted = `CampusKit Message\n-----------------\nName: ${name}\nEmail: ${email}\nTopic: ${topicLabel}\n\nMessage:\n${message}`;
+
+        try {
+          await navigator.clipboard.writeText(formatted);
+          copyBtnText.textContent = 'Copied to Clipboard!';
+          setTimeout(() => {
+            if (copyBtnText) copyBtnText.textContent = 'Copy Formatted Message';
+          }, 3000);
+        } catch {
+          copyBtnText.textContent = 'Select & Copy Manually';
+        }
+      });
+    }
+
+    // Edit again handler
+    if (editAgainBtn) {
+      editAgainBtn.addEventListener('click', () => {
+        resultPanel.classList.add('hidden');
+        nameInput.focus();
+      });
+    }
+  }
+</script>

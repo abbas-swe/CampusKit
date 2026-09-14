@@ -14,9 +14,12 @@ interface Props {
   faqs?: FAQItem[];
   canonical?: string;
   metaDescription?: string;
+  noindex?: boolean;
 }
 
-const { tool, pageTitle, faqs = [], canonical, metaDescription } = Astro.props;
+const { tool, pageTitle, faqs = [], canonical, metaDescription, noindex } = Astro.props;
+
+const shouldNoIndex = noindex ?? (tool.status === 'coming-soon');
 
 const breadcrumbs = [
   { name: 'Tools', item: '/#tools' },
@@ -32,7 +35,7 @@ const structuredData = generateSoftwareApplicationSchema({
 
 // Find related tools from data
 const relatedTools = TOOLS.filter(
-  (t) => tool.relatedToolSlugs.includes(t.slug) && t.slug !== tool.slug
+  (t) => tool.relatedToolSlugs.includes(t.slug) && t.slug !== tool.slug && t.status === 'active'
 ).slice(0, 3);
 ---
 
@@ -43,6 +46,7 @@ const relatedTools = TOOLS.filter(
   breadcrumbs={breadcrumbs}
   faqs={faqs}
   structuredData={structuredData}
+  noindex={shouldNoIndex}
 >
   <!-- Tool Header Banner -->
   <div class="bg-white border-b border-slate-200">

@@ -1,0 +1,1111 @@
+---
+// StudyHoursCalculator.astro
+const DEFAULT_DAILY_DATA = {
+  totalHours: '30',
+  studyDays: '10',
+};
+
+const DEFAULT_TOTAL_DATA = {
+  dailyHours: '3',
+  studyDays: '10',
+};
+
+const DEFAULT_SUBJECT_DATA = {
+  totalWeeklyHours: '20',
+  studyDaysPerWeek: '5',
+  subjects: [
+    { id: 'sub-1', name: 'Calculus / Mathematics', priority: 'high' },
+    { id: 'sub-2', name: 'Physics / Computer Science', priority: 'medium' },
+    { id: 'sub-3', name: 'History / General Elective', priority: 'low' },
+  ],
+};
+---
+
+<div class="w-full max-w-5xl mx-auto" id="study-hours-calculator-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Calculator Card (8 cols on desktop) -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Header & Mode Tabs -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Interactive Tool</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Study Hours Calculator
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Plan daily study sessions, project overall prep time, or balance weekly hours across subjects.
+              </p>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                id="reset-study-btn"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle min-h-[40px]"
+                title="Reset calculator to standard presets"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Selector Tabs -->
+          <div class="mt-6">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Calculation Mode
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-1 bg-slate-100/80 rounded-xl border border-slate-200" role="tablist" aria-label="Study Calculator Modes">
+              <!-- Tab 1: Hours Per Day (Default) -->
+              <button
+                type="button"
+                id="mode-tab-daily"
+                role="tab"
+                aria-selected="true"
+                aria-controls="workspace-daily"
+                class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left transition-all font-medium text-xs sm:text-sm bg-white text-academic-900 shadow-sm border border-slate-200/80 cursor-pointer"
+              >
+                <div class="w-7 h-7 rounded-md bg-academic-100 text-academic-700 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 text-xs sm:text-sm">Hours Per Day</div>
+                  <div class="text-[11px] text-slate-500 font-normal">Target hours ÷ days</div>
+                </div>
+              </button>
+
+              <!-- Tab 2: Total Study Hours -->
+              <button
+                type="button"
+                id="mode-tab-total"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-total"
+                class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left transition-all font-medium text-xs sm:text-sm text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 text-xs sm:text-sm">Total Study Hours</div>
+                  <div class="text-[11px] text-slate-500 font-normal">Daily pace × days</div>
+                </div>
+              </button>
+
+              <!-- Tab 3: Study Plan By Subject -->
+              <button
+                type="button"
+                id="mode-tab-subject"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-subject"
+                class="flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left transition-all font-medium text-xs sm:text-sm text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-7 h-7 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 text-xs sm:text-sm">Plan by Subject</div>
+                  <div class="text-[11px] text-slate-500 font-normal">Split by priority</div>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- WORKSPACE 1: HOURS PER DAY                                      -->
+        <!-- ============================================================== -->
+        <div id="workspace-daily" class="p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Total Study Hours Needed -->
+            <div>
+              <label for="input-daily-total-hours" class="block text-xs font-bold text-slate-800 mb-1.5">
+                Total Study Hours Needed
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-daily-total-hours"
+                  min="0.5"
+                  max="1000"
+                  step="0.5"
+                  value={DEFAULT_DAILY_DATA.totalHours}
+                  placeholder="e.g. 30"
+                  class="w-full px-3.5 py-2.5 pr-14 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">
+                  hours
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Total prep hours needed before exam or deadline.</p>
+
+              <!-- Quick Presets -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Presets:</span>
+                <button type="button" class="daily-total-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="15">15 hrs</button>
+                <button type="button" class="daily-total-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="30">30 hrs</button>
+                <button type="button" class="daily-total-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="50">50 hrs</button>
+                <button type="button" class="daily-total-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="100">100 hrs</button>
+              </div>
+            </div>
+
+            <!-- Number of Study Days -->
+            <div>
+              <label for="input-daily-study-days" class="block text-xs font-bold text-slate-800 mb-1.5">
+                Number of Study Days
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-daily-study-days"
+                  min="1"
+                  max="365"
+                  step="1"
+                  value={DEFAULT_DAILY_DATA.studyDays}
+                  placeholder="e.g. 10"
+                  class="w-full px-3.5 py-2.5 pr-14 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">
+                  days
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Days remaining or days planned to study.</p>
+
+              <!-- Quick Presets -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Presets:</span>
+                <button type="button" class="daily-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="5">5 Days</button>
+                <button type="button" class="daily-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="7">1 Week</button>
+                <button type="button" class="daily-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="10">10 Days</button>
+                <button type="button" class="daily-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="14">2 Weeks</button>
+                <button type="button" class="daily-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="30">1 Month</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formula Callout -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+            <span class="text-slate-600">Formula Applied:</span>
+            <span class="font-mono text-academic-800 font-semibold">Daily Study Hours = Total Hours ÷ Study Days</span>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="daily-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="daily-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- WORKSPACE 2: TOTAL STUDY HOURS                                  -->
+        <!-- ============================================================== -->
+        <div id="workspace-total" class="hidden p-6 sm:p-7 space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <!-- Study Hours Per Day -->
+            <div>
+              <label for="input-total-daily-hours" class="block text-xs font-bold text-slate-800 mb-1.5">
+                Target Study Hours Per Day
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-total-daily-hours"
+                  min="0.1"
+                  max="24"
+                  step="0.5"
+                  value={DEFAULT_TOTAL_DATA.dailyHours}
+                  placeholder="e.g. 3"
+                  class="w-full px-3.5 py-2.5 pr-14 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">
+                  hrs/day
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Realistic hours you can commit each study day.</p>
+
+              <!-- Quick Presets -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Presets:</span>
+                <button type="button" class="total-daily-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="1.5">1.5 hrs</button>
+                <button type="button" class="total-daily-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="2.5">2.5 hrs</button>
+                <button type="button" class="total-daily-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="3">3 hrs</button>
+                <button type="button" class="total-daily-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="5">5 hrs</button>
+              </div>
+            </div>
+
+            <!-- Number of Study Days -->
+            <div>
+              <label for="input-total-study-days" class="block text-xs font-bold text-slate-800 mb-1.5">
+                Number of Study Days
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-total-study-days"
+                  min="1"
+                  max="365"
+                  step="1"
+                  value={DEFAULT_TOTAL_DATA.studyDays}
+                  placeholder="e.g. 10"
+                  class="w-full px-3.5 py-2.5 pr-14 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-slate-400 pointer-events-none">
+                  days
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500 mt-1">Total active days you will execute this pace.</p>
+
+              <!-- Quick Presets -->
+              <div class="flex flex-wrap items-center gap-1.5 mt-2.5">
+                <span class="text-[10px] uppercase font-bold text-slate-400">Presets:</span>
+                <button type="button" class="total-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="7">1 Week</button>
+                <button type="button" class="total-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="10">10 Days</button>
+                <button type="button" class="total-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="14">2 Weeks</button>
+                <button type="button" class="total-days-preset px-2 py-0.5 rounded text-[11px] font-medium bg-slate-100 text-slate-700 hover:bg-academic-50 hover:text-academic-800 border border-slate-200 transition-colors" data-val="30">1 Month</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Formula Callout -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+            <span class="text-slate-600">Formula Applied:</span>
+            <span class="font-mono text-academic-800 font-semibold">Total Study Hours = Daily Hours × Study Days</span>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="total-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="total-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- WORKSPACE 3: STUDY PLAN BY SUBJECT                             -->
+        <!-- ============================================================== -->
+        <div id="workspace-subject" class="hidden p-6 sm:p-7 space-y-6">
+          <!-- Top Subject Controls: Total Weekly Hours & Days per Week & Allocation Type -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pb-5 border-b border-slate-100">
+            <!-- Total Weekly Study Hours -->
+            <div>
+              <label for="input-sub-weekly-hours" class="block text-xs font-bold text-slate-800 mb-1">
+                Weekly Study Pool
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="input-sub-weekly-hours"
+                  min="1"
+                  max="120"
+                  step="1"
+                  value={DEFAULT_SUBJECT_DATA.totalWeeklyHours}
+                  placeholder="e.g. 20"
+                  class="w-full px-3 py-2 pr-12 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[40px]"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs font-semibold text-slate-400 pointer-events-none">
+                  hrs/wk
+                </span>
+              </div>
+            </div>
+
+            <!-- Study Days Per Week -->
+            <div>
+              <label for="input-sub-study-days" class="block text-xs font-bold text-slate-800 mb-1">
+                Study Days Per Week
+              </label>
+              <select
+                id="input-sub-study-days"
+                class="w-full px-3 py-2 text-sm bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[40px]"
+              >
+                <option value="5" selected>5 Days / Week (Weekdays)</option>
+                <option value="6">6 Days / Week (1 Rest Day)</option>
+                <option value="7">7 Days / Week (Every Day)</option>
+                <option value="4">4 Days / Week (Intensive)</option>
+              </select>
+            </div>
+
+            <!-- Allocation Strategy -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 mb-1">
+                Distribution Strategy
+              </label>
+              <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs">
+                <button
+                  type="button"
+                  id="alloc-btn-equal"
+                  class="py-1.5 px-2 rounded font-semibold text-center transition-all bg-white text-slate-900 shadow-sm border border-slate-200/80 cursor-pointer"
+                >
+                  Equal
+                </button>
+                <button
+                  type="button"
+                  id="alloc-btn-priority"
+                  class="py-1.5 px-2 rounded font-semibold text-center transition-all text-slate-600 hover:text-slate-900 cursor-pointer"
+                >
+                  By Priority
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Subject List Section -->
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-700">Course List</span>
+                <span id="subject-count-badge" class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                  3 Subjects
+                </span>
+              </div>
+              <button
+                type="button"
+                id="add-subject-btn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-academic-700 hover:text-academic-900 bg-academic-50 hover:bg-academic-100 border border-academic-200 rounded-lg transition-colors cursor-pointer"
+              >
+                <svg class="w-3.5 h-3.5 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Add Subject</span>
+              </button>
+            </div>
+
+            <!-- Headers for desktop view -->
+            <div class="hidden sm:grid sm:grid-cols-12 gap-3 px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50 rounded-lg mb-2">
+              <div class="col-span-6">Subject / Course Name</div>
+              <div class="col-span-3 priority-col-header">Priority Weight</div>
+              <div class="col-span-3 text-right">Actions</div>
+            </div>
+
+            <!-- Container for dynamically added subjects -->
+            <div id="subject-list-container" class="space-y-2.5">
+              <!-- Rendered via Client-side JS -->
+            </div>
+          </div>
+
+          <!-- Error Alert Banner -->
+          <div id="subject-errors-banner" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="subject-errors-list" class="space-y-1"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- STICKY RESULTS SUMMARY PANEL (4 cols on desktop)                -->
+    <!-- ============================================================== -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
+        id="study-result-card"
+        aria-live="polite"
+      >
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500" id="result-header-title">
+            Recommended Target
+          </h3>
+          <span
+            id="study-pace-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200"
+          >
+            Moderate & Sustainable
+          </span>
+        </div>
+
+        <!-- Big Primary Metric Callout -->
+        <div class="py-6 text-center">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1" id="primary-metric-label">
+            Recommended Daily Study Time
+          </span>
+          <div
+            class="text-4xl sm:text-5xl font-extrabold tracking-tight text-academic-900 font-sans leading-tight transition-transform duration-200"
+            id="primary-metric-display"
+          >
+            3 hrs
+          </div>
+          <div class="mt-1.5 text-xs font-bold text-academic-700 font-mono" id="primary-metric-subtext">
+            3 hours 0 minutes per day
+          </div>
+          <p class="mt-3 text-xs font-medium text-slate-600 px-2 leading-relaxed" id="pace-description-text">
+            Ideal sweet spot for deep cognitive retention without inducing burnout or mental fatigue.
+          </p>
+        </div>
+
+        <!-- Summary Details Grid -->
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2.5 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600" id="stat-row-1-label">Total Study Time</span>
+            <span class="font-bold text-slate-900 font-mono text-sm" id="stat-row-1-value">30 hours</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600" id="stat-row-2-label">Study Days</span>
+            <span class="font-bold text-slate-900 font-mono text-sm" id="stat-row-2-value">10 days</span>
+          </div>
+          <div class="flex items-center justify-between pt-2 border-t border-slate-200/60" id="stat-row-3-container">
+            <span class="text-slate-600" id="stat-row-3-label">Weekly Equivalent</span>
+            <span class="font-bold text-academic-800 font-mono text-sm" id="stat-row-3-value">21.0 hrs/wk</span>
+          </div>
+        </div>
+
+        <!-- Subject Breakdown List (Visible in Subject Mode) -->
+        <div id="subject-breakdown-card" class="hidden mt-4 pt-4 border-t border-slate-100">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2.5 flex items-center justify-between">
+            <span>Subject Breakdown</span>
+            <span class="text-[11px] font-normal text-slate-500" id="subject-breakdown-avg">Avg: 6.7 hrs/sub</span>
+          </h4>
+          <div id="subject-breakdown-list" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+            <!-- Dynamic Mini Breakdown -->
+          </div>
+        </div>
+
+        <!-- Practical Study Tip Box -->
+        <div class="mt-4 p-3.5 rounded-xl bg-academic-50/50 border border-academic-100 flex items-start gap-2.5 text-xs text-academic-900">
+          <svg class="w-4 h-4 text-academic-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="leading-relaxed" id="practical-study-tip">
+            <strong>Study Tip:</strong> Divide longer study targets into 50-minute focused blocks followed by 10-minute active recall or relaxation breaks.
+          </div>
+        </div>
+
+        <!-- 100% Client-Side Privacy Callout -->
+        <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Client-Side. Calculations stay on your device.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side Calculator Engine -->
+<script>
+  import type {
+    StudyHoursMode,
+    SubjectPriority,
+    SubjectItem,
+  } from '../../../types/studyHours.ts';
+  import {
+    calculateDailyStudyHours,
+    calculateTotalStudyHours,
+    calculateSubjectStudyPlan,
+    formatHoursAndMinutesLong,
+  } from '../../../utils/studyHours.ts';
+
+  interface SubjectRow {
+    id: string;
+    name: string;
+    priority: SubjectPriority;
+  }
+
+  function setupStudyHoursCalculator() {
+    const root = document.getElementById('study-hours-calculator-root');
+    if (!root) return;
+
+    // Tabs
+    const modeTabDaily = document.getElementById('mode-tab-daily');
+    const modeTabTotal = document.getElementById('mode-tab-total');
+    const modeTabSubject = document.getElementById('mode-tab-subject');
+
+    const wsDaily = document.getElementById('workspace-daily');
+    const wsTotal = document.getElementById('workspace-total');
+    const wsSubject = document.getElementById('workspace-subject');
+
+    // Reset Button
+    const resetBtn = document.getElementById('reset-study-btn');
+
+    // Workspace 1: Daily Inputs & Presets
+    const inputDailyTotalHours = document.getElementById('input-daily-total-hours') as HTMLInputElement | null;
+    const inputDailyStudyDays = document.getElementById('input-daily-study-days') as HTMLInputElement | null;
+    const dailyTotalPresets = document.querySelectorAll('.daily-total-preset');
+    const dailyDaysPresets = document.querySelectorAll('.daily-days-preset');
+    const dailyErrorsBanner = document.getElementById('daily-errors-banner');
+    const dailyErrorsList = document.getElementById('daily-errors-list');
+
+    // Workspace 2: Total Inputs & Presets
+    const inputTotalDailyHours = document.getElementById('input-total-daily-hours') as HTMLInputElement | null;
+    const inputTotalStudyDays = document.getElementById('input-total-study-days') as HTMLInputElement | null;
+    const totalDailyPresets = document.querySelectorAll('.total-daily-preset');
+    const totalDaysPresets = document.querySelectorAll('.total-days-preset');
+    const totalErrorsBanner = document.getElementById('total-errors-banner');
+    const totalErrorsList = document.getElementById('total-errors-list');
+
+    // Workspace 3: Subject Inputs & Controls
+    const inputSubWeeklyHours = document.getElementById('input-sub-weekly-hours') as HTMLInputElement | null;
+    const inputSubStudyDays = document.getElementById('input-sub-study-days') as HTMLSelectElement | null;
+    const allocBtnEqual = document.getElementById('alloc-btn-equal');
+    const allocBtnPriority = document.getElementById('alloc-btn-priority');
+    const addSubjectBtn = document.getElementById('add-subject-btn');
+    const subjectCountBadge = document.getElementById('subject-count-badge');
+    const subjectListContainer = document.getElementById('subject-list-container');
+    const subjectErrorsBanner = document.getElementById('subject-errors-banner');
+    const subjectErrorsList = document.getElementById('subject-errors-list');
+
+    // Results Card Elements
+    const resultHeaderTitle = document.getElementById('result-header-title');
+    const studyPaceBadge = document.getElementById('study-pace-badge');
+    const primaryMetricLabel = document.getElementById('primary-metric-label');
+    const primaryMetricDisplay = document.getElementById('primary-metric-display');
+    const primaryMetricSubtext = document.getElementById('primary-metric-subtext');
+    const paceDescriptionText = document.getElementById('pace-description-text');
+
+    const statRow1Label = document.getElementById('stat-row-1-label');
+    const statRow1Value = document.getElementById('stat-row-1-value');
+    const statRow2Label = document.getElementById('stat-row-2-label');
+    const statRow2Value = document.getElementById('stat-row-2-value');
+    const statRow3Container = document.getElementById('stat-row-3-container');
+    const statRow3Label = document.getElementById('stat-row-3-label');
+    const statRow3Value = document.getElementById('stat-row-3-value');
+
+    const subjectBreakdownCard = document.getElementById('subject-breakdown-card');
+    const subjectBreakdownAvg = document.getElementById('subject-breakdown-avg');
+    const subjectBreakdownList = document.getElementById('subject-breakdown-list');
+    const practicalStudyTip = document.getElementById('practical-study-tip');
+
+    // Current State
+    let activeMode: StudyHoursMode = 'daily';
+    let allocationStrategy: 'equal' | 'priority' = 'equal';
+    let subjectsState: SubjectRow[] = [
+      { id: 'sub-1', name: 'Calculus / Mathematics', priority: 'high' },
+      { id: 'sub-2', name: 'Physics / Computer Science', priority: 'medium' },
+      { id: 'sub-3', name: 'History / General Elective', priority: 'low' },
+    ];
+
+    // Mode Switching
+    function setMode(mode: StudyHoursMode) {
+      activeMode = mode;
+
+      const tabs = [
+        { btn: modeTabDaily, ws: wsDaily, id: 'daily' },
+        { btn: modeTabTotal, ws: wsTotal, id: 'total' },
+        { btn: modeTabSubject, ws: wsSubject, id: 'subject' },
+      ];
+
+      tabs.forEach((t) => {
+        const isMatch = t.id === mode;
+        if (isMatch) {
+          t.btn?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+          t.btn?.classList.remove('text-slate-600', 'hover:bg-white/60');
+          t.btn?.setAttribute('aria-selected', 'true');
+          t.ws?.classList.remove('hidden');
+        } else {
+          t.btn?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+          t.btn?.classList.add('text-slate-600', 'hover:bg-white/60');
+          t.btn?.setAttribute('aria-selected', 'false');
+          t.ws?.classList.add('hidden');
+        }
+      });
+
+      recalculate();
+    }
+
+    modeTabDaily?.addEventListener('click', () => setMode('daily'));
+    modeTabTotal?.addEventListener('click', () => setMode('total'));
+    modeTabSubject?.addEventListener('click', () => setMode('subject'));
+
+    // Strategy Switching for Subject Mode
+    function setAllocationStrategy(strat: 'equal' | 'priority') {
+      allocationStrategy = strat;
+      if (strat === 'equal') {
+        allocBtnEqual?.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        allocBtnEqual?.classList.remove('text-slate-600', 'hover:text-slate-900');
+        allocBtnPriority?.classList.remove('bg-white', 'text-slate-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        allocBtnPriority?.classList.add('text-slate-600', 'hover:text-slate-900');
+      } else {
+        allocBtnPriority?.classList.add('bg-white', 'text-slate-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        allocBtnPriority?.classList.remove('text-slate-600', 'hover:text-slate-900');
+        allocBtnEqual?.classList.remove('bg-white', 'text-slate-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        allocBtnEqual?.classList.add('text-slate-600', 'hover:text-slate-900');
+      }
+
+      // Toggle visibility of priority columns in subject rows
+      const priorityCols = document.querySelectorAll('.subject-priority-col');
+      const priorityHeader = document.querySelector('.priority-col-header');
+      if (strat === 'equal') {
+        priorityCols.forEach((col) => col.classList.add('opacity-40', 'pointer-events-none'));
+        priorityHeader?.classList.add('opacity-40');
+      } else {
+        priorityCols.forEach((col) => col.classList.remove('opacity-40', 'pointer-events-none'));
+        priorityHeader?.classList.remove('opacity-40');
+      }
+
+      recalculate();
+    }
+
+    allocBtnEqual?.addEventListener('click', () => setAllocationStrategy('equal'));
+    allocBtnPriority?.addEventListener('click', () => setAllocationStrategy('priority'));
+
+    // Render Subjects Rows
+    function renderSubjects() {
+      if (!subjectListContainer) return;
+      subjectListContainer.innerHTML = '';
+
+      if (subjectCountBadge) {
+        subjectCountBadge.textContent = `${subjectsState.length} Subject${subjectsState.length === 1 ? '' : 's'}`;
+      }
+
+      subjectsState.forEach((sub, index) => {
+        const row = document.createElement('div');
+        row.className =
+          'p-3 sm:p-2.5 rounded-xl sm:rounded-lg bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center transition-all';
+        row.setAttribute('data-id', sub.id);
+
+        // Subject Name Input (6 cols)
+        const nameCol = document.createElement('div');
+        nameCol.className = 'sm:col-span-6';
+
+        const nameLabel = document.createElement('label');
+        nameLabel.className = 'block sm:sr-only text-[11px] font-bold text-slate-700 mb-1';
+        nameLabel.textContent = `Course ${index + 1} Name`;
+        nameLabel.setAttribute('for', `sub-name-${sub.id}`);
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `sub-name-${sub.id}`;
+        nameInput.value = sub.name;
+        nameInput.placeholder = `e.g. Subject ${index + 1}`;
+        nameInput.className =
+          'w-full px-3 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[38px]';
+        nameInput.addEventListener('input', (e) => {
+          sub.name = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        nameCol.appendChild(nameLabel);
+        nameCol.appendChild(nameInput);
+        row.appendChild(nameCol);
+
+        // Priority Select Input (3 cols)
+        const priorityCol = document.createElement('div');
+        priorityCol.className = `sm:col-span-3 subject-priority-col transition-opacity ${
+          allocationStrategy === 'equal' ? 'opacity-40 pointer-events-none' : ''
+        }`;
+
+        const priorityLabel = document.createElement('label');
+        priorityLabel.className = 'block sm:sr-only text-[11px] font-bold text-slate-700 mb-1';
+        priorityLabel.textContent = `Priority`;
+        priorityLabel.setAttribute('for', `sub-priority-${sub.id}`);
+
+        const prioritySelect = document.createElement('select');
+        prioritySelect.id = `sub-priority-${sub.id}`;
+        prioritySelect.className =
+          'w-full px-2.5 py-2 text-xs sm:text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[38px] cursor-pointer';
+
+        const priorities: { val: SubjectPriority; label: string }[] = [
+          { val: 'low', label: 'Low (1x)' },
+          { val: 'medium', label: 'Medium (2x)' },
+          { val: 'high', label: 'High (3x)' },
+          { val: 'very-high', label: 'Highest (4x)' },
+        ];
+
+        priorities.forEach((p) => {
+          const opt = document.createElement('option');
+          opt.value = p.val;
+          opt.textContent = p.label;
+          if (p.val === sub.priority) opt.selected = true;
+          prioritySelect.appendChild(opt);
+        });
+
+        prioritySelect.addEventListener('change', (e) => {
+          sub.priority = (e.target as HTMLSelectElement).value as SubjectPriority;
+          recalculate();
+        });
+
+        priorityCol.appendChild(priorityLabel);
+        priorityCol.appendChild(prioritySelect);
+        row.appendChild(priorityCol);
+
+        // Delete Button (3 cols)
+        const actionCol = document.createElement('div');
+        actionCol.className = 'sm:col-span-3 flex items-center justify-end gap-2';
+
+        if (subjectsState.length > 1) {
+          const delBtn = document.createElement('button');
+          delBtn.type = 'button';
+          delBtn.className =
+            'p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer min-h-[38px] flex items-center gap-1 text-xs';
+          delBtn.title = 'Remove Subject';
+          delBtn.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span class="sm:hidden font-medium">Remove</span>
+          `;
+          delBtn.addEventListener('click', () => {
+            subjectsState = subjectsState.filter((s) => s.id !== sub.id);
+            renderSubjects();
+            recalculate();
+          });
+          actionCol.appendChild(delBtn);
+        }
+
+        row.appendChild(actionCol);
+        subjectListContainer.appendChild(row);
+      });
+    }
+
+    addSubjectBtn?.addEventListener('click', () => {
+      if (subjectsState.length >= 15) return;
+      const nextId = `sub-${Date.now()}`;
+      const nextNum = subjectsState.length + 1;
+      subjectsState.push({
+        id: nextId,
+        name: `Subject ${nextNum}`,
+        priority: 'medium',
+      });
+      renderSubjects();
+      recalculate();
+    });
+
+    // Preset button handlers
+    dailyTotalPresets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-val');
+        if (inputDailyTotalHours && val) {
+          inputDailyTotalHours.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    dailyDaysPresets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-val');
+        if (inputDailyStudyDays && val) {
+          inputDailyStudyDays.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    totalDailyPresets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-val');
+        if (inputTotalDailyHours && val) {
+          inputTotalDailyHours.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    totalDaysPresets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-val');
+        if (inputTotalStudyDays && val) {
+          inputTotalStudyDays.value = val;
+          recalculate();
+        }
+      });
+    });
+
+    // Reset Handler
+    resetBtn?.addEventListener('click', () => {
+      if (activeMode === 'daily') {
+        if (inputDailyTotalHours) inputDailyTotalHours.value = '30';
+        if (inputDailyStudyDays) inputDailyStudyDays.value = '10';
+      } else if (activeMode === 'total') {
+        if (inputTotalDailyHours) inputTotalDailyHours.value = '3';
+        if (inputTotalStudyDays) inputTotalStudyDays.value = '10';
+      } else {
+        if (inputSubWeeklyHours) inputSubWeeklyHours.value = '20';
+        if (inputSubStudyDays) inputSubStudyDays.value = '5';
+        allocationStrategy = 'equal';
+        subjectsState = [
+          { id: 'sub-1', name: 'Calculus / Mathematics', priority: 'high' },
+          { id: 'sub-2', name: 'Physics / Computer Science', priority: 'medium' },
+          { id: 'sub-3', name: 'History / General Elective', priority: 'low' },
+        ];
+        setAllocationStrategy('equal');
+        renderSubjects();
+      }
+      recalculate();
+    });
+
+    // Main Recalculate Function
+    function recalculate() {
+      if (activeMode === 'daily') {
+        calculateDailyMode();
+      } else if (activeMode === 'total') {
+        calculateTotalMode();
+      } else {
+        calculateSubjectMode();
+      }
+    }
+
+    // 1. Daily Mode Execution
+    function calculateDailyMode() {
+      if (subjectBreakdownCard) subjectBreakdownCard.classList.add('hidden');
+      if (statRow3Container) statRow3Container.classList.remove('hidden');
+
+      const totalVal = inputDailyTotalHours?.value ?? '';
+      const daysVal = inputDailyStudyDays?.value ?? '';
+
+      const res = calculateDailyStudyHours({
+        totalHours: totalVal,
+        studyDays: daysVal,
+      });
+
+      if (!res.isValid) {
+        if (dailyErrorsBanner && dailyErrorsList) {
+          dailyErrorsList.innerHTML = res.errors.map((e) => `<div>• ${e}</div>`).join('');
+          dailyErrorsBanner.classList.remove('hidden');
+        }
+        if (primaryMetricDisplay) primaryMetricDisplay.textContent = '-- hrs';
+        if (primaryMetricSubtext) primaryMetricSubtext.textContent = 'Invalid input';
+        if (paceDescriptionText) paceDescriptionText.textContent = 'Please enter valid positive numbers for hours and days.';
+        return;
+      }
+
+      if (dailyErrorsBanner) dailyErrorsBanner.classList.add('hidden');
+
+      if (resultHeaderTitle) resultHeaderTitle.textContent = 'Recommended Target';
+      if (primaryMetricLabel) primaryMetricLabel.textContent = 'Recommended Daily Study Time';
+      if (primaryMetricDisplay) primaryMetricDisplay.textContent = res.dailyFormatted;
+      if (primaryMetricSubtext) primaryMetricSubtext.textContent = `${formatHoursAndMinutesLong(res.dailyHours)} per day`;
+      if (paceDescriptionText) paceDescriptionText.textContent = res.paceDescription;
+
+      // Update Pace Badge
+      if (studyPaceBadge) {
+        studyPaceBadge.textContent = res.paceLabel;
+        if (res.pace === 'light' || res.pace === 'moderate') {
+          studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200';
+        } else if (res.pace === 'intensive') {
+          studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+        } else {
+          studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-800 border-rose-200';
+        }
+      }
+
+      // Summary Card
+      if (statRow1Label) statRow1Label.textContent = 'Total Study Time';
+      if (statRow1Value) statRow1Value.textContent = `${res.totalHours} hours`;
+
+      if (statRow2Label) statRow2Label.textContent = 'Study Days';
+      if (statRow2Value) statRow2Value.textContent = `${res.studyDays} days`;
+
+      if (statRow3Label) statRow3Label.textContent = 'Weekly Equivalent';
+      const weekly = (res.dailyHours * 7).toFixed(1);
+      if (statRow3Value) statRow3Value.textContent = `${weekly} hrs/wk`;
+
+      // Study Tip
+      if (practicalStudyTip) {
+        if (res.dailyHours <= 2) {
+          practicalStudyTip.innerHTML = `<strong>Study Tip:</strong> An easy ${res.dailyFormatted} daily pace is great for continuous spaced repetition and flashcard drills without cognitive fatigue.`;
+        } else if (res.dailyHours <= 5) {
+          practicalStudyTip.innerHTML = `<strong>Study Tip:</strong> Break your ${res.dailyFormatted} target into two balanced blocks (e.g. 90 minutes morning, 90 minutes evening) to optimize memory retention.`;
+        } else {
+          practicalStudyTip.innerHTML = `<strong>Burnout Warning:</strong> A heavy ${res.dailyFormatted} daily target requires scheduled 10-minute rest breaks every hour, adequate hydration, and protecting your 7+ hours of sleep.`;
+        }
+      }
+    }
+
+    // 2. Total Mode Execution
+    function calculateTotalMode() {
+      if (subjectBreakdownCard) subjectBreakdownCard.classList.add('hidden');
+      if (statRow3Container) statRow3Container.classList.remove('hidden');
+
+      const dailyVal = inputTotalDailyHours?.value ?? '';
+      const daysVal = inputTotalStudyDays?.value ?? '';
+
+      const res = calculateTotalStudyHours({
+        dailyHours: dailyVal,
+        studyDays: daysVal,
+      });
+
+      if (!res.isValid) {
+        if (totalErrorsBanner && totalErrorsList) {
+          totalErrorsList.innerHTML = res.errors.map((e) => `<div>• ${e}</div>`).join('');
+          totalErrorsBanner.classList.remove('hidden');
+        }
+        if (primaryMetricDisplay) primaryMetricDisplay.textContent = '-- hrs';
+        if (primaryMetricSubtext) primaryMetricSubtext.textContent = 'Invalid input';
+        if (paceDescriptionText) paceDescriptionText.textContent = 'Please enter valid positive numbers for daily hours and days.';
+        return;
+      }
+
+      if (totalErrorsBanner) totalErrorsBanner.classList.add('hidden');
+
+      if (resultHeaderTitle) resultHeaderTitle.textContent = 'Accumulated Prep Time';
+      if (primaryMetricLabel) primaryMetricLabel.textContent = 'Total Study Hours';
+      if (primaryMetricDisplay) primaryMetricDisplay.textContent = res.totalFormatted;
+      if (primaryMetricSubtext) primaryMetricSubtext.textContent = `${formatHoursAndMinutesLong(res.totalHours)} total`;
+      if (paceDescriptionText) {
+        paceDescriptionText.textContent = `Maintaining ${res.dailyHours} hrs/day across ${res.studyDays} days accumulates ${res.totalFormatted} of total study prep.`;
+      }
+
+      // Update Pace Badge
+      if (studyPaceBadge) {
+        studyPaceBadge.textContent = res.paceLabel;
+        if (res.pace === 'light' || res.pace === 'moderate') {
+          studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200';
+        } else if (res.pace === 'intensive') {
+          studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+        } else {
+          studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-rose-50 text-rose-800 border-rose-200';
+        }
+      }
+
+      // Summary Card
+      if (statRow1Label) statRow1Label.textContent = 'Daily Study Pace';
+      if (statRow1Value) statRow1Value.textContent = `${res.dailyHours} hrs/day`;
+
+      if (statRow2Label) statRow2Label.textContent = 'Study Days';
+      if (statRow2Value) statRow2Value.textContent = `${res.studyDays} days`;
+
+      if (statRow3Label) statRow3Label.textContent = 'Weekly Equivalent';
+      const weekly = (res.dailyHours * 7).toFixed(1);
+      if (statRow3Value) statRow3Value.textContent = `${weekly} hrs/wk`;
+
+      // Study Tip
+      if (practicalStudyTip) {
+        practicalStudyTip.innerHTML = `<strong>Consistency Note:</strong> Steady study of ${res.dailyHours} hrs/day for ${res.studyDays} days achieves far higher test scores than cramming all ${res.totalFormatted} into a frantic 48-hour period.`;
+      }
+    }
+
+    // 3. Subject Mode Execution
+    function calculateSubjectMode() {
+      const weeklyVal = inputSubWeeklyHours?.value ?? '20';
+      const daysVal = inputSubStudyDays?.value ?? '5';
+
+      const res = calculateSubjectStudyPlan({
+        totalWeeklyHours: weeklyVal,
+        studyDaysPerWeek: daysVal,
+        allocationType: allocationStrategy,
+        subjects: subjectsState,
+      });
+
+      if (!res.isValid) {
+        if (subjectErrorsBanner && subjectErrorsList) {
+          subjectErrorsList.innerHTML = res.errors.map((e) => `<div>• ${e}</div>`).join('');
+          subjectErrorsBanner.classList.remove('hidden');
+        }
+        if (primaryMetricDisplay) primaryMetricDisplay.textContent = '-- hrs';
+        if (primaryMetricSubtext) primaryMetricSubtext.textContent = 'Invalid input';
+        return;
+      }
+
+      if (subjectErrorsBanner) subjectErrorsBanner.classList.add('hidden');
+
+      if (resultHeaderTitle) resultHeaderTitle.textContent = 'Course Schedule Plan';
+      if (primaryMetricLabel) primaryMetricLabel.textContent = 'Weekly Study Workload';
+      if (primaryMetricDisplay) primaryMetricDisplay.textContent = `${res.totalHours} hrs/wk`;
+      if (primaryMetricSubtext) {
+        const dailyAvg = (res.totalHours / res.studyDaysPerWeek).toFixed(1);
+        primaryMetricSubtext.textContent = `~${dailyAvg} hrs/day (${res.studyDaysPerWeek} study days/wk)`;
+      }
+
+      if (studyPaceBadge) {
+        studyPaceBadge.textContent = `${subjectsState.length} Subjects Balanced`;
+        studyPaceBadge.className = 'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200';
+      }
+
+      if (paceDescriptionText) {
+        paceDescriptionText.textContent = `Allocating ${res.totalHours} hours across ${res.subjects.length} subjects using ${
+          allocationStrategy === 'priority' ? 'custom course priority weights' : 'equal time division'
+        }.`;
+      }
+
+      // Summary Details Card
+      if (statRow1Label) statRow1Label.textContent = 'Total Weekly Pool';
+      if (statRow1Value) statRow1Value.textContent = `${res.totalHours} hrs/wk`;
+
+      if (statRow2Label) statRow2Label.textContent = 'Study Days / Week';
+      if (statRow2Value) statRow2Value.textContent = `${res.studyDaysPerWeek} days`;
+
+      if (statRow3Label) statRow3Label.textContent = 'Average Per Subject';
+      if (statRow3Value) statRow3Value.textContent = `${res.averageHoursFormatted}/wk`;
+
+      // Render Subject Breakdown List
+      if (subjectBreakdownCard && subjectBreakdownList) {
+        subjectBreakdownCard.classList.remove('hidden');
+        if (subjectBreakdownAvg) subjectBreakdownAvg.textContent = `Avg: ${res.averageHoursFormatted}`;
+
+        subjectBreakdownList.innerHTML = '';
+        res.subjects.forEach((s) => {
+          const item = document.createElement('div');
+          item.className = 'p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs';
+
+          const left = document.createElement('div');
+          left.className = 'truncate pr-2';
+
+          const title = document.createElement('div');
+          title.className = 'font-bold text-slate-800 truncate';
+          title.textContent = s.name;
+
+          const meta = document.createElement('div');
+          meta.className = 'text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5';
+          meta.textContent = `${s.dailyFormatted}/day (${s.percentOfTotal}%)`;
+
+          left.appendChild(title);
+          left.appendChild(meta);
+
+          const right = document.createElement('div');
+          right.className = 'text-right flex-shrink-0';
+
+          const hrs = document.createElement('div');
+          hrs.className = 'font-bold text-academic-800 font-mono';
+          hrs.textContent = s.hoursFormatted;
+
+          const badge = document.createElement('span');
+          badge.className = 'text-[10px] font-semibold text-slate-400 block';
+          badge.textContent = allocationStrategy === 'priority' ? s.priorityLabel : 'Equal Share';
+
+          right.appendChild(hrs);
+          right.appendChild(badge);
+
+          item.appendChild(left);
+          item.appendChild(right);
+          subjectBreakdownList.appendChild(item);
+        });
+      }
+
+      if (practicalStudyTip) {
+        practicalStudyTip.innerHTML = `<strong>Subject Scheduling:</strong> Tackle high-priority courses earlier in your study sessions when cognitive energy is highest, leaving reading and lighter review for later.`;
+      }
+    }
+
+    // Attach Listeners
+    [inputDailyTotalHours, inputDailyStudyDays].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    [inputTotalDailyHours, inputTotalStudyDays].forEach((el) => {
+      el?.addEventListener('input', recalculate);
+    });
+
+    inputSubWeeklyHours?.addEventListener('input', recalculate);
+    inputSubStudyDays?.addEventListener('change', recalculate);
+
+    // Initial render
+    renderSubjects();
+    recalculate();
+  }
+
+  // Support direct page load and Astro view transitions
+  setupStudyHoursCalculator();
+  document.addEventListener('astro:page-load', setupStudyHoursCalculator);
+</script>

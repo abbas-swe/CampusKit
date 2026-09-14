@@ -1,53 +1,298 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import InputField from '../../components/tools/InputField.astro';
+import StudyHoursCalculator from '../../components/tools/studyHours/StudyHoursCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('study-hours-calculator')!;
 
-const faqs: FAQItem[] = [
+const studyHoursFaqs: FAQItem[] = [
   {
-    question: 'How many hours should I study per college credit?',
+    question: 'How many hours should I study per day?',
     answer:
-      'The traditional Carnegie rule recommends studying 2 to 3 hours outside of class for every 1 credit hour enrolled. For a standard 15-credit semester, this equates to 30 to 45 hours of dedicated study per week.',
+      'For most university and college students, 2 to 5 hours of dedicated, focused study per day outside of class lectures represents the optimal sweet spot. Cognitive science research demonstrates that after 4 to 5 hours of high-intensity analytical work, mental fatigue causes steep diminishing returns in memory consolidation and comprehension. Quality, consistency, and active recall are far more effective than marathon cramming sessions.',
+  },
+  {
+    question: 'How do I calculate my study hours?',
+    answer:
+      'To calculate daily study hours, divide the total hours of preparation needed by the number of study days remaining before your exam or project deadline (Daily Hours = Total Hours Needed ÷ Study Days). Alternatively, if you know your daily capacity, multiply your daily study hours by the number of available days (Total Hours = Daily Hours × Study Days).',
+  },
+  {
+    question: 'How many hours should I study for an exam?',
+    answer:
+      'Prep time varies by course difficulty and your familiarity with the material. As a practical benchmark, routine midterms usually require 15 to 25 hours of focused preparation spaced over 1 to 2 weeks, whereas comprehensive college final exams often require 25 to 45 hours distributed over 2 to 4 weeks. High-stakes standardized tests (MCAT, LSAT, GRE) require 150 to 300+ total study hours spread over several months.',
+  },
+  {
+    question: 'How do I divide study time between subjects?',
+    answer:
+      'You can divide study time either equally across all subjects or proportionally based on course difficulty, upcoming exam dates, and credit weight. With priority weighting, assign higher weights (e.g. 3x or 4x) to rigorous subjects like calculus or organic chemistry where your grade is borderline, and lower weights (1x or 2x) to courses where you are already performing well or syllabus deadlines are further out.',
+  },
+  {
+    question: 'Is studying more hours always better?',
+    answer:
+      'No. Studying 8 to 10+ hours per day often leads to burnout, sleep deprivation, and passive re-reading where very little information is actually retained. Consistent 3-hour daily sessions with active recall and spaced repetition consistently outperform exhausting 12-hour all-nighters.',
+  },
+  {
+    question: 'What is the 2-for-1 study rule (Carnegie Rule)?',
+    answer:
+      'The traditional higher education guideline suggests spending 2 to 3 hours studying outside of class for every 1 credit hour of enrollment per week. For a typical 15-credit college schedule, this equals 30 to 45 hours of independent study weekly. However, actual requirements vary widely between STEM laboratory courses, essay-based humanities, and general electives.',
   },
 ];
 ---
 
-<ToolLayout tool={tool} faqs={faqs}>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Weekly Course Load & Rigor</h2>
-        <p class="text-xs text-slate-500 mb-4">Input total credit hours and estimated course difficulty.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField id="credit-hours" label="Total Semester Credit Hours" type="number" value="15" />
-          <InputField id="multiplier" label="Target Ratio (Hours per Credit)" type="number" step="0.5" value="2.5" />
+<ToolLayout
+  tool={tool}
+  pageTitle="Study Hours Calculator – Plan Your Study Time | CampusKit"
+  faqs={studyHoursFaqs}
+  canonical="/tools/study-hours-calculator"
+  metaDescription="Calculate your study hours per day, total study time, and time to spend on each subject. Build a simple study schedule with CampusKit."
+>
+  <!-- Interactive Calculator Container -->
+  <StudyHoursCalculator />
+
+  <!-- Comprehensive Educational Guide & SEO Documentation (Semantic HTML) -->
+  <div slot="guide" class="space-y-12">
+    <!-- Section 1: What is a Study Hours Calculator? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What Is a Study Hours Calculator?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        A <strong class="text-slate-900 font-semibold">Study Hours Calculator</strong> is a productivity and schedule planning tool designed to eliminate academic overwhelm. Instead of guessing how much prep time you need or cramming late into the night before an exam, this tool calculates precise, actionable daily targets, total prep hours, and balanced multi-subject allocations.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Whether you are planning for finals week, managing 5 college courses simultaneously, or spacing out review for an upcoming midterm, this calculator translates broad academic goals into realistic, sustainable daily study routines.
+      </p>
+    </div>
+
+    <!-- Section 2: How to Calculate Study Hours -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Calculate Study Hours
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        Depending on whether you start from an exam date deadline or daily availability, use one of the two core mathematical relationships:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Method 1: Target to Daily -->
+        <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-academic-100 text-academic-800 uppercase">Mode 1</span>
+            <h3 class="text-base font-bold text-slate-900">Calculating Daily Hours</h3>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">
+            When you know your total study target and the days left before an exam:
+          </p>
+          <div class="p-4 rounded-xl bg-white border border-slate-200 font-mono text-xs sm:text-sm text-academic-900 overflow-x-auto shadow-subtle">
+            Daily Study Hours = Total Hours Needed ÷ Number of Study Days
+          </div>
+          <p class="mt-3 text-xs text-slate-500 leading-relaxed">
+            Example: 30 hours needed ÷ 10 study days = <strong>3.0 hours per day</strong>.
+          </p>
+        </div>
+
+        <!-- Method 2: Daily to Total -->
+        <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-academic-100 text-academic-800 uppercase">Mode 2</span>
+            <h3 class="text-base font-bold text-slate-900">Calculating Total Study Time</h3>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">
+            When you know how many hours you can commit each day over a revision period:
+          </p>
+          <div class="p-4 rounded-xl bg-white border border-slate-200 font-mono text-xs sm:text-sm text-academic-900 overflow-x-auto shadow-subtle">
+            Total Study Hours = Target Hours Per Day × Number of Study Days
+          </div>
+          <p class="mt-3 text-xs text-slate-500 leading-relaxed">
+            Example: 2.5 hours per day × 14 study days = <strong>35.0 total study hours</strong>.
+          </p>
         </div>
       </div>
     </div>
 
+    <!-- Section 3: How Many Hours Should You Study? -->
     <div>
-      <ResultCard
-        title="Recommended Study Schedule"
-        primaryValue="37.5 hrs"
-        primaryLabel="Total Outside-of-Class Study / Week"
-        badge="Full-Time Workload"
-        badgeTone="info"
-        secondaryStats={[
-          { label: 'Daily Study', value: '5.4 hrs', subtext: '7 Days / Week' },
-          { label: 'Class Time', value: '15.0 hrs', subtext: 'In Lectures' },
-        ]}
-      />
-    </div>
-  </div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How Many Hours Should You Study?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        There is no universal magic number that guarantees high marks. Effective study schedules depend on course rigor, prior mastery, and study methodology. Here is an evidence-based breakdown of study intensities:
+      </p>
 
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">The Carnegie Unit Study Rule</h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Higher education accreditation relies on the Carnegie rule, which assumes that each credit hour represents one hour of direct instruction and at least two hours of out-of-class student work each week for a 15-week semester.
-    </p>
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Light Pace -->
+        <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-emerald-900 text-sm">1 – 2 Hours / Day</h3>
+          </div>
+          <p class="text-xs text-emerald-800 leading-relaxed">
+            <strong>Light Pace:</strong> Ideal for daily homework, light elective reading, and routine flashcard reviews. Completely sustainable long-term.
+          </p>
+        </div>
+
+        <!-- Moderate Pace -->
+        <div class="p-4 rounded-xl border border-academic-200 bg-academic-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-academic-600"></span>
+            <h3 class="font-bold text-academic-900 text-sm">3 – 5 Hours / Day</h3>
+          </div>
+          <p class="text-xs text-academic-800 leading-relaxed">
+            <strong>Optimal Pace:</strong> The sweet spot for college students during typical semester weeks. Maximizes deep retention while preserving mental energy.
+          </p>
+        </div>
+
+        <!-- Intensive Pace -->
+        <div class="p-4 rounded-xl border border-amber-200 bg-amber-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <h3 class="font-bold text-amber-900 text-sm">6 – 8 Hours / Day</h3>
+          </div>
+          <p class="text-xs text-amber-800 leading-relaxed">
+            <strong>Intensive Pace:</strong> Appropriate for midterm or finals crunch periods. Requires scheduled 10-minute breaks every hour and sufficient sleep.
+          </p>
+        </div>
+
+        <!-- High Risk Pace -->
+        <div class="p-4 rounded-xl border border-rose-200 bg-rose-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            <h3 class="font-bold text-rose-900 text-sm">> 8 Hours / Day</h3>
+          </div>
+          <p class="text-xs text-rose-800 leading-relaxed">
+            <strong>High Fatigue Risk:</strong> Leads to steep cognitive exhaustion, impaired working memory, and sleep deprivation. Avoid sustained study at this level.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: How to Divide Study Time Between Subjects -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Divide Study Time Between Subjects
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        When managing 4 to 6 university courses, giving equal time to every subject is often counterproductive. A student who spends 5 hours reviewing an introductory elective and only 5 hours on an advanced physics midterm risks falling behind.
+      </p>
+
+      <div class="mt-6 space-y-4">
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="font-bold text-slate-900 text-base mb-1">Equal Time Strategy</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Divide your total available weekly study pool evenly across all enrolled subjects: <code class="bg-slate-100 px-1.5 py-0.5 rounded text-academic-800 font-mono text-xs">Hours Per Subject = Total Weekly Hours ÷ Number of Subjects</code>. This works best during the first two weeks of a semester when workloads across syllabi are relatively uniform.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="font-bold text-slate-900 text-base mb-1">Priority-Weighted Strategy</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Assign weights to courses according to difficulty and upcoming assessment stakes:
+          </p>
+          <ul class="mt-2 text-sm text-slate-600 space-y-1.5 list-disc pl-5">
+            <li><strong class="text-slate-900">Highest Priority (4x):</strong> Challenging prerequisites, courses where you are below your target grade, or subjects with major exams this week.</li>
+            <li><strong class="text-slate-900">High Priority (3x):</strong> Core technical or problem-set-heavy subjects requiring extensive practice.</li>
+            <li><strong class="text-slate-900">Medium Priority (2x):</strong> Standard curriculum classes where you understand lecture content smoothly.</li>
+            <li><strong class="text-slate-900">Low Priority (1x):</strong> General electives, discussion courses, or classes where your current grade is firmly secured.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Worked Example -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Worked Example
+      </h2>
+      <div class="mt-6 p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <h3 class="text-base font-bold text-slate-900">Scenario: 10-Day Exam Countdown</h3>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-academic-100 text-academic-800">Mode 1 & Subject Mode</span>
+        </div>
+        <p class="text-sm text-slate-600 leading-relaxed">
+          Suppose a student needs <strong>30 total study hours</strong> before finals week across <strong>10 study days</strong>. They are enrolled in 3 subjects: Calculus (High Priority, weight 3), Physics (Medium Priority, weight 2), and History (Low Priority, weight 1).
+        </p>
+
+        <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Step 1: Daily Target</h4>
+            <div class="text-sm font-mono text-academic-900 space-y-1">
+              <div>Daily Hours = 30 hrs ÷ 10 days</div>
+              <div class="font-bold text-academic-800 text-base mt-1">= 3.0 hours / day (180 mins)</div>
+            </div>
+            <p class="text-xs text-slate-500 mt-2">Pace: Moderate & Sustainable.</p>
+          </div>
+
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Step 2: Subject Time Allocation</h4>
+            <div class="text-xs font-mono text-slate-700 space-y-1.5">
+              <div>Total Weights = 3 + 2 + 1 = 6</div>
+              <div>Calculus (3/6): 30 × 0.50 = <strong>15.0 hrs</strong> (1.5 hrs/day)</div>
+              <div>Physics (2/6): 30 × 0.333 = <strong>10.0 hrs</strong> (1.0 hr/day)</div>
+              <div>History (1/6): 30 × 0.167 = <strong>5.0 hrs</strong> (30 mins/day)</div>
+            </div>
+          </div>
+        </div>
+        <p class="mt-4 text-xs text-slate-500 font-medium">
+          Result: The student maintains a focused 3-hour daily routine without guessing what to study each day.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 6: How to Make a Realistic Study Schedule -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Make a Practical Study Schedule
+      </h2>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Study in 50-to-90 Minute Time Blocks
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Avoid vague plans like "study all afternoon." Instead, schedule two distinct 90-minute blocks (e.g. 10:00 AM – 11:30 AM and 3:00 PM – 4:30 PM) separated by meals or active breaks. You can track these intervals with our <a href="/tools/pomodoro-study-timer" class="text-academic-700 font-semibold hover:underline">Pomodoro Study Timer</a> and countdown until finals with the <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown</a>.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Focus on Active Recall Rather than Passive Reading
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Three hours of practice problems, practice exam questions, and flashcard retrieval will solidify memory far more effectively than six hours of passive textbook highlighting.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Calculate Required Scores on Upcoming Work
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Know exactly what score you need before you study. Use our <a href="/tools/marks-needed-calculator" class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a> and <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown Timer</a> to set precise score targets and timeline milestones.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Track Cumulative GPA Across Terms
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Ensure your study hours translate into long-term academic honors by tracking your term results with our <a href="/tools/gpa-calculator" class="text-academic-700 font-semibold hover:underline">GPA Calculator</a> and <a href="/tools/cgpa-calculator" class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a>.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </ToolLayout>

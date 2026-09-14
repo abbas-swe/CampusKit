@@ -1,0 +1,918 @@
+---
+// PomodoroTimer.astro
+import { DEFAULT_SETTINGS } from '../../../utils/pomodoro.ts';
+---
+
+<div class="w-full max-w-5xl mx-auto" id="pomodoro-timer-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Timer Card (8 cols on desktop) -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Top Toolbar / Mode Selector -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>Focus Assistant</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                Pomodoro Study Timer
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Maintain deep academic focus with structured intervals and restorative breaks.
+              </p>
+            </div>
+
+            <!-- Quick Settings & Sound Toggles -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <!-- Sound Toggle Button -->
+              <button
+                type="button"
+                id="sound-toggle-btn"
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors cursor-pointer shadow-subtle min-h-[38px]"
+                title="Toggle notification chime"
+                aria-label="Toggle sound chime"
+              >
+                <svg id="sound-icon-on" class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                </svg>
+                <svg id="sound-icon-off" class="w-4 h-4 text-slate-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+                </svg>
+                <span id="sound-label">Sound On</span>
+              </button>
+
+              <!-- Settings Drawer Toggle Button -->
+              <button
+                type="button"
+                id="toggle-settings-btn"
+                class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors cursor-pointer shadow-subtle min-h-[38px]"
+                title="Customize interval durations"
+                aria-expanded="false"
+                aria-controls="settings-panel"
+              >
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span>Settings</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Switching Tabs (Focus, Short Break, Long Break) -->
+          <div class="mt-6">
+            <div class="grid grid-cols-3 gap-2 p-1.5 bg-slate-100/90 rounded-xl border border-slate-200" role="tablist" aria-label="Pomodoro Intervals">
+              <button
+                type="button"
+                id="tab-mode-focus"
+                role="tab"
+                aria-selected="true"
+                class="py-2.5 px-3 rounded-lg text-xs sm:text-sm font-bold text-center transition-all bg-white text-academic-900 shadow-sm border border-slate-200/80 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span class="w-2 h-2 rounded-full bg-academic-600"></span>
+                <span>Focus</span>
+                <span class="hidden sm:inline text-slate-400 font-normal text-[11px]" id="tab-focus-duration">(25m)</span>
+              </button>
+
+              <button
+                type="button"
+                id="tab-mode-short-break"
+                role="tab"
+                aria-selected="false"
+                class="py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold text-center transition-all text-slate-600 hover:text-slate-900 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                <span>Short Break</span>
+                <span class="hidden sm:inline text-slate-400 font-normal text-[11px]" id="tab-short-duration">(5m)</span>
+              </button>
+
+              <button
+                type="button"
+                id="tab-mode-long-break"
+                role="tab"
+                aria-selected="false"
+                class="py-2.5 px-3 rounded-lg text-xs sm:text-sm font-semibold text-center transition-all text-slate-600 hover:text-slate-900 cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+                <span>Long Break</span>
+                <span class="hidden sm:inline text-slate-400 font-normal text-[11px]" id="tab-long-duration">(15m)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Big Timer Face Centerpiece -->
+        <div class="p-8 sm:p-12 text-center relative overflow-hidden" id="timer-face-container">
+          <!-- Session Number & Cycle Pips -->
+          <div class="flex flex-col items-center justify-center mb-5">
+            <span
+              id="current-session-label"
+              class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2"
+            >
+              Session 1 of 4
+            </span>
+            <!-- 4-Dot Cycle Indicator -->
+            <div class="flex items-center gap-2" id="cycle-pips-container">
+              <span class="w-3 h-3 rounded-full bg-academic-600 ring-4 ring-academic-100 transition-all pip-item" data-pip="1"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all pip-item" data-pip="2"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all pip-item" data-pip="3"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-200 transition-all pip-item" data-pip="4"></span>
+            </div>
+          </div>
+
+          <!-- Massive Countdown Digits -->
+          <div
+            id="timer-clock-digits"
+            class="text-7xl sm:text-8xl md:text-9xl font-black font-mono tracking-tight text-academic-900 my-2 select-none"
+            aria-live="polite"
+          >
+            25:00
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="max-w-md mx-auto my-6 px-4">
+            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200 flex">
+              <div
+                id="timer-progress-fill"
+                class="bg-academic-600 h-full rounded-full transition-all duration-300"
+                style="width: 0%"
+              ></div>
+            </div>
+            <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 mt-1.5">
+              <span id="progress-mode-tag">Ready to begin</span>
+              <span id="progress-percent-label">0% completed</span>
+            </div>
+          </div>
+
+          <!-- Timer Controls (Start / Pause, Reset, Skip) -->
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 mt-6">
+            <!-- Reset Button -->
+            <button
+              type="button"
+              id="timer-reset-btn"
+              class="inline-flex items-center justify-center gap-1.5 px-4 py-3 text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-xl transition-all cursor-pointer shadow-subtle min-h-[46px] min-w-[90px]"
+              title="Reset current session timer"
+            >
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span>Reset</span>
+            </button>
+
+            <!-- Start / Pause Main Action Button -->
+            <button
+              type="button"
+              id="timer-play-btn"
+              class="inline-flex items-center justify-center gap-2 px-8 sm:px-10 py-3.5 text-base sm:text-lg font-bold text-white bg-academic-600 hover:bg-academic-700 active:bg-academic-800 rounded-xl transition-all shadow-md hover:shadow-lg cursor-pointer min-h-[50px] min-w-[170px]"
+            >
+              <svg id="play-icon" class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <svg id="pause-icon" class="w-5 h-5 fill-current hidden" viewBox="0 0 24 24">
+                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+              </svg>
+              <span id="play-label">Start Focus</span>
+            </button>
+
+            <!-- Skip Button -->
+            <button
+              type="button"
+              id="timer-skip-btn"
+              class="inline-flex items-center justify-center gap-1.5 px-4 py-3 text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-xl transition-all cursor-pointer shadow-subtle min-h-[46px] min-w-[90px]"
+              title="Skip to next interval"
+            >
+              <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+              </svg>
+              <span>Skip</span>
+            </button>
+          </div>
+
+          <!-- Keyboard Shortcuts Caption -->
+          <p class="text-[11px] text-slate-400 mt-6 hidden sm:block">
+            Shortcuts: <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[10px] font-mono">Space</kbd> Start/Pause &bull; <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[10px] font-mono">R</kbd> Reset &bull; <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-300 rounded text-[10px] font-mono">S</kbd> Skip
+          </p>
+        </div>
+
+        <!-- ============================================================== -->
+        <!-- CUSTOM SETTINGS DRAWER / PANEL (Hidden by Default)              -->
+        <!-- ============================================================== -->
+        <div
+          id="settings-panel"
+          class="hidden border-t border-slate-200 bg-slate-50/70 p-6 sm:p-7 transition-all"
+        >
+          <div class="flex items-center justify-between pb-3 border-b border-slate-200 mb-5">
+            <h3 class="text-sm font-bold text-slate-900 flex items-center gap-1.5">
+              <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+              </svg>
+              <span>Customize Timer Intervals</span>
+            </h3>
+
+            <!-- Quick Presets -->
+            <div class="flex items-center gap-1.5 text-xs">
+              <button type="button" class="preset-btn px-2.5 py-1 rounded text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-academic-50 hover:text-academic-900" data-f="25" data-s="5" data-l="15" data-c="4">
+                25 / 5
+              </button>
+              <button type="button" class="preset-btn px-2.5 py-1 rounded text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-academic-50 hover:text-academic-900" data-f="50" data-s="10" data-l="20" data-c="4">
+                50 / 10
+              </button>
+              <button type="button" class="preset-btn px-2.5 py-1 rounded text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 hover:bg-academic-50 hover:text-academic-900" data-f="15" data-s="3" data-l="10" data-c="3">
+                15 / 3
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <!-- Focus Minutes -->
+            <div>
+              <label for="setting-focus-mins" class="block text-xs font-bold text-slate-700 mb-1">
+                Focus (mins)
+              </label>
+              <input
+                type="number"
+                id="setting-focus-mins"
+                min="1"
+                max="120"
+                value={DEFAULT_SETTINGS.focusMinutes}
+                class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent font-semibold text-slate-900"
+              />
+            </div>
+
+            <!-- Short Break Minutes -->
+            <div>
+              <label for="setting-short-mins" class="block text-xs font-bold text-slate-700 mb-1">
+                Short Break (mins)
+              </label>
+              <input
+                type="number"
+                id="setting-short-mins"
+                min="1"
+                max="60"
+                value={DEFAULT_SETTINGS.shortBreakMinutes}
+                class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent font-semibold text-slate-900"
+              />
+            </div>
+
+            <!-- Long Break Minutes -->
+            <div>
+              <label for="setting-long-mins" class="block text-xs font-bold text-slate-700 mb-1">
+                Long Break (mins)
+              </label>
+              <input
+                type="number"
+                id="setting-long-mins"
+                min="1"
+                max="90"
+                value={DEFAULT_SETTINGS.longBreakMinutes}
+                class="w-full px-3 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent font-semibold text-slate-900"
+              />
+            </div>
+
+            <!-- Long Break Interval (Cycles) -->
+            <div>
+              <label for="setting-cycle-count" class="block text-xs font-bold text-slate-700 mb-1">
+                Long Break Every
+              </label>
+              <div class="relative">
+                <input
+                  type="number"
+                  id="setting-cycle-count"
+                  min="1"
+                  max="12"
+                  value={DEFAULT_SETTINGS.sessionsBeforeLongBreak}
+                  class="w-full px-3 py-2 pr-12 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent font-semibold text-slate-900"
+                />
+                <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-[11px] text-slate-400 pointer-events-none">
+                  sessions
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Validation Errors for Settings -->
+          <div id="settings-errors-banner" class="hidden mt-3 p-3 rounded-lg bg-rose-50 border border-rose-200 text-xs text-rose-800"></div>
+
+          <!-- Settings Action Buttons -->
+          <div class="mt-4 flex items-center justify-end gap-2 pt-3 border-t border-slate-200">
+            <button
+              type="button"
+              id="reset-settings-defaults-btn"
+              class="px-3 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 cursor-pointer"
+            >
+              Restore Defaults (25/5/15)
+            </button>
+            <button
+              type="button"
+              id="apply-settings-btn"
+              class="px-4 py-2 text-xs font-bold text-white bg-academic-600 hover:bg-academic-700 rounded-lg transition-colors cursor-pointer shadow-sm"
+            >
+              Apply Settings
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar / Study Summary Card (4 cols on desktop) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24 space-y-5"
+      >
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+            Session Summary
+          </h3>
+          <span
+            id="summary-status-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200"
+          >
+            Active Timer
+          </span>
+        </div>
+
+        <!-- Big Stat Numbers -->
+        <div class="grid grid-cols-2 gap-3 py-2">
+          <!-- Stat 1: Completed Sessions -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+            <span class="text-xs font-semibold text-slate-500 block mb-1">Completed</span>
+            <div id="summary-completed-count" class="text-2xl sm:text-3xl font-extrabold text-academic-900 font-mono">
+              0
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium">Pomodoros</span>
+          </div>
+
+          <!-- Stat 2: Total Focus Time -->
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-center">
+            <span class="text-xs font-semibold text-slate-500 block mb-1">Focus Time</span>
+            <div id="summary-total-time" class="text-2xl sm:text-3xl font-extrabold text-academic-900 font-mono">
+              0m
+            </div>
+            <span class="text-[10px] text-slate-400 font-medium">Accumulated</span>
+          </div>
+        </div>
+
+        <!-- Current Interval Overview -->
+        <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-2 text-xs">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600">Current Phase:</span>
+            <span id="summary-phase-label" class="font-bold text-slate-900">Focus Session</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600">Cycle Progress:</span>
+            <span id="summary-cycle-label" class="font-bold text-academic-800 font-mono">1 of 4</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-600">Next Scheduled:</span>
+            <span id="summary-next-label" class="font-semibold text-slate-700">Short Break (5m)</span>
+          </div>
+        </div>
+
+        <!-- Study Productivity Tip -->
+        <div class="p-3.5 rounded-xl bg-academic-50/60 border border-academic-100 flex items-start gap-2.5 text-xs text-academic-900">
+          <svg class="w-4 h-4 text-academic-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div class="leading-relaxed" id="pomodoro-tip-text">
+            <strong>Study Tip:</strong> During break periods, step completely away from your desk. Sticking to true breaks restores cognitive attention for your next focus block.
+          </div>
+        </div>
+
+        <!-- Companion Tool Link -->
+        <div class="pt-2">
+          <a
+            href="/tools/study-hours-calculator"
+            class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-academic-300 hover:bg-academic-50/40 transition-all text-xs group"
+          >
+            <div>
+              <div class="font-bold text-slate-900 group-hover:text-academic-900">Study Hours Calculator</div>
+              <div class="text-slate-500 text-[11px]">Calculate total hours needed across your courses</div>
+            </div>
+            <svg class="w-4 h-4 text-slate-400 group-hover:text-academic-700 flex-shrink-0 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- 100% Client-Side Notice -->
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Client-Side. No account or tracking.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side Pomodoro Engine -->
+<script>
+  import type { PomodoroMode, PomodoroSettings } from '../../../types/pomodoro.ts';
+  import {
+    DEFAULT_SETTINGS,
+    formatTimerDisplay,
+    formatFocusDuration,
+    getNextMode,
+    getModeLabel,
+    validateSettings,
+  } from '../../../utils/pomodoro.ts';
+
+  let activeInterval: ReturnType<typeof setInterval> | null = null;
+  const ORIGINAL_PAGE_TITLE = document.title;
+
+  function playChime() {
+    try {
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+
+      // Pleasant 2-tone melodic chime: Note 1 (D5 ~ 587.3 Hz), Note 2 (A5 ~ 880 Hz)
+      const now = ctx.currentTime;
+
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(587.33, now);
+      gain1.gain.setValueAtTime(0.15, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.4);
+
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(880.00, now + 0.18);
+      gain2.gain.setValueAtTime(0.2, now + 0.18);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.18);
+      osc2.stop(now + 0.7);
+    } catch {
+      // AudioContext unavailable or blocked by browser policy
+    }
+  }
+
+  function setupPomodoroTimer() {
+    const root = document.getElementById('pomodoro-timer-root');
+    if (!root) return;
+
+    // Clean up any running timers on re-init
+    if (activeInterval) {
+      clearInterval(activeInterval);
+      activeInterval = null;
+    }
+    document.title = ORIGINAL_PAGE_TITLE;
+
+    // State Variables
+    let currentMode: PomodoroMode = 'focus';
+    let isRunning = false;
+    let targetEndTimestamp = 0;
+    let remainingSeconds = DEFAULT_SETTINGS.focusMinutes * 60;
+    let currentTotalDuration = DEFAULT_SETTINGS.focusMinutes * 60;
+    let completedFocusSessions = 0;
+    let totalFocusSecondsCompleted = 0;
+
+    let settings: PomodoroSettings = { ...DEFAULT_SETTINGS };
+
+    // DOM Elements: Tabs
+    const tabFocus = document.getElementById('tab-mode-focus');
+    const tabShort = document.getElementById('tab-mode-short-break');
+    const tabLong = document.getElementById('tab-mode-long-break');
+    const tabFocusDuration = document.getElementById('tab-focus-duration');
+    const tabShortDuration = document.getElementById('tab-short-duration');
+    const tabLongDuration = document.getElementById('tab-long-duration');
+
+    // DOM Elements: Clock Face
+    const timerClockDigits = document.getElementById('timer-clock-digits');
+    const timerProgressFill = document.getElementById('timer-progress-fill');
+    const progressModeTag = document.getElementById('progress-mode-tag');
+    const progressPercentLabel = document.getElementById('progress-percent-label');
+    const currentSessionLabel = document.getElementById('current-session-label');
+    const pipsContainer = document.getElementById('cycle-pips-container');
+
+    // DOM Elements: Controls
+    const playBtn = document.getElementById('timer-play-btn');
+    const playIcon = document.getElementById('play-icon');
+    const pauseIcon = document.getElementById('pause-icon');
+    const playLabel = document.getElementById('play-label');
+    const resetBtn = document.getElementById('timer-reset-btn');
+    const skipBtn = document.getElementById('timer-skip-btn');
+
+    // DOM Elements: Sound Toggle
+    const soundToggleBtn = document.getElementById('sound-toggle-btn');
+    const soundIconOn = document.getElementById('sound-icon-on');
+    const soundIconOff = document.getElementById('sound-icon-off');
+    const soundLabel = document.getElementById('sound-label');
+
+    // DOM Elements: Settings Panel
+    const toggleSettingsBtn = document.getElementById('toggle-settings-btn');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingFocusMins = document.getElementById('setting-focus-mins') as HTMLInputElement | null;
+    const settingShortMins = document.getElementById('setting-short-mins') as HTMLInputElement | null;
+    const settingLongMins = document.getElementById('setting-long-mins') as HTMLInputElement | null;
+    const settingCycleCount = document.getElementById('setting-cycle-count') as HTMLInputElement | null;
+    const applySettingsBtn = document.getElementById('apply-settings-btn');
+    const resetSettingsDefaultsBtn = document.getElementById('reset-settings-defaults-btn');
+    const settingsErrorsBanner = document.getElementById('settings-errors-banner');
+    const presetBtns = document.querySelectorAll('.preset-btn');
+
+    // DOM Elements: Summary Panel
+    const summaryCompletedCount = document.getElementById('summary-completed-count');
+    const summaryTotalTime = document.getElementById('summary-total-time');
+    const summaryPhaseLabel = document.getElementById('summary-phase-label');
+    const summaryCycleLabel = document.getElementById('summary-cycle-label');
+    const summaryNextLabel = document.getElementById('summary-next-label');
+
+    function getDurationForMode(mode: PomodoroMode): number {
+      switch (mode) {
+        case 'focus':
+          return settings.focusMinutes * 60;
+        case 'short-break':
+          return settings.shortBreakMinutes * 60;
+        case 'long-break':
+          return settings.longBreakMinutes * 60;
+      }
+    }
+
+    function switchMode(newMode: PomodoroMode, autoStart = false) {
+      currentMode = newMode;
+      currentTotalDuration = getDurationForMode(newMode);
+      remainingSeconds = currentTotalDuration;
+
+      if (isRunning) {
+        clearInterval(activeInterval!);
+        activeInterval = null;
+        isRunning = false;
+      }
+
+      if (autoStart) {
+        startTimer();
+      } else {
+        updateUI();
+      }
+    }
+
+    function updatePipsUI() {
+      if (!pipsContainer) return;
+      const cycleIndex = (completedFocusSessions % settings.sessionsBeforeLongBreak) + 1;
+
+      if (currentSessionLabel) {
+        if (currentMode === 'focus') {
+          currentSessionLabel.textContent = `Focus Session ${cycleIndex} of ${settings.sessionsBeforeLongBreak}`;
+        } else if (currentMode === 'short-break') {
+          currentSessionLabel.textContent = `Restorative Short Break`;
+        } else {
+          currentSessionLabel.textContent = `Extended Recovery Break`;
+        }
+      }
+
+      // Re-generate pips if cycle count changed
+      pipsContainer.innerHTML = '';
+      for (let i = 1; i <= settings.sessionsBeforeLongBreak; i++) {
+        const pip = document.createElement('span');
+        if (i < cycleIndex) {
+          pip.className = 'w-2.5 h-2.5 rounded-full bg-academic-600 transition-all';
+        } else if (i === cycleIndex) {
+          pip.className = 'w-3 h-3 rounded-full bg-academic-600 ring-4 ring-academic-100 transition-all';
+        } else {
+          pip.className = 'w-2.5 h-2.5 rounded-full bg-slate-200 transition-all';
+        }
+        pipsContainer.appendChild(pip);
+      }
+    }
+
+    function updateUI() {
+      // 1. Clock Display
+      if (timerClockDigits) {
+        timerClockDigits.textContent = formatTimerDisplay(remainingSeconds);
+      }
+
+      // 2. Tab Highlights
+      const tabs = [
+        { btn: tabFocus, mode: 'focus' },
+        { btn: tabShort, mode: 'short-break' },
+        { btn: tabLong, mode: 'long-break' },
+      ];
+      tabs.forEach((t) => {
+        if (t.mode === currentMode) {
+          t.btn?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+          t.btn?.classList.remove('text-slate-600', 'hover:text-slate-900');
+          t.btn?.setAttribute('aria-selected', 'true');
+        } else {
+          t.btn?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+          t.btn?.classList.add('text-slate-600', 'hover:text-slate-900');
+          t.btn?.setAttribute('aria-selected', 'false');
+        }
+      });
+
+      // 3. Progress Bar & Mode Tag
+      const elapsed = currentTotalDuration - remainingSeconds;
+      const pct = Math.min(100, Math.max(0, Math.round((elapsed / currentTotalDuration) * 100)));
+      if (timerProgressFill) {
+        timerProgressFill.style.width = `${pct}%`;
+        if (currentMode === 'focus') {
+          timerProgressFill.className = 'bg-academic-600 h-full rounded-full transition-all duration-300';
+        } else if (currentMode === 'short-break') {
+          timerProgressFill.className = 'bg-emerald-500 h-full rounded-full transition-all duration-300';
+        } else {
+          timerProgressFill.className = 'bg-indigo-500 h-full rounded-full transition-all duration-300';
+        }
+      }
+
+      if (progressModeTag) {
+        if (!isRunning && remainingSeconds === currentTotalDuration) {
+          progressModeTag.textContent = 'Ready to begin';
+        } else if (isRunning) {
+          progressModeTag.textContent = `${getModeLabel(currentMode)} in progress`;
+        } else {
+          progressModeTag.textContent = 'Paused';
+        }
+      }
+
+      if (progressPercentLabel) {
+        progressPercentLabel.textContent = `${pct}% elapsed`;
+      }
+
+      // 4. Play/Pause Button State
+      if (playIcon && pauseIcon && playLabel) {
+        if (isRunning) {
+          playIcon.classList.add('hidden');
+          pauseIcon.classList.remove('hidden');
+          playLabel.textContent = 'Pause';
+        } else {
+          playIcon.classList.remove('hidden');
+          pauseIcon.classList.add('hidden');
+          playLabel.textContent = remainingSeconds < currentTotalDuration ? 'Resume' : `Start ${currentMode === 'focus' ? 'Focus' : 'Break'}`;
+        }
+      }
+
+      // 5. Pips & Cycle
+      updatePipsUI();
+
+      // 6. Summary Sidebar
+      if (summaryCompletedCount) {
+        summaryCompletedCount.textContent = String(completedFocusSessions);
+      }
+      if (summaryTotalTime) {
+        summaryTotalTime.textContent = formatFocusDuration(totalFocusSecondsCompleted);
+      }
+      if (summaryPhaseLabel) {
+        summaryPhaseLabel.textContent = getModeLabel(currentMode);
+      }
+      if (summaryCycleLabel) {
+        const cycleIdx = (completedFocusSessions % settings.sessionsBeforeLongBreak) + 1;
+        summaryCycleLabel.textContent = `${cycleIdx} of ${settings.sessionsBeforeLongBreak}`;
+      }
+      if (summaryNextLabel) {
+        const next = getNextMode(currentMode, completedFocusSessions, settings.sessionsBeforeLongBreak);
+        if (next === 'focus') {
+          summaryNextLabel.textContent = `Focus (${settings.focusMinutes}m)`;
+        } else if (next === 'short-break') {
+          summaryNextLabel.textContent = `Short Break (${settings.shortBreakMinutes}m)`;
+        } else {
+          summaryNextLabel.textContent = `Long Break (${settings.longBreakMinutes}m)`;
+        }
+      }
+
+      // 7. Tab Durations
+      if (tabFocusDuration) tabFocusDuration.textContent = `(${settings.focusMinutes}m)`;
+      if (tabShortDuration) tabShortDuration.textContent = `(${settings.shortBreakMinutes}m)`;
+      if (tabLongDuration) tabLongDuration.textContent = `(${settings.longBreakMinutes}m)`;
+
+      // 8. Document Title
+      if (isRunning) {
+        const formatted = formatTimerDisplay(remainingSeconds);
+        const tag = currentMode === 'focus' ? 'Focus' : 'Break';
+        document.title = `${formatted} – ${tag} | CampusKit`;
+      } else {
+        document.title = ORIGINAL_PAGE_TITLE;
+      }
+    }
+
+    function onSessionComplete() {
+      if (activeInterval) {
+        clearInterval(activeInterval);
+        activeInterval = null;
+        isRunning = false;
+      }
+
+      // Visual flash on timer digits
+      if (timerClockDigits) {
+        timerClockDigits.classList.add('animate-bounce');
+        setTimeout(() => {
+          timerClockDigits.classList.remove('animate-bounce');
+        }, 1500);
+      }
+
+      // Sound Notification
+      if (settings.soundEnabled) {
+        playChime();
+      }
+
+      if (currentMode === 'focus') {
+        completedFocusSessions++;
+        totalFocusSecondsCompleted += settings.focusMinutes * 60;
+        const next = getNextMode('focus', completedFocusSessions - 1, settings.sessionsBeforeLongBreak);
+        switchMode(next, true);
+      } else {
+        // Break finished, return to focus
+        switchMode('focus', true);
+      }
+    }
+
+    function tick() {
+      const now = Date.now();
+      const diffMs = targetEndTimestamp - now;
+      remainingSeconds = Math.max(0, Math.ceil(diffMs / 1000));
+
+      if (remainingSeconds <= 0) {
+        remainingSeconds = 0;
+        updateUI();
+        onSessionComplete();
+        return;
+      }
+
+      updateUI();
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      targetEndTimestamp = Date.now() + remainingSeconds * 1000;
+      updateUI();
+      activeInterval = setInterval(tick, 250);
+    }
+
+    function pauseTimer() {
+      if (!isRunning) return;
+      isRunning = false;
+      if (activeInterval) {
+        clearInterval(activeInterval);
+        activeInterval = null;
+      }
+      updateUI();
+    }
+
+    function togglePlay() {
+      if (isRunning) {
+        pauseTimer();
+      } else {
+        startTimer();
+      }
+    }
+
+    function resetCurrentSession() {
+      pauseTimer();
+      remainingSeconds = currentTotalDuration;
+      updateUI();
+    }
+
+    function skipSession() {
+      pauseTimer();
+      if (currentMode === 'focus') {
+        const next = getNextMode('focus', completedFocusSessions, settings.sessionsBeforeLongBreak);
+        switchMode(next, false);
+      } else {
+        switchMode('focus', false);
+      }
+    }
+
+    // Attach Main Control Handlers
+    playBtn?.addEventListener('click', togglePlay);
+    resetBtn?.addEventListener('click', resetCurrentSession);
+    skipBtn?.addEventListener('click', skipSession);
+
+    // Tab Clicks (Direct Mode Switch)
+    tabFocus?.addEventListener('click', () => switchMode('focus', false));
+    tabShort?.addEventListener('click', () => switchMode('short-break', false));
+    tabLong?.addEventListener('click', () => switchMode('long-break', false));
+
+    // Sound Toggle Handler
+    soundToggleBtn?.addEventListener('click', () => {
+      settings.soundEnabled = !settings.soundEnabled;
+      if (settings.soundEnabled) {
+        soundIconOn?.classList.remove('hidden');
+        soundIconOff?.classList.add('hidden');
+        if (soundLabel) soundLabel.textContent = 'Sound On';
+        playChime();
+      } else {
+        soundIconOn?.classList.add('hidden');
+        soundIconOff?.classList.remove('hidden');
+        if (soundLabel) soundLabel.textContent = 'Sound Off';
+      }
+    });
+
+    // Settings Toggle
+    toggleSettingsBtn?.addEventListener('click', () => {
+      const isHidden = settingsPanel?.classList.contains('hidden');
+      if (isHidden) {
+        settingsPanel?.classList.remove('hidden');
+        toggleSettingsBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        settingsPanel?.classList.add('hidden');
+        toggleSettingsBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Preset Buttons Handler
+    presetBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const f = btn.getAttribute('data-f');
+        const s = btn.getAttribute('data-s');
+        const l = btn.getAttribute('data-l');
+        const c = btn.getAttribute('data-c');
+
+        if (settingFocusMins && f) settingFocusMins.value = f;
+        if (settingShortMins && s) settingShortMins.value = s;
+        if (settingLongMins && l) settingLongMins.value = l;
+        if (settingCycleCount && c) settingCycleCount.value = c;
+      });
+    });
+
+    // Apply Settings Handler
+    applySettingsBtn?.addEventListener('click', () => {
+      const f = parseInt(settingFocusMins?.value || '25', 10);
+      const s = parseInt(settingShortMins?.value || '5', 10);
+      const l = parseInt(settingLongMins?.value || '15', 10);
+      const c = parseInt(settingCycleCount?.value || '4', 10);
+
+      const val = validateSettings({
+        focusMinutes: f,
+        shortBreakMinutes: s,
+        longBreakMinutes: l,
+        sessionsBeforeLongBreak: c,
+      });
+
+      if (!val.isValid) {
+        if (settingsErrorsBanner) {
+          settingsErrorsBanner.innerHTML = val.errors.map((e) => `<div>• ${e}</div>`).join('');
+          settingsErrorsBanner.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (settingsErrorsBanner) {
+        settingsErrorsBanner.classList.add('hidden');
+      }
+
+      settings.focusMinutes = f;
+      settings.shortBreakMinutes = s;
+      settings.longBreakMinutes = l;
+      settings.sessionsBeforeLongBreak = c;
+
+      // Reset current session to new duration
+      pauseTimer();
+      currentTotalDuration = getDurationForMode(currentMode);
+      remainingSeconds = currentTotalDuration;
+      updateUI();
+
+      // Close settings panel
+      settingsPanel?.classList.add('hidden');
+      toggleSettingsBtn?.setAttribute('aria-expanded', 'false');
+    });
+
+    // Reset Settings Defaults
+    resetSettingsDefaultsBtn?.addEventListener('click', () => {
+      if (settingFocusMins) settingFocusMins.value = String(DEFAULT_SETTINGS.focusMinutes);
+      if (settingShortMins) settingShortMins.value = String(DEFAULT_SETTINGS.shortBreakMinutes);
+      if (settingLongMins) settingLongMins.value = String(DEFAULT_SETTINGS.longBreakMinutes);
+      if (settingCycleCount) settingCycleCount.value = String(DEFAULT_SETTINGS.sessionsBeforeLongBreak);
+      if (settingsErrorsBanner) settingsErrorsBanner.classList.add('hidden');
+    });
+
+    // Keyboard Shortcuts
+    function handleKeydown(e: KeyboardEvent) {
+      // Don't trigger if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+      if (e.code === 'Space') {
+        e.preventDefault();
+        togglePlay();
+      } else if (e.key === 'r' || e.key === 'R') {
+        e.preventDefault();
+        resetCurrentSession();
+      } else if (e.key === 's' || e.key === 'S') {
+        e.preventDefault();
+        skipSession();
+      }
+    }
+    window.addEventListener('keydown', handleKeydown);
+
+    // Initial render
+    updateUI();
+  }
+
+  // Support direct page load and Astro view transitions
+  setupPomodoroTimer();
+  document.addEventListener('astro:page-load', setupPomodoroTimer);
+</script>

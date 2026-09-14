@@ -1,0 +1,1163 @@
+---
+import { GPA_SCALES, INITIAL_COURSES_DATA } from '../../../data/gpaScales';
+
+const defaultScale = GPA_SCALES['4.0'];
+
+const INITIAL_SEMESTERS_DATA = [
+  { name: 'Semester 1 (Fall)', gpa: '3.60', credits: '15' },
+  { name: 'Semester 2 (Spring)', gpa: '3.80', credits: '15' },
+];
+---
+
+<div class="w-full max-w-5xl mx-auto" id="cgpa-calculator-root">
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <!-- Main Calculator Card (8 cols on desktop) -->
+    <div class="lg:col-span-8 space-y-6">
+      <div class="bg-white rounded-2xl border border-slate-200/90 shadow-card overflow-hidden">
+        <!-- Header & Mode Switcher -->
+        <div class="p-6 sm:p-7 border-b border-slate-100 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-academic-50 text-academic-800 border border-academic-200 mb-2">
+                <svg class="w-3.5 h-3.5 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span>Interactive Tool</span>
+              </div>
+              <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                CGPA Calculator
+              </h2>
+              <p class="text-sm text-slate-600 mt-1">
+                Calculate your cumulative grade point average across semesters or individual courses instantly.
+              </p>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                id="reset-cgpa-btn"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 border border-slate-300 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle min-h-[40px]"
+                title="Reset calculator to initial state"
+              >
+                <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Reset</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mode Selector Tabs -->
+          <div class="mt-6">
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Calculation Mode
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 p-1 bg-slate-100/80 rounded-xl border border-slate-200" role="tablist" aria-label="Calculation Mode">
+              <button
+                type="button"
+                id="mode-tab-semester"
+                role="tab"
+                aria-selected="true"
+                aria-controls="workspace-semester"
+                class="mode-tab-btn flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all font-medium text-xs sm:text-sm bg-white text-academic-900 shadow-sm border border-slate-200/80 cursor-pointer"
+              >
+                <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900 flex items-center gap-1.5">
+                    <span>Semester-based</span>
+                    <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.2 rounded bg-academic-100 text-academic-800">Default</span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 font-normal mt-0.5">Calculate from semester GPAs & credits</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                id="mode-tab-course"
+                role="tab"
+                aria-selected="false"
+                aria-controls="workspace-course"
+                class="mode-tab-btn flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-all font-medium text-xs sm:text-sm text-slate-600 hover:text-slate-900 hover:bg-white/60 cursor-pointer"
+              >
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="font-bold text-slate-900">Course-based</div>
+                  <div class="text-[11px] text-slate-500 font-normal mt-0.5">Calculate from individual course grades</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Grading Scale Selection -->
+          <div class="mt-6 pt-5 border-t border-slate-100">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div class="flex-grow">
+                <label for="cgpa-scale-selector" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  University Grading Scale
+                </label>
+                <div class="relative w-full sm:w-80">
+                  <select
+                    id="cgpa-scale-selector"
+                    class="w-full appearance-none bg-slate-50 hover:bg-slate-100/80 border border-slate-300 rounded-xl px-4 py-2.5 pr-10 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle min-h-[44px]"
+                  >
+                    <option value="4.0" selected>4.0 Scale (Standard US & Canada)</option>
+                    <option value="5.0">5.0 Scale (Honors / Weighted)</option>
+                    <option value="10.0">10.0 Scale (International / SGPA)</option>
+                    <option value="custom">Custom Scale (Direct Grade Points)</option>
+                  </select>
+                  <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-slate-500">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Custom Max Points Field -->
+              <div id="cgpa-custom-max-container" class="hidden sm:w-48">
+                <label for="cgpa-custom-max-points" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                  Max GPA Scale
+                </label>
+                <div class="relative">
+                  <input
+                    type="number"
+                    id="cgpa-custom-max-points"
+                    min="1"
+                    max="100"
+                    step="0.1"
+                    value="4.0"
+                    class="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-academic-600 shadow-subtle min-h-[44px]"
+                    placeholder="e.g. 4.0"
+                  />
+                  <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-xs text-slate-400 pointer-events-none">Max</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scale Information Banner -->
+            <div class="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs text-slate-600 flex items-start gap-2.5">
+              <svg class="w-4 h-4 text-academic-700 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <p id="cgpa-scale-info-banner" class="leading-relaxed">
+                Standard 4.0 scale (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C+ = 2.3, C = 2.0, C- = 1.7, D+ = 1.3, D = 1.0, D- = 0.7, F = 0.0). Universities use varied grading models; always verify with your registrar.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- MODE 1: Semester Rows Workspace (Default) -->
+        <div id="workspace-semester" role="tabpanel" aria-labelledby="mode-tab-semester" class="p-6 sm:p-7">
+          <!-- Desktop Column Headers -->
+          <div class="hidden sm:grid sm:grid-cols-12 gap-3 pb-3 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div class="col-span-5">Semester / Term (Optional)</div>
+            <div class="col-span-3">Semester GPA</div>
+            <div class="col-span-3">Credits Completed</div>
+            <div class="col-span-1 text-center">Remove</div>
+          </div>
+
+          <!-- Dynamic Semesters Container -->
+          <div id="semesters-list" class="divide-y divide-slate-200 sm:divide-y-0 sm:space-y-3 pt-2">
+            {
+              INITIAL_SEMESTERS_DATA.map((sem, idx) => (
+                <div
+                  class="semester-row-item p-4 sm:p-0 sm:py-2.5 rounded-xl sm:rounded-none bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 mb-3 sm:mb-0 transition-all"
+                  data-id={`semester-${idx + 1}`}
+                >
+                  <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                    <!-- Semester Name -->
+                    <div class="sm:col-span-5">
+                      <label for={`sem-name-${idx + 1}`} class="block sm:sr-only text-xs font-bold text-slate-700 mb-1">
+                        Semester {idx + 1} Name
+                      </label>
+                      <input
+                        type="text"
+                        id={`sem-name-${idx + 1}`}
+                        value={sem.name}
+                        placeholder={`Semester ${idx + 1} (e.g. Fall 2024)`}
+                        class="semester-name-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[42px]"
+                        aria-label={`Semester ${idx + 1} Name`}
+                      />
+                    </div>
+
+                    <!-- Semester GPA -->
+                    <div class="sm:col-span-3">
+                      <label for={`sem-gpa-${idx + 1}`} class="block sm:sr-only text-xs font-bold text-slate-700 mb-1">
+                        Semester GPA (0 - 4.0)
+                      </label>
+                      <div class="relative">
+                        <input
+                          type="number"
+                          id={`sem-gpa-${idx + 1}`}
+                          min="0"
+                          max="4.0"
+                          step="0.01"
+                          value={sem.gpa}
+                          placeholder="e.g. 3.75"
+                          class="semester-gpa-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]"
+                          aria-label={`Semester ${idx + 1} GPA`}
+                        />
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-xs text-slate-400 pointer-events-none">GPA</span>
+                      </div>
+                    </div>
+
+                    <!-- Credits -->
+                    <div class="sm:col-span-3">
+                      <label for={`sem-credits-${idx + 1}`} class="block sm:sr-only text-xs font-bold text-slate-700 mb-1">
+                        Credits
+                      </label>
+                      <div class="relative">
+                        <input
+                          type="number"
+                          id={`sem-credits-${idx + 1}`}
+                          min="0.5"
+                          max="60"
+                          step="0.5"
+                          value={sem.credits}
+                          placeholder="e.g. 15"
+                          class="semester-credits-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]"
+                          aria-label={`Semester ${idx + 1} Credits`}
+                        />
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-xs text-slate-400 pointer-events-none">Credits</span>
+                      </div>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <div class="sm:col-span-1 flex items-center justify-end sm:justify-center pt-2 sm:pt-0">
+                      <button
+                        type="button"
+                        class="semester-remove-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center"
+                        aria-label={`Remove Semester ${idx + 1}`}
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+
+          <!-- Inline Validation Notification Area for Semesters -->
+          <div id="cgpa-semester-errors-banner" class="hidden mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="cgpa-semester-errors-list" class="space-y-1"></div>
+          </div>
+
+          <!-- Add Semester Row Button -->
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+            <button
+              type="button"
+              id="add-semester-btn"
+              class="inline-flex items-center gap-2 px-4 py-2.5 bg-academic-50 hover:bg-academic-100 text-academic-800 text-sm font-semibold rounded-xl border border-academic-200 transition-all focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle hover:shadow min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Add Semester</span>
+            </button>
+
+            <span class="text-xs font-semibold text-slate-500" id="semesters-counter-badge">
+              2 Semesters Listed
+            </span>
+          </div>
+        </div>
+
+        <!-- MODE 2: Course Rows Workspace (Hidden initially) -->
+        <div id="workspace-course" role="tabpanel" aria-labelledby="mode-tab-course" class="hidden p-6 sm:p-7">
+          <!-- Desktop Column Headers -->
+          <div class="hidden sm:grid sm:grid-cols-12 gap-3 pb-3 border-b border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-500">
+            <div class="col-span-5">Course / Subject (Optional)</div>
+            <div class="col-span-3">Grade</div>
+            <div class="col-span-3">Credits</div>
+            <div class="col-span-1 text-center">Remove</div>
+          </div>
+
+          <!-- Dynamic Courses Container -->
+          <div id="cgpa-courses-list" class="divide-y divide-slate-200 sm:divide-y-0 sm:space-y-3 pt-2">
+            <!-- Will be populated dynamically by script -->
+          </div>
+
+          <!-- Inline Validation Notification Area for Courses -->
+          <div id="cgpa-course-errors-banner" class="hidden mt-4 p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5">
+            <svg class="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div id="cgpa-course-errors-list" class="space-y-1"></div>
+          </div>
+
+          <!-- Add Course Row Button -->
+          <div class="mt-6 pt-5 border-t border-slate-100 flex items-center justify-between">
+            <button
+              type="button"
+              id="add-cgpa-course-btn"
+              class="inline-flex items-center gap-2 px-4 py-2.5 bg-academic-50 hover:bg-academic-100 text-academic-800 text-sm font-semibold rounded-xl border border-academic-200 transition-all focus-visible:ring-2 focus-visible:ring-academic-600 cursor-pointer shadow-subtle hover:shadow min-h-[44px]"
+            >
+              <svg class="w-4 h-4 text-academic-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Add Course</span>
+            </button>
+
+            <span class="text-xs font-semibold text-slate-500" id="cgpa-courses-counter-badge">
+              4 Courses Listed
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sticky Results Summary Panel (4 cols on desktop) -->
+    <div class="lg:col-span-4 space-y-6">
+      <div
+        class="bg-white rounded-2xl border border-slate-200/90 shadow-card p-6 sm:p-7 sticky top-24"
+        id="cgpa-result-card"
+        aria-live="polite"
+      >
+        <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500" id="cgpa-result-header-title">
+            Calculated Cumulative CGPA
+          </h3>
+          <span
+            id="cgpa-standing-badge"
+            class="text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200"
+          >
+            Dean's List / Honors
+          </span>
+        </div>
+
+        <!-- Big Metric Callout -->
+        <div class="py-8 text-center">
+          <div
+            class="text-6xl sm:text-7xl font-extrabold tracking-tight text-academic-900 font-sans leading-none transition-transform duration-200"
+            id="cgpa-display-value"
+          >
+            3.70
+          </div>
+          <p class="mt-2 text-xs font-medium text-slate-500" id="cgpa-scale-ceiling-label">
+            Out of 4.00 Maximum
+          </p>
+        </div>
+
+        <!-- Metric Details Grid -->
+        <div class="grid grid-cols-2 gap-3 pt-4 border-t border-slate-100">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider">Total Credits</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block font-mono" id="cgpa-total-credits-value">30.0</span>
+            <span class="text-[10px] text-slate-400 block" id="cgpa-credits-subtitle">Cumulative</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-center">
+            <span class="text-[11px] text-slate-500 font-medium block uppercase tracking-wider" id="cgpa-count-title">Semesters</span>
+            <span class="text-lg font-bold text-slate-900 mt-0.5 block font-mono" id="cgpa-items-count-value">2</span>
+            <span class="text-[10px] text-slate-400 block" id="cgpa-items-count-subtitle">Evaluated</span>
+          </div>
+        </div>
+
+        <!-- Secondary Information -->
+        <div class="mt-4 pt-4 border-t border-slate-100 space-y-2 text-xs text-slate-600">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Quality Points Earned:</span>
+            <span class="font-bold font-mono text-slate-800" id="cgpa-quality-points-value">111.0</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-slate-500">Percentage Equivalent:</span>
+            <span class="font-bold font-mono text-slate-800" id="cgpa-percentage-equiv-value">~ 92.5%</span>
+          </div>
+        </div>
+
+        <!-- Empty state message (shown when no data is valid) -->
+        <div id="cgpa-empty-state-notice" class="hidden mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200/70 text-xs text-amber-800 text-center">
+          Enter valid credits and GPAs above to compute your cumulative score.
+        </div>
+
+        <!-- Privacy Assurance Note -->
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span>100% Client-Side. No academic data is stored.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Reactive Client-Side CGPA Calculator Engine -->
+<script>
+  import { GPA_SCALES, INITIAL_COURSES_DATA } from '../../../data/gpaScales.ts';
+  import type { GPAScaleType, GPAScaleDefinition, Course } from '../../../types/gpa.ts';
+  import type { Semester, CGPAMode } from '../../../types/cgpa.ts';
+  import { calculateGPA, formatGPADisplay } from '../../../utils/gpa.ts';
+  import { calculateCGPAFromSemesters, formatCGPADisplay } from '../../../utils/cgpa.ts';
+
+  interface SemesterState {
+    id: string;
+    name: string;
+    gpa: string;
+    credits: string;
+  }
+
+  interface CourseState {
+    id: string;
+    name: string;
+    credits: string;
+    letterGrade: string;
+    gradePoints: string;
+  }
+
+  function setupCgpaCalculator() {
+    const root = document.getElementById('cgpa-calculator-root');
+    if (!root) return;
+
+    // Elements
+    const modeTabSemester = document.getElementById('mode-tab-semester');
+    const modeTabCourse = document.getElementById('mode-tab-course');
+    const workspaceSemester = document.getElementById('workspace-semester');
+    const workspaceCourse = document.getElementById('workspace-course');
+
+    const scaleSelector = document.getElementById('cgpa-scale-selector') as HTMLSelectElement | null;
+    const customMaxContainer = document.getElementById('cgpa-custom-max-container');
+    const customMaxPointsInput = document.getElementById('cgpa-custom-max-points') as HTMLInputElement | null;
+    const scaleInfoBanner = document.getElementById('cgpa-scale-info-banner');
+
+    const resetBtn = document.getElementById('reset-cgpa-btn');
+
+    // Semester Mode Elements
+    const semestersList = document.getElementById('semesters-list');
+    const addSemesterBtn = document.getElementById('add-semester-btn');
+    const semestersCounter = document.getElementById('semesters-counter-badge');
+    const semesterErrorsBanner = document.getElementById('cgpa-semester-errors-banner');
+    const semesterErrorsList = document.getElementById('cgpa-semester-errors-list');
+
+    // Course Mode Elements
+    const coursesList = document.getElementById('cgpa-courses-list');
+    const addCourseBtn = document.getElementById('add-cgpa-course-btn');
+    const coursesCounter = document.getElementById('cgpa-courses-counter-badge');
+    const courseErrorsBanner = document.getElementById('cgpa-course-errors-banner');
+    const courseErrorsList = document.getElementById('cgpa-course-errors-list');
+
+    // Result Card Elements
+    const resultHeaderTitle = document.getElementById('cgpa-result-header-title');
+    const cgpaDisplay = document.getElementById('cgpa-display-value');
+    const cgpaCeilingLabel = document.getElementById('cgpa-scale-ceiling-label');
+    const standingBadge = document.getElementById('cgpa-standing-badge');
+    const totalCreditsDisplay = document.getElementById('cgpa-total-credits-value');
+    const itemsCountTitle = document.getElementById('cgpa-count-title');
+    const itemsCountDisplay = document.getElementById('cgpa-items-count-value');
+    const itemsCountSubtitle = document.getElementById('cgpa-items-count-subtitle');
+    const qualityPointsDisplay = document.getElementById('cgpa-quality-points-value');
+    const percentageEquivDisplay = document.getElementById('cgpa-percentage-equiv-value');
+    const emptyNotice = document.getElementById('cgpa-empty-state-notice');
+
+    if (!scaleSelector || !semestersList || !coursesList) return;
+
+    // Calculator State
+    let activeMode: CGPAMode = 'semester';
+    let currentScaleType: GPAScaleType = '4.0';
+    let customMaxPoints = 4.0;
+    let nextSemesterId = 3;
+    let nextCourseId = 5;
+
+    // Initial Semester state
+    let semesters: SemesterState[] = [
+      { id: 'semester-1', name: 'Semester 1 (Fall)', gpa: '3.60', credits: '15' },
+      { id: 'semester-2', name: 'Semester 2 (Spring)', gpa: '3.80', credits: '15' },
+    ];
+
+    // Initial Course state
+    let courses: CourseState[] = INITIAL_COURSES_DATA.map((c, i) => ({
+      id: `cgpa-course-${i + 1}`,
+      name: c.name,
+      credits: String(c.credits),
+      letterGrade: c.grade,
+      gradePoints: '4.0',
+    }));
+
+    function getCurrentScaleDefinition(): GPAScaleDefinition {
+      if (currentScaleType === 'custom') {
+        return {
+          type: 'custom',
+          name: 'Custom Scale',
+          maxPoints: customMaxPoints > 0 ? customMaxPoints : 4.0,
+          description: 'Custom user-defined maximum scale.',
+          grades: [],
+        };
+      }
+      return GPA_SCALES[currentScaleType] || GPA_SCALES['4.0'];
+    }
+
+    // MODE SWITCHING
+    function setMode(newMode: CGPAMode) {
+      activeMode = newMode;
+
+      if (activeMode === 'semester') {
+        // Tab styling
+        modeTabSemester?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabSemester?.classList.remove('text-slate-600', 'hover:bg-white/60');
+        modeTabSemester?.setAttribute('aria-selected', 'true');
+
+        modeTabCourse?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabCourse?.classList.add('text-slate-600', 'hover:bg-white/60');
+        modeTabCourse?.setAttribute('aria-selected', 'false');
+
+        // Workspaces
+        workspaceSemester?.classList.remove('hidden');
+        workspaceCourse?.classList.add('hidden');
+
+        if (itemsCountTitle) itemsCountTitle.textContent = 'Semesters';
+        if (itemsCountSubtitle) itemsCountSubtitle.textContent = 'Evaluated';
+      } else {
+        // Course Mode
+        modeTabCourse?.classList.add('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabCourse?.classList.remove('text-slate-600', 'hover:bg-white/60');
+        modeTabCourse?.setAttribute('aria-selected', 'true');
+
+        modeTabSemester?.classList.remove('bg-white', 'text-academic-900', 'shadow-sm', 'border', 'border-slate-200/80');
+        modeTabSemester?.classList.add('text-slate-600', 'hover:bg-white/60');
+        modeTabSemester?.setAttribute('aria-selected', 'false');
+
+        workspaceCourse?.classList.remove('hidden');
+        workspaceSemester?.classList.add('hidden');
+
+        if (itemsCountTitle) itemsCountTitle.textContent = 'Courses';
+        if (itemsCountSubtitle) itemsCountSubtitle.textContent = 'Completed';
+      }
+
+      recalculate();
+    }
+
+    modeTabSemester?.addEventListener('click', () => setMode('semester'));
+    modeTabCourse?.addEventListener('click', () => setMode('course'));
+
+    // RENDER SEMESTERS
+    function renderSemesters() {
+      if (!semestersList) return;
+      semestersList.innerHTML = '';
+      const scaleDef = getCurrentScaleDefinition();
+
+      semesters.forEach((sem, index) => {
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className =
+          'semester-row-item p-4 sm:p-0 sm:py-2.5 rounded-xl sm:rounded-none bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 mb-3 sm:mb-0 transition-all';
+        rowWrapper.setAttribute('data-id', sem.id);
+
+        const rowGrid = document.createElement('div');
+        rowGrid.className = 'grid grid-cols-1 sm:grid-cols-12 gap-3 items-center';
+
+        // 1. Semester Name (5 cols on sm+)
+        const nameCol = document.createElement('div');
+        nameCol.className = 'sm:col-span-5';
+
+        const nameLabel = document.createElement('label');
+        nameLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        nameLabel.setAttribute('for', `sem-name-${sem.id}`);
+        nameLabel.textContent = `Semester ${index + 1} Name`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `sem-name-${sem.id}`;
+        nameInput.value = sem.name;
+        nameInput.placeholder = `Semester ${index + 1} (e.g. Fall 2024)`;
+        nameInput.className =
+          'semester-name-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[42px]';
+        nameInput.setAttribute('aria-label', `Semester ${index + 1} Name`);
+        nameInput.addEventListener('input', (e) => {
+          sem.name = (e.target as HTMLInputElement).value;
+        });
+
+        nameCol.appendChild(nameLabel);
+        nameCol.appendChild(nameInput);
+        rowGrid.appendChild(nameCol);
+
+        // 2. GPA Input (3 cols on sm+)
+        const gpaCol = document.createElement('div');
+        gpaCol.className = 'sm:col-span-3';
+
+        const gpaLabel = document.createElement('label');
+        gpaLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        gpaLabel.setAttribute('for', `sem-gpa-${sem.id}`);
+        gpaLabel.textContent = `Semester ${index + 1} GPA`;
+
+        const gpaWrapper = document.createElement('div');
+        gpaWrapper.className = 'relative';
+
+        const gpaInput = document.createElement('input');
+        gpaInput.type = 'number';
+        gpaInput.id = `sem-gpa-${sem.id}`;
+        gpaInput.min = '0';
+        gpaInput.max = String(scaleDef.maxPoints);
+        gpaInput.step = '0.01';
+        gpaInput.value = sem.gpa;
+        gpaInput.placeholder = `0 – ${scaleDef.maxPoints.toFixed(1)}`;
+        gpaInput.className =
+          'semester-gpa-input w-full px-3 py-2 pr-12 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+        gpaInput.setAttribute('aria-label', `Semester ${index + 1} GPA`);
+        gpaInput.addEventListener('input', (e) => {
+          sem.gpa = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        const gpaBadge = document.createElement('span');
+        gpaBadge.className = 'absolute inset-y-0 right-0 flex items-center pr-2.5 text-xs text-slate-400 pointer-events-none';
+        gpaBadge.textContent = 'GPA';
+
+        gpaWrapper.appendChild(gpaInput);
+        gpaWrapper.appendChild(gpaBadge);
+        gpaCol.appendChild(gpaLabel);
+        gpaCol.appendChild(gpaWrapper);
+        rowGrid.appendChild(gpaCol);
+
+        // 3. Credits Input (3 cols on sm+)
+        const creditsCol = document.createElement('div');
+        creditsCol.className = 'sm:col-span-3';
+
+        const creditsLabel = document.createElement('label');
+        creditsLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        creditsLabel.setAttribute('for', `sem-credits-${sem.id}`);
+        creditsLabel.textContent = `Semester ${index + 1} Credits`;
+
+        const creditsWrapper = document.createElement('div');
+        creditsWrapper.className = 'relative';
+
+        const creditsInput = document.createElement('input');
+        creditsInput.type = 'number';
+        creditsInput.id = `sem-credits-${sem.id}`;
+        creditsInput.min = '0.5';
+        creditsInput.max = '60';
+        creditsInput.step = '0.5';
+        creditsInput.value = sem.credits;
+        creditsInput.placeholder = 'Credits (e.g. 15)';
+        creditsInput.className =
+          'semester-credits-input w-full px-3 py-2 pr-14 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+        creditsInput.setAttribute('aria-label', `Semester ${index + 1} Credits`);
+        creditsInput.addEventListener('input', (e) => {
+          sem.credits = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        const creditsBadge = document.createElement('span');
+        creditsBadge.className = 'absolute inset-y-0 right-0 flex items-center pr-2.5 text-xs text-slate-400 pointer-events-none';
+        creditsBadge.textContent = 'Credits';
+
+        creditsWrapper.appendChild(creditsInput);
+        creditsWrapper.appendChild(creditsBadge);
+        creditsCol.appendChild(creditsLabel);
+        creditsCol.appendChild(creditsWrapper);
+        rowGrid.appendChild(creditsCol);
+
+        // 4. Remove Button (1 col on sm+)
+        const removeCol = document.createElement('div');
+        removeCol.className = 'sm:col-span-1 flex items-center justify-end sm:justify-center pt-2 sm:pt-0';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className =
+          'semester-remove-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center';
+        removeBtn.setAttribute('aria-label', `Remove Semester ${index + 1}: ${sem.name || 'Untitled'}`);
+        removeBtn.innerHTML =
+          '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>';
+
+        removeBtn.addEventListener('click', () => {
+          removeSemester(sem.id);
+        });
+
+        removeCol.appendChild(removeBtn);
+        rowGrid.appendChild(removeCol);
+
+        rowWrapper.appendChild(rowGrid);
+        semestersList.appendChild(rowWrapper);
+      });
+
+      updateSemesterCounter();
+      recalculate();
+    }
+
+    function addSemester() {
+      semesters.push({
+        id: `semester-${nextSemesterId++}`,
+        name: `Semester ${semesters.length + 1}`,
+        gpa: '',
+        credits: '15',
+      });
+      renderSemesters();
+
+      const newGpaInput = document.getElementById(`sem-gpa-semester-${nextSemesterId - 1}`);
+      if (newGpaInput) {
+        newGpaInput.focus();
+      }
+    }
+
+    function removeSemester(id: string) {
+      if (semesters.length <= 1) {
+        // Keep at least one row, but clear its inputs
+        semesters[0] = {
+          id: semesters[0].id,
+          name: '',
+          gpa: '',
+          credits: '',
+        };
+      } else {
+        semesters = semesters.filter((s) => s.id !== id);
+      }
+      renderSemesters();
+    }
+
+    function updateSemesterCounter() {
+      if (!semestersCounter) return;
+      semestersCounter.textContent = `${semesters.length} ${semesters.length === 1 ? 'Semester' : 'Semesters'} Listed`;
+    }
+
+    // RENDER COURSES (Course Mode)
+    function renderCourses() {
+      if (!coursesList) return;
+      coursesList.innerHTML = '';
+
+      const scaleDef = getCurrentScaleDefinition();
+      const isCustom = currentScaleType === 'custom';
+
+      courses.forEach((course, index) => {
+        const rowWrapper = document.createElement('div');
+        rowWrapper.className =
+          'course-row-item p-4 sm:p-0 sm:py-2.5 rounded-xl sm:rounded-none bg-slate-50/70 sm:bg-transparent border border-slate-200/80 sm:border-0 mb-3 sm:mb-0 transition-all';
+        rowWrapper.setAttribute('data-id', course.id);
+
+        const rowGrid = document.createElement('div');
+        rowGrid.className = 'grid grid-cols-1 sm:grid-cols-12 gap-3 items-center';
+
+        // 1. Course Name (5 cols on sm+)
+        const nameCol = document.createElement('div');
+        nameCol.className = 'sm:col-span-5';
+
+        const nameLabel = document.createElement('label');
+        nameLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        nameLabel.setAttribute('for', `course-name-${course.id}`);
+        nameLabel.textContent = `Course ${index + 1} Name`;
+
+        const nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.id = `course-name-${course.id}`;
+        nameInput.value = course.name;
+        nameInput.placeholder = `Course ${index + 1} (e.g. Calculus)`;
+        nameInput.className =
+          'course-name-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle min-h-[42px]';
+        nameInput.setAttribute('aria-label', `Course ${index + 1} Name`);
+        nameInput.addEventListener('input', (e) => {
+          course.name = (e.target as HTMLInputElement).value;
+        });
+
+        nameCol.appendChild(nameLabel);
+        nameCol.appendChild(nameInput);
+        rowGrid.appendChild(nameCol);
+
+        // 2. Grade Selection / Points (3 cols on sm+)
+        const gradeCol = document.createElement('div');
+        gradeCol.className = 'sm:col-span-3 grade-input-container';
+
+        const gradeLabel = document.createElement('label');
+        gradeLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        gradeLabel.setAttribute('for', `course-grade-${course.id}`);
+        gradeLabel.textContent = isCustom ? 'Grade Points' : 'Letter Grade';
+
+        if (isCustom) {
+          const pointsInput = document.createElement('input');
+          pointsInput.type = 'number';
+          pointsInput.id = `course-grade-${course.id}`;
+          pointsInput.min = '0';
+          pointsInput.max = String(scaleDef.maxPoints);
+          pointsInput.step = '0.01';
+          pointsInput.value = course.gradePoints;
+          pointsInput.placeholder = `0 – ${scaleDef.maxPoints}`;
+          pointsInput.className =
+            'course-points-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+          pointsInput.setAttribute('aria-label', `Course ${index + 1} Grade Points`);
+          pointsInput.addEventListener('input', (e) => {
+            course.gradePoints = (e.target as HTMLInputElement).value;
+            recalculate();
+          });
+          gradeCol.appendChild(gradeLabel);
+          gradeCol.appendChild(pointsInput);
+        } else {
+          const gradeSelectWrapper = document.createElement('div');
+          gradeSelectWrapper.className = 'relative';
+
+          const gradeSelect = document.createElement('select');
+          gradeSelect.id = `course-grade-${course.id}`;
+          gradeSelect.className =
+            'course-grade-select w-full appearance-none px-3 py-2 pr-8 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all cursor-pointer shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+          gradeSelect.setAttribute('aria-label', `Course ${index + 1} Grade`);
+
+          scaleDef.grades.forEach((g) => {
+            const opt = document.createElement('option');
+            opt.value = g.letter;
+            opt.textContent = `${g.letter} (${g.points.toFixed(1)})`;
+            if (g.letter === course.letterGrade) {
+              opt.selected = true;
+            }
+            gradeSelect.appendChild(opt);
+          });
+
+          if (!scaleDef.grades.some((g) => g.letter === course.letterGrade) && scaleDef.grades.length > 0) {
+            course.letterGrade = scaleDef.grades[0]?.letter || 'A';
+          }
+
+          gradeSelect.addEventListener('change', (e) => {
+            course.letterGrade = (e.target as HTMLSelectElement).value;
+            recalculate();
+          });
+
+          const chevron = document.createElement('div');
+          chevron.className = 'pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400';
+          chevron.innerHTML =
+            '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>';
+
+          gradeSelectWrapper.appendChild(gradeSelect);
+          gradeSelectWrapper.appendChild(chevron);
+          gradeCol.appendChild(gradeLabel);
+          gradeCol.appendChild(gradeSelectWrapper);
+        }
+        rowGrid.appendChild(gradeCol);
+
+        // 3. Credits (3 cols on sm+)
+        const creditsCol = document.createElement('div');
+        creditsCol.className = 'sm:col-span-3';
+
+        const creditsLabel = document.createElement('label');
+        creditsLabel.className = 'block sm:sr-only text-xs font-bold text-slate-700 mb-1';
+        creditsLabel.setAttribute('for', `course-credits-${course.id}`);
+        creditsLabel.textContent = 'Credits';
+
+        const creditsInput = document.createElement('input');
+        creditsInput.type = 'number';
+        creditsInput.id = `course-credits-${course.id}`;
+        creditsInput.min = '0';
+        creditsInput.max = '30';
+        creditsInput.step = '0.5';
+        creditsInput.value = course.credits;
+        creditsInput.placeholder = 'Credits';
+        creditsInput.className =
+          'course-credits-input w-full px-3 py-2 text-sm bg-white sm:bg-slate-50 hover:bg-white focus:bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-academic-600 focus:border-transparent transition-all shadow-subtle font-semibold text-slate-900 min-h-[42px]';
+        creditsInput.setAttribute('aria-label', `Course ${index + 1} Credits`);
+        creditsInput.addEventListener('input', (e) => {
+          course.credits = (e.target as HTMLInputElement).value;
+          recalculate();
+        });
+
+        creditsCol.appendChild(creditsLabel);
+        creditsCol.appendChild(creditsInput);
+        rowGrid.appendChild(creditsCol);
+
+        // 4. Remove Button (1 col on sm+)
+        const removeCol = document.createElement('div');
+        removeCol.className = 'sm:col-span-1 flex items-center justify-end sm:justify-center pt-2 sm:pt-0';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className =
+          'course-remove-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-rose-500 cursor-pointer min-w-[40px] min-h-[40px] flex items-center justify-center';
+        removeBtn.setAttribute('aria-label', `Remove Course ${index + 1}: ${course.name || 'Untitled'}`);
+        removeBtn.innerHTML =
+          '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>';
+
+        removeBtn.addEventListener('click', () => {
+          removeCourse(course.id);
+        });
+
+        removeCol.appendChild(removeBtn);
+        rowGrid.appendChild(removeCol);
+
+        rowWrapper.appendChild(rowGrid);
+        coursesList.appendChild(rowWrapper);
+      });
+
+      updateCourseCounter();
+      recalculate();
+    }
+
+    function addCourse() {
+      const scaleDef = getCurrentScaleDefinition();
+      const defaultGrade = scaleDef.grades[0]?.letter || 'A';
+      courses.push({
+        id: `cgpa-course-${nextCourseId++}`,
+        name: '',
+        credits: '3',
+        letterGrade: defaultGrade,
+        gradePoints: String(scaleDef.maxPoints),
+      });
+      renderCourses();
+
+      const newCourseInput = document.getElementById(`course-name-cgpa-course-${nextCourseId - 1}`);
+      if (newCourseInput) {
+        newCourseInput.focus();
+      }
+    }
+
+    function removeCourse(id: string) {
+      if (courses.length <= 1) {
+        courses[0] = {
+          id: courses[0].id,
+          name: '',
+          credits: '',
+          letterGrade: 'A',
+          gradePoints: '4.0',
+        };
+      } else {
+        courses = courses.filter((c) => c.id !== id);
+      }
+      renderCourses();
+    }
+
+    function updateCourseCounter() {
+      if (!coursesCounter) return;
+      coursesCounter.textContent = `${courses.length} ${courses.length === 1 ? 'Course' : 'Courses'} Listed`;
+    }
+
+    // RESET FUNCTION
+    function resetCalculator() {
+      currentScaleType = '4.0';
+      customMaxPoints = 4.0;
+      if (scaleSelector) scaleSelector.value = '4.0';
+      if (customMaxPointsInput) customMaxPointsInput.value = '4.0';
+      if (customMaxContainer) customMaxContainer.classList.add('hidden');
+
+      semesters = [
+        { id: 'semester-1', name: 'Semester 1 (Fall)', gpa: '3.60', credits: '15' },
+        { id: 'semester-2', name: 'Semester 2 (Spring)', gpa: '3.80', credits: '15' },
+      ];
+
+      courses = INITIAL_COURSES_DATA.map((c, i) => ({
+        id: `cgpa-course-${i + 1}`,
+        name: c.name,
+        credits: String(c.credits),
+        letterGrade: c.grade,
+        gradePoints: '4.0',
+      }));
+
+      updateScaleDescription();
+      renderSemesters();
+      renderCourses();
+      recalculate();
+    }
+
+    function updateScaleDescription() {
+      if (!scaleInfoBanner) return;
+      if (currentScaleType === '4.0') {
+        scaleInfoBanner.textContent =
+          'Standard 4.0 scale (A+ / A = 4.0, A- = 3.7, B+ = 3.3, B = 3.0, C+ = 2.3, C = 2.0, C- = 1.7, D+ = 1.3, D = 1.0, D- = 0.7, F = 0.0). Universities use varied grading models; always verify with your registrar.';
+      } else if (currentScaleType === '5.0') {
+        scaleInfoBanner.textContent =
+          'Weighted 5.0 scale (A+ = 5.0, A = 4.5, B+ = 4.0, B = 3.5, C+ = 3.0, C = 2.5, D = 2.0, F = 0.0). Widely used for advanced coursework and honors programs.';
+      } else if (currentScaleType === '10.0') {
+        scaleInfoBanner.textContent =
+          'Standard 10-point scale (O = 10.0, A+ = 9.0, A = 8.0, B+ = 7.0, B = 6.0, C = 5.0, P = 4.0, F = 0.0). Used across European, Canadian percentage, and Indian university frameworks (AICTE/UGC).';
+      } else {
+        scaleInfoBanner.textContent =
+          `Custom scale with a maximum of ${customMaxPoints.toFixed(1)} points. Enter grade points or semester GPAs directly. Check your institution’s official academic catalogue.`;
+      }
+    }
+
+    // MAIN RECALCULATE ENGINE
+    function recalculate() {
+      const scaleDef = getCurrentScaleDefinition();
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      let calculatedCGPA = 0;
+      let totalCredits = 0;
+      let qualityPoints = 0;
+      let itemsCount = 0;
+      let percentage = 0;
+      let standing = 'Good Standing';
+      let errors: string[] = [];
+
+      if (activeMode === 'semester') {
+        const semesterObjects: Semester[] = semesters.map((s) => ({
+          id: s.id,
+          name: s.name,
+          gpa: s.gpa,
+          credits: s.credits,
+        }));
+
+        const result = calculateCGPAFromSemesters(semesterObjects, scaleDef.maxPoints);
+        calculatedCGPA = result.cgpa;
+        totalCredits = result.totalCredits;
+        qualityPoints = result.totalQualityPoints;
+        itemsCount = result.itemsCount;
+        percentage = result.percentageEquivalent || 0;
+        standing = result.academicStanding;
+        errors = result.errors;
+
+        // Display Semester Errors
+        if (semesterErrorsBanner && semesterErrorsList) {
+          if (errors.length > 0) {
+            semesterErrorsList.innerHTML = errors.map((err) => `<div>• ${err}</div>`).join('');
+            semesterErrorsBanner.classList.remove('hidden');
+          } else {
+            semesterErrorsBanner.classList.add('hidden');
+          }
+        }
+      } else {
+        // Course Mode
+        const courseObjects: Course[] = courses.map((c) => ({
+          id: c.id,
+          name: c.name,
+          credits: c.credits,
+          entryMode: (currentScaleType === 'custom' ? 'points' : 'letter') as 'points' | 'letter',
+          letterGrade: c.letterGrade,
+          gradePoints: c.gradePoints,
+        }));
+
+        const result = calculateGPA(courseObjects, scaleDef);
+        calculatedCGPA = result.gpa;
+        totalCredits = result.totalCredits;
+        qualityPoints = result.totalGradePoints;
+        itemsCount = result.coursesCount;
+        percentage = result.percentageEquivalent || 0;
+        standing = result.academicStanding;
+        errors = result.errors;
+
+        // Display Course Errors
+        if (courseErrorsBanner && courseErrorsList) {
+          if (errors.length > 0) {
+            courseErrorsList.innerHTML = errors.map((err) => `<div>• ${err}</div>`).join('');
+            courseErrorsBanner.classList.remove('hidden');
+          } else {
+            courseErrorsBanner.classList.add('hidden');
+          }
+        }
+      }
+
+      // Update Results Card
+      const hasValidData = itemsCount > 0 && totalCredits > 0 && !isNaN(calculatedCGPA) && isFinite(calculatedCGPA);
+
+      if (cgpaDisplay) {
+        if (!hasValidData) {
+          cgpaDisplay.textContent = '--.--';
+          cgpaDisplay.classList.add('text-slate-400');
+          cgpaDisplay.classList.remove('text-academic-900');
+        } else {
+          cgpaDisplay.textContent = formatCGPADisplay(calculatedCGPA);
+          cgpaDisplay.classList.remove('text-slate-400');
+          cgpaDisplay.classList.add('text-academic-900');
+
+          // Subtle result-change animation respecting prefers-reduced-motion
+          if (!prefersReducedMotion) {
+            cgpaDisplay.classList.add('scale-[1.02]');
+            setTimeout(() => {
+              cgpaDisplay.classList.remove('scale-[1.02]');
+            }, 150);
+          }
+        }
+      }
+
+      if (cgpaCeilingLabel) {
+        cgpaCeilingLabel.textContent = `Out of ${scaleDef.maxPoints.toFixed(2)} Maximum`;
+      }
+
+      if (totalCreditsDisplay) {
+        totalCreditsDisplay.textContent = totalCredits > 0 ? totalCredits.toFixed(1) : '0.0';
+      }
+
+      if (itemsCountDisplay) {
+        itemsCountDisplay.textContent = String(itemsCount);
+      }
+
+      if (qualityPointsDisplay) {
+        qualityPointsDisplay.textContent = qualityPoints > 0 ? qualityPoints.toFixed(1) : '0.0';
+      }
+
+      if (percentageEquivDisplay) {
+        if (!hasValidData) {
+          percentageEquivDisplay.textContent = '--%';
+        } else {
+          percentageEquivDisplay.textContent = `~ ${percentage.toFixed(1)}%`;
+        }
+      }
+
+      if (emptyNotice) {
+        if (!hasValidData && errors.length === 0) {
+          emptyNotice.classList.remove('hidden');
+        } else {
+          emptyNotice.classList.add('hidden');
+        }
+      }
+
+      if (standingBadge) {
+        standingBadge.textContent = standing;
+        if (standing.includes('Honors') || standing.includes("Dean's")) {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-emerald-50 text-emerald-800 border-emerald-200';
+        } else if (standing.includes('Good')) {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-academic-50 text-academic-800 border-academic-200';
+        } else if (standing.includes('Warning')) {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-amber-50 text-amber-800 border-amber-200';
+        } else {
+          standingBadge.className =
+            'text-xs font-semibold px-2.5 py-0.5 rounded-full border bg-slate-100 text-slate-700 border-slate-200';
+        }
+      }
+    }
+
+    // Scale Switcher Event
+    scaleSelector.addEventListener('change', (e) => {
+      const selectedScale = (e.target as HTMLSelectElement).value as GPAScaleType;
+      currentScaleType = selectedScale;
+
+      if (currentScaleType === 'custom') {
+        customMaxContainer?.classList.remove('hidden');
+      } else {
+        customMaxContainer?.classList.add('hidden');
+      }
+
+      updateScaleDescription();
+      renderSemesters();
+      renderCourses();
+    });
+
+    if (customMaxPointsInput) {
+      customMaxPointsInput.addEventListener('input', (e) => {
+        const val = Number((e.target as HTMLInputElement).value);
+        if (!isNaN(val) && val > 0) {
+          customMaxPoints = val;
+          updateScaleDescription();
+          renderSemesters();
+          renderCourses();
+        }
+      });
+    }
+
+    if (addSemesterBtn) {
+      addSemesterBtn.addEventListener('click', addSemester);
+    }
+
+    if (addCourseBtn) {
+      addCourseBtn.addEventListener('click', addCourse);
+    }
+
+    if (resetBtn) {
+      resetBtn.addEventListener('click', resetCalculator);
+    }
+
+    // Initial render
+    renderSemesters();
+    renderCourses();
+  }
+
+  // Support both direct load and Astro view transitions
+  setupCgpaCalculator();
+  document.addEventListener('astro:page-load', setupCgpaCalculator);
+</script>

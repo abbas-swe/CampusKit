@@ -1,54 +1,354 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import InputField from '../../components/tools/InputField.astro';
+import MarksNeededCalculator from '../../components/tools/marksNeeded/MarksNeededCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('marks-needed-calculator')!;
 
-const faqs: FAQItem[] = [
+const marksNeededFaqs: FAQItem[] = [
   {
-    question: 'How do I calculate total marks needed to pass or get an A?',
+    question: 'How do I calculate how many marks I need?',
     answer:
-      'Subtract your currently earned weighted marks from your target percentage threshold, then determine the average percentage required across the remaining points or assignments.',
+      'To calculate the marks you need on an upcoming assessment using points, multiply your target percentage by the combined total possible marks (current possible + upcoming possible) and divide by 100, then subtract your current marks earned. In formula form: Required Marks = [Target % × (Current Possible + Upcoming Possible) / 100] − Current Marks Earned.',
+  },
+  {
+    question: 'What marks do I need to get an 80%?',
+    answer:
+      'If you currently have 72 out of 100 possible marks graded and your upcoming exam is worth 50 marks, your course total will be 150 marks. To achieve 80% overall (80% of 150 = 120 total marks), subtract your existing 72 marks from 120: 120 − 72 = 48 marks. You need 48 out of 50 marks (a 96.0% score) on your upcoming exam.',
+  },
+  {
+    question: 'How do I calculate the score needed on my final exam?',
+    answer:
+      'If your course uses percentage weights instead of raw points, use the Weighted Assessment mode: Required % = [Desired Final % − (Current % × Completed Weight % / 100)] ÷ (Upcoming Exam Weight % / 100). For example, if you have an 82% across 70% of the syllabus and want an 85% final grade with a 30% exam: [85 − (82 × 0.70)] ÷ 0.30 = [85 − 57.4] ÷ 0.30 = 27.6 ÷ 0.30 = 92.0%. You can also use our dedicated Final Grade Calculator.',
+  },
+  {
+    question: 'Can I calculate the marks needed for a target grade?',
+    answer:
+      'Yes. Simply enter your current graded points and the points available on your upcoming assignment, midterm, or exam, then set your desired target grade (e.g. 70% for a C, 80% for a B, or 90% for an A). The calculator will instantly determine whether the target is achievable, challenging, or already locked in.',
+  },
+  {
+    question: 'What if the marks I need are higher than the available marks?',
+    answer:
+      'If the required marks exceed the maximum points on the upcoming assessment (or if the required percentage exceeds 100%), your target grade is not mathematically achievable without extra credit, score drops, or a curve. In this case, recalculate for the next grade threshold down (e.g. B+ instead of A) to see what score secures that tier.',
+  },
+  {
+    question: 'What does it mean if the calculator says 0 marks are needed?',
+    answer:
+      'If your required score is 0 marks (or 0%), you have already secured your target grade! Your current marks alone exceed the total points needed for that percentage threshold across the entire evaluated semester, meaning you will maintain at least that final grade regardless of your upcoming assessment score.',
+  },
+  {
+    question: 'How does Points Mode differ from Weighted Assessment Mode?',
+    answer:
+      'Points Mode is designed for courses where every assignment, lab, and quiz adds raw points to a running total (e.g., scoring 380 out of 450 possible points). Weighted Assessment Mode is designed for courses where categories have percentage weights (e.g., Midterm worth 25%, Labs worth 35%, Final worth 40%) regardless of the raw number of test questions.',
   },
 ];
 ---
 
-<ToolLayout tool={tool} faqs={faqs}>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Target Marks Planner</h2>
-        <p class="text-xs text-slate-500 mb-4">Calculate points needed across remaining quizzes, papers, or practicals.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <InputField id="points-earned" label="Points Earned So Far" type="number" value="380" />
-          <InputField id="points-possible" label="Points Graded So Far" type="number" value="450" />
-          <InputField id="target-total" label="Target Total Percentage" type="number" suffix="%" value="90" />
+<ToolLayout
+  tool={tool}
+  pageTitle="Marks Needed Calculator – Calculate Your Required Score | CampusKit"
+  faqs={marksNeededFaqs}
+  canonical="/tools/marks-needed-calculator"
+  metaDescription="Calculate the marks or percentage you need on your next exam or assessment to reach your target grade. Fast, free, and easy to use."
+>
+  <!-- Interactive Calculator Container -->
+  <MarksNeededCalculator />
+
+  <!-- Comprehensive Educational Guide & SEO Documentation (Semantic HTML) -->
+  <div slot="guide" class="space-y-12">
+    <!-- Section 1: What is a Marks Needed Calculator? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What Is a Marks Needed Calculator?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        A <strong class="text-slate-900 font-semibold">Marks Needed Calculator</strong> is an academic planning utility designed to reverse-engineer the exact score, points, or percentage you must achieve on an upcoming exam, test, quiz, or final assignment to attain your target course grade.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Whether your professor grades using a cumulative points system (such as 500 total course points) or category weights (such as homework 30%, midterms 30%, and final exam 40%), this tool calculates your required performance immediately. It tells you if your academic target is realistically achievable, whether you have already secured it, or if it is mathematically out of reach.
+      </p>
+    </div>
+
+    <!-- Section 2: How to Calculate the Marks You Need -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Calculate the Marks You Need
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        To determine how many marks you need, follow this simple three-step procedure:
+      </p>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            1
+          </div>
+          <h3 class="font-bold text-slate-900 text-base">Tally Current Marks</h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Sum the points you have earned so far and the total possible points graded to date, or find your current running percentage on your course portal.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            2
+          </div>
+          <h3 class="font-bold text-slate-900 text-base">Check Upcoming Value</h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Locate the upcoming assessment's maximum points (e.g., a 50-mark midterm) or syllabus percentage weight (e.g., a 30% final assessment).
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            3
+          </div>
+          <h3 class="font-bold text-slate-900 text-base">Set Your Target</h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Choose your desired final percentage threshold, such as 70% to pass, 80% for a solid B, or 90% for an A distinction.
+          </p>
         </div>
       </div>
     </div>
 
+    <!-- Section 3: Mathematical Formulas -->
     <div>
-      <ResultCard
-        title="Points Required"
-        primaryValue="92.7%"
-        primaryLabel="Required Average on Remaining Work"
-        badge="Achievable Target"
-        badgeTone="info"
-        secondaryStats={[
-          { label: 'Current Score', value: '84.4%', subtext: 'Running Average' },
-          { label: 'Target', value: '90.0%', subtext: 'A Grade' },
-        ]}
-      />
-    </div>
-  </div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Mathematical Formulas
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        CampusKit uses two rigorous formulas depending on whether your class evaluates work by points or percentage weights:
+      </p>
 
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Planning Points & Marks Strategy</h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Breaking down required course marks into bite-sized objectives across assignments helps maintain focused motivation throughout the semester.
-    </p>
+      <div class="mt-6 space-y-6">
+        <!-- Formula 1: Points Mode -->
+        <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-academic-100 text-academic-800 uppercase">Mode 2</span>
+            <h3 class="text-base font-bold text-slate-900">Marks / Points Formula</h3>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">
+            When all coursework is measured in cumulative points:
+          </p>
+          <div class="p-4 rounded-xl bg-white border border-slate-200 font-mono text-xs sm:text-sm text-academic-900 overflow-x-auto shadow-subtle">
+            Required Marks = [Target % × (Current Possible + Upcoming Marks) ÷ 100] − Current Marks Earned
+          </div>
+          <p class="mt-3 text-xs text-slate-500">
+            Required Assessment Percentage = (Required Marks ÷ Upcoming Marks) × 100
+          </p>
+        </div>
+
+        <!-- Formula 2: Weighted Assessment Mode -->
+        <div class="p-6 rounded-2xl border border-slate-200 bg-slate-50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="px-2 py-0.5 rounded text-xs font-bold bg-academic-100 text-academic-800 uppercase">Mode 1</span>
+            <h3 class="text-base font-bold text-slate-900">Weighted Assessment Formula</h3>
+          </div>
+          <p class="text-sm text-slate-600 mb-3">
+            When syllabus categories have percentage weights (e.g. labs 40%, exam 30%):
+          </p>
+          <div class="p-4 rounded-xl bg-white border border-slate-200 font-mono text-xs sm:text-sm text-academic-900 overflow-x-auto shadow-subtle">
+            Required % = [Desired Final % − (Current % × Completed Weight ÷ 100)] ÷ (Upcoming Weight ÷ 100)
+          </div>
+          <p class="mt-3 text-xs text-slate-500">
+            Where Completed Weight + Upcoming Weight ≤ 100%.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Worked Examples -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Worked Examples
+      </h2>
+
+      <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Example 1: Points Mode -->
+        <div class="p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h3 class="text-base font-bold text-slate-900">Example 1: Points Assessment</h3>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">72/100 Graded</span>
+          </div>
+          <div class="space-y-3 text-sm text-slate-600">
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Current Marks Earned:</span>
+              <span class="font-semibold text-slate-900">72 marks</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Current Possible Marks:</span>
+              <span class="font-semibold text-slate-900">100 marks</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Upcoming Assessment:</span>
+              <span class="font-semibold text-slate-900">50 marks</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Desired Course Grade:</span>
+              <span class="font-semibold text-slate-900">80%</span>
+            </div>
+          </div>
+
+          <div class="mt-5 p-4 rounded-xl bg-academic-50/60 border border-academic-100">
+            <p class="text-xs font-bold text-academic-900 mb-1">Step-by-step Solution:</p>
+            <ol class="text-xs text-academic-800 space-y-1.5 list-decimal pl-4 font-mono">
+              <li>Total Course Points = 100 + 50 = 150 marks</li>
+              <li>Points needed for 80% = 150 × 0.80 = 120 marks</li>
+              <li>Required Marks = 120 − 72 = 48 marks</li>
+              <li>Required Assessment % = (48 ÷ 50) × 100 = <strong>96.0%</strong></li>
+            </ol>
+          </div>
+          <p class="mt-3 text-xs text-slate-500 font-medium">
+            Result: <strong class="text-slate-900">You need 48 / 50 marks (96.0%)</strong> on the upcoming assessment.
+          </p>
+        </div>
+
+        <!-- Example 2: Weighted Mode -->
+        <div class="p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+            <h3 class="text-base font-bold text-slate-900">Example 2: Weighted Syllabus</h3>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-100 text-slate-700">82% Current Avg</span>
+          </div>
+          <div class="space-y-3 text-sm text-slate-600">
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Current Course Average:</span>
+              <span class="font-semibold text-slate-900">82.0%</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Completed Course Weight:</span>
+              <span class="font-semibold text-slate-900">70%</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Upcoming Exam Weight:</span>
+              <span class="font-semibold text-slate-900">30%</span>
+            </div>
+            <div class="flex justify-between py-1 border-b border-slate-50">
+              <span class="font-medium text-slate-700">Target Final Grade:</span>
+              <span class="font-semibold text-slate-900">85%</span>
+            </div>
+          </div>
+
+          <div class="mt-5 p-4 rounded-xl bg-academic-50/60 border border-academic-100">
+            <p class="text-xs font-bold text-academic-900 mb-1">Step-by-step Solution:</p>
+            <ol class="text-xs text-academic-800 space-y-1.5 list-decimal pl-4 font-mono">
+              <li>Current Contribution = 82 × 0.70 = 57.4 points</li>
+              <li>Points Still Needed = 85 − 57.4 = 27.6 points</li>
+              <li>Required Score = 27.6 ÷ 0.30 = <strong>92.0%</strong></li>
+            </ol>
+          </div>
+          <p class="mt-3 text-xs text-slate-500 font-medium">
+            Result: <strong class="text-slate-900">You need a 92.0% score</strong> on the remaining 30% exam.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: How to Know If Your Target Grade Is Achievable -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Know If Your Target Grade Is Achievable
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        The calculator automatically classifies your goal into one of four mathematical feasibility states:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+            <h3 class="font-bold text-emerald-900 text-sm">Already Secured</h3>
+          </div>
+          <p class="text-xs text-emerald-800 leading-relaxed">
+            Required marks are ≤ 0. Your current grades already guarantee this target threshold regardless of your score.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl border border-academic-200 bg-academic-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-academic-600"></span>
+            <h3 class="font-bold text-academic-900 text-sm">Achievable Target</h3>
+          </div>
+          <p class="text-xs text-academic-800 leading-relaxed">
+            Required score is under 85%. Consistent review and normal preparation will easily secure your desired grade.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl border border-amber-200 bg-amber-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+            <h3 class="font-bold text-amber-900 text-sm">Challenging Target</h3>
+          </div>
+          <p class="text-xs text-amber-800 leading-relaxed">
+            Required score is between 85% and 100%. Highly achievable, but demands thorough study and dedicated revision.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-xl border border-rose-200 bg-rose-50/50">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            <h3 class="font-bold text-rose-900 text-sm">Not Achievable</h3>
+          </div>
+          <p class="text-xs text-rose-800 leading-relaxed">
+            Required marks exceed 100% of the upcoming assessment. Mathematically impossible without bonus points or curves.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Tips for Planning Your Remaining Assessments -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Tips for Planning Your Remaining Assessments
+      </h2>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Review the Syllabus for Dropped Grades
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Many college courses drop your lowest quiz, lab, or discussion grade at the end of the term. Recalculate your current standing excluding that lowest score to get a more accurate projection.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Prioritize High-Weight Deadlines
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            If you have an upcoming 50-mark final exam and a 5-mark homework assignment, prioritize study time proportionally. High-weight assessments produce the biggest shifts in your final course standing.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Monitor Overall Term GPA & Standing
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Use our <a href="/tools/gpa-calculator" class="text-academic-700 font-semibold hover:underline">GPA Calculator</a> and <a href="/tools/cgpa-calculator" class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a> to verify how shifts in individual course letter grades affect your scholarship eligibility and degree standing.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Pair with Exam Countdown & Study Hours
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            When preparing for exam week, pair your score targets with our <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown Timer</a> and <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to structure preparation intervals.
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </ToolLayout>

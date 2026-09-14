@@ -1,0 +1,257 @@
+---
+import ToolLayout from '../../layouts/ToolLayout.astro';
+import PomodoroTimer from '../../components/tools/pomodoro/PomodoroTimer.astro';
+import { getToolBySlug } from '../../data/tools';
+import type { FAQItem } from '../../types/seo';
+
+const tool = getToolBySlug('pomodoro-study-timer')!;
+
+const pomodoroFaqs: FAQItem[] = [
+  {
+    question: 'What is the Pomodoro technique?',
+    answer:
+      'The Pomodoro Technique is a widely used time-management framework developed by Francesco Cirillo in the late 1980s. It uses a timer to break academic work into focused intervals—traditionally 25 minutes in length—separated by 5-minute short breaks. After completing four consecutive intervals, you take a longer restorative break of 15 to 30 minutes.',
+  },
+  {
+    question: 'How long should a Pomodoro study session be?',
+    answer:
+      'The standard interval is 25 minutes of focus followed by a 5-minute break. However, for university coursework involving complex mathematical problem sets, literature analysis, or coding, many students prefer an extended 50-minute focus block with a 10-minute break. Our timer allows you to customize durations to match your cognitive stamina.',
+  },
+  {
+    question: 'How many Pomodoros should I do in a day?',
+    answer:
+      'Most undergraduate and graduate students complete between 6 and 10 high-quality Pomodoro sessions per day (representing approximately 2.5 to 4 hours of pure, undistracted deep work). Attempting more than 12 to 14 intense Pomodoro blocks daily often results in diminishing returns and mental fatigue.',
+  },
+  {
+    question: 'What should I do during a Pomodoro break?',
+    answer:
+      'Step completely away from screens. Stand up, stretch, walk around, drink water, or look out a window to rest your optic nerve. Avoid opening social media, watching videos, or checking stressful notifications, as digital stimulation prevents genuine cognitive recharge.',
+  },
+  {
+    question: 'Is Pomodoro good for studying?',
+    answer:
+      'Yes, particularly for students prone to procrastination or overwhelmed by large study backlogs. By committing to just one single 25-minute sprint, the barrier to starting is low. However, it is a tool rather than a rigid rule; if you enter a productive "flow state," feel free to finish your train of thought before taking a break.',
+  },
+  {
+    question: 'Can I customize the Pomodoro timer?',
+    answer:
+      'Yes. Click the "Settings" button on the timer to adjust focus duration (1–120 mins), short break duration (1–60 mins), long break duration (1–90 mins), and how many sessions trigger a long break. You can also toggle audio chime notifications on or off.',
+  },
+];
+---
+
+<ToolLayout
+  tool={tool}
+  pageTitle="Pomodoro Study Timer – Free Focus Timer for Students | CampusKit"
+  faqs={pomodoroFaqs}
+  canonical="/tools/pomodoro-study-timer"
+  metaDescription="Use a free Pomodoro study timer to focus for 25 minutes, take structured breaks, and build productive study sessions. Fully customizable and no signup required."
+>
+  <!-- Interactive Pomodoro Timer Component -->
+  <PomodoroTimer />
+
+  <!-- Comprehensive Educational Guide & SEO Documentation (Semantic HTML) -->
+  <div slot="guide" class="space-y-12">
+    <!-- Section 1: What Is the Pomodoro Technique? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What Is the Pomodoro Technique?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        The <strong class="text-slate-900 font-semibold">Pomodoro Technique</strong> is a structured time-management method designed to overcome procrastination, sustain mental clarity, and prevent academic burnout. Named after the tomato-shaped kitchen timer used by creator Francesco Cirillo, the method divides revision into bite-sized, distraction-free work blocks called "Pomodoros."
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Rather than attempting an exhausting 5-hour study marathon with dwindling attention, you commit to studying with complete focus for 25 minutes, followed immediately by 5 minutes of genuine relaxation. Repeating this cycle provides rhythm to your study day while keeping cognitive fatigue at bay.
+      </p>
+    </div>
+
+    <!-- Section 2: How the Pomodoro Study Timer Works -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How the Pomodoro Study Timer Works
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        Our browser timer automates the full study cycle with zero setup or accounts required:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            1
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm">Focus Block (25m)</h3>
+          <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+            Eliminate all notifications and work on one single lecture, chapter, or problem set until the timer sounds.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center text-sm mb-3">
+            2
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm">Short Break (5m)</h3>
+          <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+            Stand up, stretch, grab water, or relax your eyes away from computer and phone screens.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            3
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm">Repeat 4 Cycles</h3>
+          <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+            Complete four 25-minute focus intervals, tracking your accumulated deep work sessions automatically.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm mb-3">
+            4
+          </div>
+          <h3 class="font-bold text-slate-900 text-sm">Long Break (15m)</h3>
+          <p class="mt-1.5 text-xs text-slate-600 leading-relaxed">
+            Enjoy an extended 15 to 20-minute rest before beginning the next study cycle feeling completely recharged.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Recommended Pomodoro Schedule -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Recommended Pomodoro Schedules for College Students
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        While the standard 25/5 rhythm is effective for general tasks, different academic disciplines benefit from adjusted interval lengths:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <h3 class="text-base font-bold text-slate-900">Classic (25 / 5)</h3>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-academic-100 text-academic-800">Best for Starters</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Ideal for flashcards, reading textbook chapters, review quizzes, and writing discussion forum posts where maintaining quick sprints keeps energy high.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <h3 class="text-base font-bold text-slate-900">Deep Work (50 / 10)</h3>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">STEM & Coding</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Matches university 50-minute lecture blocks. Best for complex mathematics proofs, software programming, laboratory writeups, and essay drafting that require deeper immersion.
+          </p>
+        </div>
+
+        <div class="p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+          <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <h3 class="text-base font-bold text-slate-900">Short Sprints (15 / 3)</h3>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800">High Fatigue Days</span>
+          </div>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Perfect when dealing with heavy procrastination, mental resistance, or post-exam exhaustion. Fifteen minutes is low enough to start without feeling overwhelmed.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Benefits and Limitations of Pomodoro Studying -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Benefits & Realistic Limitations
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        The Pomodoro Technique is a practical productivity tool, but it is not a magical cure for every study challenge. Understanding its strengths and weaknesses helps you apply it wisely:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-xl border border-emerald-200 bg-emerald-50/40">
+          <h3 class="font-bold text-emerald-950 text-base mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Key Benefits
+          </h3>
+          <ul class="text-xs text-emerald-900 space-y-2 list-disc pl-4 leading-relaxed">
+            <li><strong>Lowers Activation Energy:</strong> Starting a 25-minute task is far easier mentally than facing an intimidating 6-hour revision afternoon.</li>
+            <li><strong>Guarantees Rest:</strong> Regular breaks prevent the cognitive exhaustion that causes careless mistakes on exam day.</li>
+            <li><strong>Quantifies Effort:</strong> Tracking completed Pomodoros gives you an objective record of time invested.</li>
+          </ul>
+        </div>
+
+        <div class="p-5 rounded-xl border border-amber-200 bg-amber-50/40">
+          <h3 class="font-bold text-amber-950 text-base mb-2 flex items-center gap-2">
+            <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Realistic Limitations
+          </h3>
+          <ul class="text-xs text-amber-900 space-y-2 list-disc pl-4 leading-relaxed">
+            <li><strong>Flow State Interruption:</strong> If you are immersed in writing code or a thesis argument, stopping arbitrarily at 25 minutes can derail progress. Adjust to 50 minutes or pause the timer.</li>
+            <li><strong>Time Spent vs Output:</strong> Sitting through 4 Pomodoro sessions with low engagement will not guarantee high grades. Pair time-tracking with active recall and practice testing.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: Tips for Staying Focused -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Actionable Tips for Maximum Focus
+      </h2>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Define Your Task Before Starting the Timer
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Never start the countdown without a specific deliverable. Instead of "study chemistry," write down: "Solve problems 14 through 22 on page 312." Clear objectives eliminate mid-session drifting.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Budget Your Total Prep Time First
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Use our <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to determine how many total study hours you need each day, then convert that target into Pomodoro blocks (e.g. 3 hours = 6 Pomodoros).
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Track Your Exam Deadlines
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Stay grounded with our live <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown</a> tool to visualize remaining calendar study days before your midterm or final.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Protect Your Cumulative Standing
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Monitor how your test marks translate into semester honors using the <a href="/tools/gpa-calculator" class="text-academic-700 font-semibold hover:underline">GPA Calculator</a>, <a href="/tools/cgpa-calculator" class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a>, and <a href="/tools/marks-needed-calculator" class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a>. You can also calculate your daily schedule with the <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> and watch test deadlines approach with the <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</ToolLayout>

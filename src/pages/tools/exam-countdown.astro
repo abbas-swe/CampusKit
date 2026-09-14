@@ -1,53 +1,250 @@
 ---
 import ToolLayout from '../../layouts/ToolLayout.astro';
-import ResultCard from '../../components/tools/ResultCard.astro';
-import InputField from '../../components/tools/InputField.astro';
+import ExamCountdown from '../../components/tools/examCountdown/ExamCountdown.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
 
 const tool = getToolBySlug('exam-countdown')!;
 
-const faqs: FAQItem[] = [
+const examCountdownFaqs: FAQItem[] = [
   {
-    question: 'Can I add multiple exam dates?',
+    question: 'How many days are left until my exam?',
     answer:
-      'Yes, the Exam Countdown tool allows you to save multiple midterms, finals, and assignment deadlines locally in your browser storage so they are always ready when you return.',
+      'Enter your exam date into the date picker above, and our live exam countdown will instantly display the exact number of days, hours, minutes, and seconds remaining. It also shows a practical "Study Days Remaining" count to help you organize your daily revision sessions.',
+  },
+  {
+    question: 'How do I calculate the time until an exam?',
+    answer:
+      'To calculate the time until an exam manually, subtract the current date and time from your scheduled exam date and time. Convert the resulting difference in milliseconds into days (divided by 86,400,000), hours (remainder divided by 3,600,000), minutes (remainder divided by 60,000), and seconds (remainder divided by 1,000). Our tool handles this computation automatically every second.',
+  },
+  {
+    question: 'Can I use the countdown for multiple exams?',
+    answer:
+      'Yes. You can enter any exam name (such as "Calculus Final", "Biology Midterm", or "Organic Chemistry Exam") and update the date and time as needed. You can also bookmark separate dates or use the quick date buttons (+1d, +3d, +7d, +14d) to shift between different course deadlines.',
+  },
+  {
+    question: 'Does the countdown update automatically?',
+    answer:
+      'Yes. The timer updates dynamically every single second right in your browser without requiring a page refresh. When the timer reaches zero, it automatically stops and displays an "Exam Time Reached!" message.',
+  },
+  {
+    question: 'Does the exam countdown use my local time?',
+    answer:
+      'Yes. The countdown utilizes your device’s local browser timezone (detected via standard Web API) and accounts for regional daylight-saving time adjustments automatically. No manual timezone offsets are needed.',
+  },
+  {
+    question: 'What happens if I enter a date in the past?',
+    answer:
+      'If you choose a date that has already passed, the countdown halts at zero and displays a gentle status notice letting you know the scheduled exam time has elapsed, prompting you to select an upcoming date.',
   },
 ];
 ---
 
-<ToolLayout tool={tool} faqs={faqs}>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-    <div class="lg:col-span-2 space-y-6">
-      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-subtle">
-        <h2 class="text-base font-bold text-slate-900 mb-1">Upcoming Exam Schedule</h2>
-        <p class="text-xs text-slate-500 mb-4">Set your upcoming midterm or final examination date and time.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <InputField id="exam-title" label="Course / Exam Name" value="Calculus II Final Exam" />
-          <InputField id="exam-date" label="Exam Date & Time" type="text" value="December 14, 2026 - 09:00 AM" />
+<ToolLayout
+  tool={tool}
+  pageTitle="Exam Countdown – Countdown to Your Exam | CampusKit"
+  faqs={examCountdownFaqs}
+  canonical="/tools/exam-countdown"
+  metaDescription="Count down the days, hours, minutes, and seconds until your next exam with CampusKit's free exam countdown timer."
+>
+  <!-- Interactive Countdown Container -->
+  <ExamCountdown />
+
+  <!-- Comprehensive Educational Guide & SEO Documentation (Semantic HTML) -->
+  <div slot="guide" class="space-y-12">
+    <!-- Section 1: What Is an Exam Countdown? -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        What Is an Exam Countdown?
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        An <strong class="text-slate-900 font-semibold">Exam Countdown</strong> is a precision time-tracking tool built to give college and university students crystal-clear visual awareness of approaching deadlines. Instead of vaguely knowing that an exam is "sometime next week," this tool breaks down the remaining time into exact days, hours, minutes, and seconds.
+      </p>
+      <p class="mt-3 text-base text-slate-600 leading-relaxed">
+        Having an accurate countdown reduces procrastination by grounding deadlines in reality. It serves as an anchor for effective study planning, helping you allocate review blocks realistically before exam morning arrives.
+      </p>
+    </div>
+
+    <!-- Section 2: How to Use the Exam Countdown -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Use the Exam Countdown
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        Setting up your countdown takes less than 30 seconds:
+      </p>
+
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            1
+          </div>
+          <h3 class="font-bold text-slate-900 text-base">Enter Course Name</h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Type in your subject (e.g. "Calculus Final" or "Physics Midterm") to personalize your timer display.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            2
+          </div>
+          <h3 class="font-bold text-slate-900 text-base">Select Date & Time</h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Pick your exam date and test start time, or use our quick presets (+1d, +3d, 1 week, 2 weeks).
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-slate-50/60">
+          <div class="w-8 h-8 rounded-lg bg-academic-100 text-academic-700 font-bold flex items-center justify-center text-sm mb-3">
+            3
+          </div>
+          <h3 class="font-bold text-slate-900 text-base">Track & Plan</h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Watch the live second-by-second countdown and use the calendar study day counter to budget your daily revision.
+          </p>
         </div>
       </div>
     </div>
 
+    <!-- Section 3: How to Prepare for an Exam When You Have Limited Time -->
     <div>
-      <ResultCard
-        title="Time Until Exam"
-        primaryValue="42d 14h"
-        primaryLabel="Remaining Before Exam Start"
-        badge="Midterm / Finals Countdown"
-        badgeTone="neutral"
-        secondaryStats={[
-          { label: 'Study Days', value: '30 Days', subtext: 'Excl. Weekends' },
-          { label: 'Weekly Hours', value: '12 hrs', subtext: 'Target Review' },
-        ]}
-      />
-    </div>
-  </div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Prepare for an Exam When You Have Limited Time
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        When your countdown shows only a few days or hours remaining, standard study habits must pivot toward high-yield revision strategies:
+      </p>
 
-  <div slot="guide" class="prose prose-slate max-w-none">
-    <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Active Spaced Repetition Planning</h2>
-    <p class="text-base text-slate-600 leading-relaxed mt-4">
-      Cognitive science demonstrates that spacing review sessions across weeks rather than cramming the night before finals dramatically increases long-term retention and reduces exam anxiety.
-    </p>
+      <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Prioritize Past Papers & Practice Problems
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Solving actual exam-style questions identifies knowledge blind spots immediately. Testing yourself activates active recall, which consolidates memories twice as fast as re-reading notes.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Calculate Your Daily Study Capacity
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Use our companion <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to divide your required prep time evenly across your remaining countdown days rather than attempting exhausting all-nighters.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            Determine Your Minimum Required Score
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Eliminate guesswork by using our <a href="/tools/marks-needed-calculator" class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a> to determine exactly what grade you need to protect your GPA.
+          </p>
+        </div>
+
+        <div class="p-5 rounded-xl border border-slate-200 bg-white">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+            <svg class="w-4 h-4 text-academic-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            Protect Your Sleep the Night Before
+          </h3>
+          <p class="mt-2 text-sm text-slate-600 leading-relaxed">
+            Sleep is when your brain transfers learned formulas and vocabulary into long-term memory. Sacrificing sleep in the final 24 hours causes brain fog, slow processing speeds, and avoidable careless errors.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: How to Calculate Days Until an Exam -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        How to Calculate Days Until an Exam
+      </h2>
+      <p class="mt-4 text-base text-slate-600 leading-relaxed">
+        Mathematically, calculating the time remaining between two timestamps follows standard date arithmetic:
+      </p>
+
+      <div class="mt-6 p-6 rounded-2xl border border-slate-200 bg-slate-50">
+        <h3 class="text-base font-bold text-slate-900 mb-2">Countdown Time Formula</h3>
+        <div class="p-4 rounded-xl bg-white border border-slate-200 font-mono text-xs sm:text-sm text-academic-900 overflow-x-auto shadow-subtle space-y-1.5">
+          <div>Time Difference (ms) = Exam Timestamp − Current Timestamp</div>
+          <div>Days = Math.floor(Time Difference ÷ 86,400,000)</div>
+          <div>Hours = Math.floor((Time Difference % 86,400,000) ÷ 3,600,000)</div>
+          <div>Minutes = Math.floor((Time Difference % 3,600,000) ÷ 60,000)</div>
+          <div>Seconds = Math.floor((Time Difference % 60,000) ÷ 1,000)</div>
+        </div>
+        <p class="mt-3 text-xs text-slate-500 leading-relaxed">
+          Our calculator re-evaluates this formula continuously every 1,000 milliseconds using your local browser time, ensuring zero drift.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section 5: Worked Example -->
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
+        Worked Example
+      </h2>
+      <div class="mt-6 p-6 rounded-2xl border border-slate-200 bg-white shadow-subtle">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <h3 class="text-base font-bold text-slate-900">Sample Countdown: Calculus Final</h3>
+          <span class="text-xs font-semibold px-2 py-0.5 rounded bg-academic-100 text-academic-800">12 Days Out</span>
+        </div>
+        <div class="space-y-3 text-sm text-slate-600">
+          <div class="flex justify-between py-1 border-b border-slate-50">
+            <span class="font-medium text-slate-700">Course Name:</span>
+            <span class="font-semibold text-slate-900">Calculus Final</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-50">
+            <span class="font-medium text-slate-700">Exam Date & Time:</span>
+            <span class="font-semibold text-slate-900">12 days, 4 hours, 32 minutes from now</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-50">
+            <span class="font-medium text-slate-700">Live Clock Units:</span>
+            <span class="font-mono font-bold text-academic-800">12d : 04h : 32m : 18s</span>
+          </div>
+          <div class="flex justify-between py-1 border-b border-slate-50">
+            <span class="font-medium text-slate-700">Calendar Study Days:</span>
+            <span class="font-semibold text-emerald-700">13 study days remaining</span>
+          </div>
+        </div>
+        <p class="mt-4 text-xs text-slate-500 font-medium">
+          Result: With 13 calendar study days and 30 total hours needed, the student can schedule an easy 2.3 hours per day to achieve a comprehensive review without last-minute stress.
+        </p>
+      </div>
+    </div>
+
+    <!-- Related Exam Preparation Workflows -->
+    <div class="p-6 rounded-xl bg-slate-50 border border-slate-200">
+      <h3 class="text-lg font-bold text-slate-900 mb-2">Next Steps for Exam Preparation</h3>
+      <p class="text-sm text-slate-600 mb-4 leading-relaxed">
+        Now that your exam countdown is running, organize your revision schedule with these companion tools:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+        <a href="/tools/study-hours-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+          <span>Calculate Daily Study Hours</span>
+          <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+        </a>
+        <a href="/tools/pomodoro-study-timer" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+          <span>Start Pomodoro Study Timer</span>
+          <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+        </a>
+        <a href="/tools/marks-needed-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+          <span>Find Marks Needed on Finals</span>
+          <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
+        </a>
+      </div>
+    </div>
   </div>
 </ToolLayout>

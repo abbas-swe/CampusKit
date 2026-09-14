@@ -3,53 +3,226 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
 
-const breadcrumbs = [{ name: 'Terms of Service', item: '/terms' }];
-const lastUpdated = 'September 2026';
+const breadcrumbs = [{ name: 'Terms of Use', item: '/terms' }];
+const lastUpdated = 'September 14, 2026';
 ---
 
 <BaseLayout
-  title="Terms of Service"
-  description="CampusKit's Terms of Service. Guidelines and terms governing use of our university tools and calculators."
+  title="Terms of Use | CampusKit"
+  description="CampusKit's Terms of Use. Guidelines, calculator accuracy disclaimers, and user terms for our free student academic tools and utilities."
   canonical="/terms"
   breadcrumbs={breadcrumbs}
 >
+  <!-- Header Banner -->
   <div class="bg-white border-b border-slate-200">
     <Container size="lg" class="py-12 sm:py-16">
       <Breadcrumbs items={breadcrumbs} />
-      <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mt-4">
-        Terms of Service
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-academic-50 text-academic-700 border border-academic-200/80 mt-4 mb-4">
+        <span>Platform Guidelines</span>
+      </div>
+      <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
+        Terms of Use
       </h1>
-      <p class="mt-2 text-sm text-slate-500">Last updated: {lastUpdated}</p>
+      <p class="mt-3 text-sm text-slate-500">
+        Last updated: {lastUpdated}
+      </p>
+      <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed max-w-3xl">
+        These Terms of Use govern your access to and use of CampusKit's academic calculators, timers, and productivity tools. We've written them in plain, understandable language so students know exactly what to expect.
+      </p>
     </Container>
   </div>
 
-  <div class="py-12 bg-slate-50">
+  <!-- Main Terms Content -->
+  <div class="py-12 sm:py-16 bg-slate-50">
     <Container size="lg">
-      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-subtle prose prose-slate max-w-none">
-        <h2>1. Acceptance of Terms</h2>
-        <p>
-          By accessing or using CampusKit ("the Service"), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.
-        </p>
+      <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 shadow-subtle space-y-12">
+        <!-- Important Notice Box: Academic Disclaimer Highlight -->
+        <div class="p-6 rounded-xl bg-amber-50 border border-amber-200 text-amber-900">
+          <div class="flex items-start gap-3">
+            <svg class="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div>
+              <h2 class="text-base font-bold text-amber-950">
+                Important Academic Disclaimer
+              </h2>
+              <p class="mt-1.5 text-xs sm:text-sm text-amber-900 leading-relaxed">
+                CampusKit calculators are <strong>informational and planning tools</strong> created to assist your personal study organization. They do not constitute official university degree audits, certified transcripts, or official academic counseling. Grading formulas, plus/minus point values, rounding rules, and attendance policies differ across institutions and course syllabi. <strong>Always confirm critical academic decisions, degree progress, and official grades with your professor, academic advisor, or university registrar's office.</strong>
+              </p>
+            </div>
+          </div>
+        </div>
 
-        <h2>2. Educational & Informational Purpose</h2>
-        <p>
-          The calculators, estimates, and academic planning utilities provided on CampusKit are offered strictly for educational, organizational, and informational purposes. While we strive to maintain meticulous adherence to standard higher education grading formulas, official grades, degrees, and academic standings are determined solely by your educational institution's registrar.
-        </p>
+        <!-- 1. Acceptance of Terms -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            1. Acceptance of Terms
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            By visiting, accessing, or using CampusKit (including all tools, calculators, and pages available under this domain), you agree to comply with and be bound by these Terms of Use. If you do not agree with any part of these terms, please do not use the website.
+          </p>
+        </section>
 
-        <h2>3. Permitted Use</h2>
-        <p>
-          CampusKit is provided free of charge for personal, non-commercial use by students, educators, and academic advisors. You agree not to attempt to disrupt, compromise, or systematically scrape the platform's infrastructure.
-        </p>
+        <!-- 2. Permitted Use -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            2. Permitted Use
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            CampusKit is provided for personal, non-commercial educational use by university students, college attendees, educators, and academic advisors. You agree to use the site responsibly and lawfully.
+          </p>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            You agree not to:
+          </p>
+          <ul class="text-sm sm:text-base text-slate-600 space-y-1.5 list-disc list-inside pl-2">
+            <li>Attempt to disrupt, overload, or compromise the stability or security of our hosting infrastructure;</li>
+            <li>Deploy automated scrapers, bots, or extraction scripts in a manner that degrades service performance for others;</li>
+            <li>Misrepresent CampusKit results as an official statement or decree from an accredited university or academic registrar;</li>
+            <li>Use the site for any unlawful or malicious purpose.</li>
+          </ul>
+        </section>
 
-        <h2>4. Disclaimer of Warranties</h2>
-        <p>
-          The Service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind, whether express or implied.
-        </p>
+        <!-- 3. Free Tools & Zero Subscriptions -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            3. Free Tools & No Account Requirements
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            All tools and calculators on CampusKit are provided completely free of charge. We do not require account creation, user logins, credit card details, or recurring subscriptions. We reserve the right to modify or adjust features to preserve free accessibility for students.
+          </p>
+        </section>
 
-        <h2>5. Contact</h2>
-        <p>
-          If you have questions regarding these Terms, please reach out through our <a href="/contact">contact page</a>.
-        </p>
+        <!-- 4. Calculator Accuracy & Institutional Discrepancies -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            4. Calculator Accuracy & Institutional Discrepancies
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            While CampusKit calculates mathematical outcomes based on widely accepted academic standards (such as standard 4.0 GPA weighting, percentage formulas, and weighted component averages), <strong>higher education institutions do not follow a single universal grading policy</strong>.
+          </p>
+          <div class="space-y-2 text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p>
+              Specifically, note that:
+            </p>
+            <ul class="space-y-1.5 list-disc list-inside pl-2">
+              <li><strong>Grade Scales:</strong> Some institutions assign 4.33 to an A+, others cap at 4.00, and others use 5.0, 10.0, or 7-point scales;</li>
+              <li><strong>Rounding Rules:</strong> Some professors round 89.5% up to an A-, while others maintain strict truncation policies;</li>
+              <li><strong>Attendance Policies:</strong> Specific departments or athletic programs may count partial absences, excused medical leave, or tardiness differently than standard percentages;</li>
+              <li><strong>Credit Weighting:</strong> Courses with zero credit, pass/fail options, or audit marks affect semester averages differently depending on registrar rules.</li>
+            </ul>
+            <p class="pt-2">
+              You are responsible for reviewing your specific course syllabus and departmental guidelines to ensure calculations match your institution's specific formulas.
+            </p>
+          </div>
+        </section>
+
+        <!-- 5. User Responsibility -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            5. User Responsibility
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            You are solely responsible for:
+          </p>
+          <ul class="text-sm sm:text-base text-slate-600 space-y-1.5 list-disc list-inside pl-2">
+            <li>The accuracy and completeness of all data and numbers you input into our tools;</li>
+            <li>Verifying all exam dates, times, and deadlines against official university timetables;</li>
+            <li>Making academic commitments, course drop/add choices, and graduation planning in consultation with authorized institutional staff.</li>
+          </ul>
+        </section>
+
+        <!-- 6. No Professional Advice -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            6. No Professional Advice
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            The calculations, timers, and informational content provided on CampusKit do not constitute certified academic counseling, financial aid advisory services, legal guidance, or official degree audit reports. For official academic counseling, please consult your university’s academic advising department, dean of students, or registrar.
+          </p>
+        </section>
+
+        <!-- 7. Intellectual Property -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            7. Intellectual Property
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            The CampusKit website design, branding, logo, visual layout, interactive user interfaces, and original code are protected by copyright and intellectual property laws. You may not copy, reproduce, mirror, or redistribute our website design or brand assets for commercial exploitation without prior written consent.
+          </p>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            Standard mathematical formulas, arithmetic equations, and public grading algorithms belong to the public domain and are freely accessible to all learners.
+          </p>
+        </section>
+
+        <!-- 8. Third-Party Links & External Services -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            8. Third-Party Links & External Services
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            CampusKit may feature links to external third-party resources or university documentation. These links are provided solely as a convenience. CampusKit has no control over the content, uptime, or policies of third-party platforms and assumes no liability for external services or third-party web content.
+          </p>
+        </section>
+
+        <!-- 9. Availability & Service Interruptions -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            9. Availability and Service Interruptions
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            CampusKit is provided on an <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong> basis without warranties of any kind, whether express, statutory, or implied. While we strive for optimal uptime and build client-side utilities capable of running reliably in modern browsers, we do not guarantee that the site will always be uninterrupted, error-free, or compatible with obsolete browsers or devices.
+          </p>
+        </section>
+
+        <!-- 10. Limitation of Liability -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            10. Limitation of Liability
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            To the maximum extent permitted by applicable law, CampusKit, its operators, contributors, and affiliates shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from or related to:
+          </p>
+          <ul class="text-sm sm:text-base text-slate-600 space-y-1.5 list-disc list-inside pl-2">
+            <li>Your use of, or inability to use, our calculators or services;</li>
+            <li>Any discrepancy between CampusKit estimates and your official institution records or grades;</li>
+            <li>Academic consequences, including course failures, loss of honors, scholarship eligibility changes, or graduation delays;</li>
+            <li>Missed exam deadlines, schedule errors, or study countdown misunderstandings;</li>
+            <li>Loss of local draft data due to browser clearing or device malfunctions.</li>
+          </ul>
+        </section>
+
+        <!-- 11. Changes to the Service -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            11. Changes to the Service
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            We reserve the right to refine, update, enhance, or discontinue any calculator, utility, or feature at any time without prior notice.
+          </p>
+        </section>
+
+        <!-- 12. Changes to These Terms -->
+        <section class="space-y-3">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            12. Changes to These Terms
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            We may revise these Terms of Use periodically. Updated terms will be published on this page with an updated revision date. Your continued use of CampusKit following the posting of changes constitutes your binding acceptance of the updated terms.
+          </p>
+        </section>
+
+        <!-- 13. Contact Information -->
+        <section class="space-y-3 pt-4 border-t border-slate-200">
+          <h2 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+            13. Contact Information
+          </h2>
+          <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
+            If you have questions, feedback, or concerns regarding these Terms of Use, please reach out through our <a href="/contact" class="text-academic-700 font-medium underline hover:text-academic-800">Contact Page</a>.
+          </p>
+          <p class="text-xs text-slate-500 italic">
+            [Administrative Legal Contact Placeholder: inquiries may be submitted via the Contact form or administrator email placeholder: contact@example.com]
+          </p>
+        </section>
       </div>
     </Container>
   </div>
