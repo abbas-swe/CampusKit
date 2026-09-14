@@ -3,23 +3,24 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Button from '../components/common/Button.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { resolvePath } from '../utils/paths';
 
-const breadcrumbs = [{ name: 'About CampusKit', item: '/about' }];
+const breadcrumbs = [{ name: 'About CampusKit', item: resolvePath('/about') }];
 
 const academicTools = [
   {
     name: 'GPA Calculator',
-    href: '/tools/gpa-calculator',
+    href: resolvePath('/tools/gpa-calculator'),
     description: 'Calculate semester and cumulative grade point averages across 4.0, 5.0, 10.0, and custom scales with credit weighting.',
   },
   {
     name: 'CGPA Calculator',
-    href: '/tools/cgpa-calculator',
+    href: resolvePath('/tools/cgpa-calculator'),
     description: 'Aggregate cumulative grade point averages across multiple semesters or course groups with real-time academic standing indicators.',
   },
   {
     name: 'Marks Needed Calculator',
-    href: '/tools/marks-needed-calculator',
+    href: resolvePath('/tools/marks-needed-calculator'),
     description: 'Reverse-engineer the exact score needed on upcoming assignments, midterms, or projects to hit your target class average.',
   },
 ];
@@ -27,17 +28,17 @@ const academicTools = [
 const productivityTools = [
   {
     name: 'Study Hours Calculator',
-    href: '/tools/study-hours-calculator',
+    href: resolvePath('/tools/study-hours-calculator'),
     description: 'Plan daily study time, calculate total preparation hours, and balance study workloads across multiple challenging courses.',
   },
   {
     name: 'Exam Countdown Timer',
-    href: '/tools/exam-countdown',
+    href: resolvePath('/tools/exam-countdown'),
     description: 'Keep important deadlines top of mind with live, second-by-second countdowns to midterms, finals, and project due dates.',
   },
   {
     name: 'Pomodoro Study Timer',
-    href: '/tools/pomodoro-study-timer',
+    href: resolvePath('/tools/pomodoro-study-timer'),
     description: 'Structure productive study blocks and resting intervals using proven time-boxing techniques tailored for academic focus.',
   },
 ];

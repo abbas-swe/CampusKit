@@ -2,13 +2,13 @@ User-agent: *
 Allow: /
 
 # Disallow internal redirect and non-public placeholder routes
-Disallow: /404
-Disallow: /tools/pomodoro-timer
-Disallow: /tools/grade-calculator
-Disallow: /tools/percentage-calculator
-Disallow: /tools/attendance-calculator
-Disallow: /tools/final-grade-calculator
+Disallow: /CampusKit/404
+Disallow: /CampusKit/tools/pomodoro-timer
+Disallow: /CampusKit/tools/grade-calculator
+Disallow: /CampusKit/tools/percentage-calculator
+Disallow: /CampusKit/tools/attendance-calculator
+Disallow: /CampusKit/tools/final-grade-calculator
 
 # Production Sitemaps
-Sitemap: https://campuskit.io/sitemap-index.xml
-Sitemap: https://campuskit.io/sitemap.xml
+Sitemap: https://abbas-swe.github.io/CampusKit/sitemap-index.xml
+Sitemap: https://abbas-swe.github.io/CampusKit/sitemap.xml

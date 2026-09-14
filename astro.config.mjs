@@ -2,18 +2,15 @@ import { defineConfig } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
-// Determine deployment site and base path:
-// Default: 'https://campuskit.io' (Custom Domain / root)
-// Automatically overridden by GitHub Actions if deployed to https://<owner>.github.io/<repo>
-const site = process.env.ASTRO_SITE || process.env.SITE || 'https://campuskit.io';
-const rawBase = process.env.ASTRO_BASE || process.env.BASE_PATH || '';
-const base = rawBase && rawBase !== '/' ? rawBase : undefined;
+// GitHub Pages configuration for repository: https://github.com/abbas-swe/CampusKit
+const site = process.env.ASTRO_SITE || process.env.SITE || 'https://abbas-swe.github.io';
+const base = process.env.ASTRO_BASE || process.env.BASE_PATH || '/CampusKit';
 
 // https://astro.build/config
 export default defineConfig({
   site,
   base,
-  trailingSlash: 'never',
+  trailingSlash: 'always',
   integrations: [
     tailwind({
       applyBaseStyles: false,

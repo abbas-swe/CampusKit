@@ -2,15 +2,16 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { resolvePath } from '../utils/paths';
 
-const breadcrumbs = [{ name: 'Privacy Policy', item: '/privacy' }];
+const breadcrumbs = [{ name: 'Privacy Policy', item: resolvePath('/privacy') }];
 const lastUpdated = 'September 14, 2026';
 ---
 
 <BaseLayout
   title="Privacy Policy | CampusKit"
   description="CampusKit's Privacy Policy. Learn how we protect student privacy with client-side calculation, zero account friction, and transparent data practices."
-  canonical="/privacy"
+  canonical={resolvePath('/privacy')}
   breadcrumbs={breadcrumbs}
 >
   <!-- Header Banner -->
@@ -64,7 +65,7 @@ const lastUpdated = 'September 14, 2026';
               <strong>Academic & Calculation Data:</strong> When you enter course names, grades, credit hours, percentage weights, attendance records, or target GPA figures into our calculators, this data is processed solely within your device's web browser via client-side JavaScript. This academic information is not transmitted to, collected by, or saved on any remote CampusKit server or database.
             </p>
             <p>
-              <strong>Voluntary Communications:</strong> If you choose to contact us directly (such as to submit feedback, report a calculation issue, or suggest a new tool via our <a href="/contact" class="text-academic-700 font-medium underline hover:text-academic-800">Contact page</a>), you may provide your name, email address, inquiry topic, and message content. This information is used strictly to reply to your inquiry and evaluate tool improvements.
+              <strong>Voluntary Communications:</strong> If you choose to contact us directly (such as to submit feedback, report a calculation issue, or suggest a new tool via our <a href={resolvePath('/contact')} class="text-academic-700 font-medium underline hover:text-academic-800">Contact page</a>), you may provide your name, email address, inquiry topic, and message content. This information is used strictly to reply to your inquiry and evaluate tool improvements.
             </p>
           </div>
         </section>
@@ -240,7 +241,7 @@ const lastUpdated = 'September 14, 2026';
             13. Contact Information
           </h2>
           <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, you can reach out via our dedicated <a href="/contact" class="text-academic-700 font-medium underline hover:text-academic-800">Contact Page</a>.
+            If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, you can reach out via our dedicated <a href={resolvePath('/contact')} class="text-academic-700 font-medium underline hover:text-academic-800">Contact Page</a>.
           </p>
           <p class="text-xs text-slate-500 italic">
             [Administrative Contact Placeholder: inquiries may be directed through the site contact form or administrator email placeholder: contact@example.com]

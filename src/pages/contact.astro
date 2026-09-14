@@ -3,8 +3,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Button from '../components/common/Button.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { resolvePath } from '../utils/paths';
 
-const breadcrumbs = [{ name: 'Contact & Support', item: '/contact' }];
+const breadcrumbs = [{ name: 'Contact & Support', item: resolvePath('/contact') }];
 
 const inquiryTopics = [
   { value: 'feedback', label: 'General Feedback & Thoughts' },
@@ -17,9 +18,9 @@ const inquiryTopics = [
 <BaseLayout
   title="Contact CampusKit | Student Tools & Support"
   description="Contact CampusKit. Share feedback, report calculation bugs, suggest new academic calculators, or submit general inquiries."
-  canonical="/contact"
+  canonical={resolvePath('/contact')}
   breadcrumbs={breadcrumbs}
-  activeNavPath="/contact"
+  activeNavPath={resolvePath('/contact')}
 >
   <!-- Header Banner -->
   <div class="bg-white border-b border-slate-200">

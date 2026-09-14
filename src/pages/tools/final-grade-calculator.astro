@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import FinalGradeCalculator from '../../components/tools/finalGrade/FinalGradeCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('final-grade-calculator')!;
 
@@ -276,7 +277,7 @@ const finalGradeFaqs: FAQItem[] = [
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <div>
-          <strong>Ready to calculate your term and cumulative GPA?</strong> Once your final grades are locked in, convert your letter grades into cumulative GPA using our official <a href="/tools/gpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">GPA Calculator</a> and multi-term <a href="/tools/cgpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">CGPA Calculator</a>.
+          <strong>Ready to calculate your term and cumulative GPA?</strong> Once your final grades are locked in, convert your letter grades into cumulative GPA using our official <a href={resolvePath('/tools/gpa-calculator')} class="underline font-semibold text-academic-800 hover:text-academic-950">GPA Calculator</a> and multi-term <a href={resolvePath('/tools/cgpa-calculator')} class="underline font-semibold text-academic-800 hover:text-academic-950">CGPA Calculator</a>.
         </div>
       </div>
     </div>

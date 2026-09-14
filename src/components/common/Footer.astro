@@ -1,25 +1,26 @@
 ---
 import Container from './Container.astro';
+import { resolvePath } from '../../utils/paths';
 
 const currentYear = new Date().getFullYear();
 
 const academicTools = [
-  { name: 'GPA Calculator', href: '/tools/gpa-calculator' },
-  { name: 'CGPA Calculator', href: '/tools/cgpa-calculator' },
-  { name: 'Marks Needed Calculator', href: '/tools/marks-needed-calculator' },
+  { name: 'GPA Calculator', href: resolvePath('/tools/gpa-calculator') },
+  { name: 'CGPA Calculator', href: resolvePath('/tools/cgpa-calculator') },
+  { name: 'Marks Needed Calculator', href: resolvePath('/tools/marks-needed-calculator') },
 ];
 
 const productivityTools = [
-  { name: 'Study Hours Calculator', href: '/tools/study-hours-calculator' },
-  { name: 'Exam Countdown Timer', href: '/tools/exam-countdown' },
-  { name: 'Pomodoro Study Timer', href: '/tools/pomodoro-study-timer' },
+  { name: 'Study Hours Calculator', href: resolvePath('/tools/study-hours-calculator') },
+  { name: 'Exam Countdown Timer', href: resolvePath('/tools/exam-countdown') },
+  { name: 'Pomodoro Study Timer', href: resolvePath('/tools/pomodoro-study-timer') },
 ];
 
 const legalLinks = [
-  { name: 'About CampusKit', href: '/about' },
-  { name: 'Contact & Support', href: '/contact' },
-  { name: 'Privacy Policy', href: '/privacy' },
-  { name: 'Terms of Use', href: '/terms' },
+  { name: 'About CampusKit', href: resolvePath('/about') },
+  { name: 'Contact & Support', href: resolvePath('/contact') },
+  { name: 'Privacy Policy', href: resolvePath('/privacy') },
+  { name: 'Terms of Use', href: resolvePath('/terms') },
 ];
 ---
 
@@ -125,10 +126,10 @@ const legalLinks = [
     <div class="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
       <p>© {currentYear} CampusKit. Built for university students worldwide.</p>
       <div class="flex items-center gap-6">
-        <a href="/about" class="hover:text-slate-400 transition-colors">About</a>
-        <a href="/contact" class="hover:text-slate-400 transition-colors">Contact</a>
-        <a href="/privacy" class="hover:text-slate-400 transition-colors">Privacy</a>
-        <a href="/terms" class="hover:text-slate-400 transition-colors">Terms</a>
+        <a href={resolvePath('/about')} class="hover:text-slate-400 transition-colors">About</a>
+        <a href={resolvePath('/contact')} class="hover:text-slate-400 transition-colors">Contact</a>
+        <a href={resolvePath('/privacy')} class="hover:text-slate-400 transition-colors">Privacy</a>
+        <a href={resolvePath('/terms')} class="hover:text-slate-400 transition-colors">Terms</a>
       </div>
     </div>
   </Container>

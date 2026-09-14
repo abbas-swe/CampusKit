@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import ExamCountdown from '../../components/tools/examCountdown/ExamCountdown.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('exam-countdown')!;
 
@@ -137,7 +138,7 @@ const examCountdownFaqs: FAQItem[] = [
             Calculate Your Daily Study Capacity
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Use our companion <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to divide your required prep time evenly across your remaining countdown days rather than attempting exhausting all-nighters.
+            Use our companion <a href={resolvePath('/tools/study-hours-calculator')} class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to divide your required prep time evenly across your remaining countdown days rather than attempting exhausting all-nighters.
           </p>
         </div>
 
@@ -149,7 +150,7 @@ const examCountdownFaqs: FAQItem[] = [
             Determine Your Minimum Required Score
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Eliminate guesswork by using our <a href="/tools/marks-needed-calculator" class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a> to determine exactly what grade you need to protect your GPA.
+            Eliminate guesswork by using our <a href={resolvePath('/tools/marks-needed-calculator')} class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a> to determine exactly what grade you need to protect your GPA.
           </p>
         </div>
 
@@ -232,15 +233,15 @@ const examCountdownFaqs: FAQItem[] = [
         Now that your exam countdown is running, organize your revision schedule with these companion tools:
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-        <a href="/tools/study-hours-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/study-hours-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Calculate Daily Study Hours</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>
-        <a href="/tools/pomodoro-study-timer" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/pomodoro-study-timer')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Start Pomodoro Study Timer</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>
-        <a href="/tools/marks-needed-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/marks-needed-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Find Marks Needed on Finals</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>

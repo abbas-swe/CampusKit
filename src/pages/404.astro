@@ -2,42 +2,43 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Button from '../components/common/Button.astro';
+import { resolvePath } from '../utils/paths';
 
 const popularTools = [
   {
     name: 'GPA Calculator',
     description: 'Calculate semester and cumulative grade point averages instantly.',
-    href: '/tools/gpa-calculator',
+    href: resolvePath('/tools/gpa-calculator'),
     badge: 'Popular',
   },
   {
     name: 'CGPA Calculator',
     description: 'Compute multi-semester cumulative grade point averages.',
-    href: '/tools/cgpa-calculator',
+    href: resolvePath('/tools/cgpa-calculator'),
     badge: 'Popular',
   },
   {
     name: 'Marks Needed Calculator',
     description: 'Find the score needed on an upcoming exam to reach your target grade.',
-    href: '/tools/marks-needed-calculator',
+    href: resolvePath('/tools/marks-needed-calculator'),
     badge: 'Popular',
   },
   {
     name: 'Study Hours Calculator',
     description: 'Calculate daily study hours and balance time across all subjects.',
-    href: '/tools/study-hours-calculator',
+    href: resolvePath('/tools/study-hours-calculator'),
     badge: 'Popular',
   },
   {
     name: 'Exam Countdown Timer',
     description: 'Live countdown of days, hours, and minutes until your next test.',
-    href: '/tools/exam-countdown',
+    href: resolvePath('/tools/exam-countdown'),
     badge: 'Timer',
   },
   {
     name: 'Pomodoro Study Timer',
     description: '25/5 and 50/10 focus intervals designed for distraction-free revision.',
-    href: '/tools/pomodoro-study-timer',
+    href: resolvePath('/tools/pomodoro-study-timer'),
     badge: 'Timer',
   },
 ];

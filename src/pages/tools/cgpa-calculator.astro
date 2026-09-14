@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import CgpaCalculator from '../../components/tools/cgpa/CgpaCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('cgpa-calculator')!;
 
@@ -147,7 +148,7 @@ const cgpaFaqs: FAQItem[] = [
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <div>
-          <strong>Calculating a single semester?</strong> If you want to compute individual course grades for an active term, use our dedicated <a href="/tools/gpa-calculator" class="underline font-semibold text-academic-800 hover:text-academic-950">College GPA Calculator</a> with letter-grade converters.
+          <strong>Calculating a single semester?</strong> If you want to compute individual course grades for an active term, use our dedicated <a href={resolvePath('/tools/gpa-calculator')} class="underline font-semibold text-academic-800 hover:text-academic-950">College GPA Calculator</a> with letter-grade converters.
         </div>
       </div>
     </div>
@@ -319,15 +320,15 @@ const cgpaFaqs: FAQItem[] = [
         Complement your cumulative CGPA tracking with these active CampusKit calculators:
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-        <a href="/tools/gpa-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/gpa-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Single-Term GPA Calculator</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>
-        <a href="/tools/marks-needed-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/marks-needed-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Calculate Marks Needed</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>
-        <a href="/tools/exam-countdown" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/exam-countdown')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Exam Countdown Timer</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>

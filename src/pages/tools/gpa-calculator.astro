@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import GpaCalculator from '../../components/tools/gpa/GpaCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('gpa-calculator')!;
 
@@ -237,15 +238,15 @@ const gpaFaqs: FAQItem[] = [
         Calculating your term GPA is just one step in tracking your degree progress. Check out these companion calculators:
       </p>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-        <a href="/tools/cgpa-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/cgpa-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Calculate Cumulative CGPA</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>
-        <a href="/tools/marks-needed-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/marks-needed-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Find Marks Needed on Finals</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>
-        <a href="/tools/study-hours-calculator" class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
+        <a href={resolvePath('/tools/study-hours-calculator')} class="p-3.5 bg-white rounded-lg border border-slate-200 hover:border-academic-300 hover:text-academic-700 transition-all font-medium flex items-center justify-between group">
           <span>Plan Daily Study Hours</span>
           <span class="text-academic-600 group-hover:translate-x-0.5 transition-transform">&rarr;</span>
         </a>

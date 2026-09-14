@@ -1,5 +1,6 @@
 ---
 import type { ToolMetadata } from '../../types/tools';
+import { resolvePath } from '../../utils/paths';
 
 interface Props {
   tool: ToolMetadata;
@@ -23,7 +24,7 @@ const badgeColors: Record<string, string> = {
 
 const isComingSoon = tool.status === 'coming-soon';
 const Tag = isComingSoon ? 'div' : 'a';
-const href = isComingSoon ? undefined : `/tools/${tool.slug}`;
+const href = isComingSoon ? undefined : resolvePath(`/tools/${tool.slug}`);
 ---
 
 <Tag

@@ -45,13 +45,16 @@ const sizeStyles = {
   lg: 'text-base px-5 py-2.5 gap-2.5',
 };
 
+import { resolvePath } from '../../utils/paths';
+
 const combinedClass = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
+const resolvedHref = href ? resolvePath(href) : undefined;
 ---
 
 {
-  href ? (
+  resolvedHref ? (
     <a
-      href={href}
+      href={resolvedHref}
       class={combinedClass}
       id={id}
       target={target}

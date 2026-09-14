@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import StudyHoursCalculator from '../../components/tools/studyHours/StudyHoursCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('study-hours-calculator')!;
 
@@ -253,7 +254,7 @@ const studyHoursFaqs: FAQItem[] = [
             Study in 50-to-90 Minute Time Blocks
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Avoid vague plans like "study all afternoon." Instead, schedule two distinct 90-minute blocks (e.g. 10:00 AM – 11:30 AM and 3:00 PM – 4:30 PM) separated by meals or active breaks. You can track these intervals with our <a href="/tools/pomodoro-study-timer" class="text-academic-700 font-semibold hover:underline">Pomodoro Study Timer</a> and countdown until finals with the <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown</a>.
+            Avoid vague plans like "study all afternoon." Instead, schedule two distinct 90-minute blocks (e.g. 10:00 AM – 11:30 AM and 3:00 PM – 4:30 PM) separated by meals or active breaks. You can track these intervals with our <a href={resolvePath('/tools/pomodoro-study-timer')} class="text-academic-700 font-semibold hover:underline">Pomodoro Study Timer</a> and countdown until finals with the <a href={resolvePath('/tools/exam-countdown')} class="text-academic-700 font-semibold hover:underline">Exam Countdown</a>.
           </p>
         </div>
 
@@ -277,7 +278,7 @@ const studyHoursFaqs: FAQItem[] = [
             Calculate Required Scores on Upcoming Work
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Know exactly what score you need before you study. Use our <a href="/tools/marks-needed-calculator" class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a> and <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown Timer</a> to set precise score targets and timeline milestones.
+            Know exactly what score you need before you study. Use our <a href={resolvePath('/tools/marks-needed-calculator')} class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a> and <a href={resolvePath('/tools/exam-countdown')} class="text-academic-700 font-semibold hover:underline">Exam Countdown Timer</a> to set precise score targets and timeline milestones.
           </p>
         </div>
 
@@ -289,7 +290,7 @@ const studyHoursFaqs: FAQItem[] = [
             Track Cumulative GPA Across Terms
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Ensure your study hours translate into long-term academic honors by tracking your term results with our <a href="/tools/gpa-calculator" class="text-academic-700 font-semibold hover:underline">GPA Calculator</a> and <a href="/tools/cgpa-calculator" class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a>.
+            Ensure your study hours translate into long-term academic honors by tracking your term results with our <a href={resolvePath('/tools/gpa-calculator')} class="text-academic-700 font-semibold hover:underline">GPA Calculator</a> and <a href={resolvePath('/tools/cgpa-calculator')} class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a>.
           </p>
         </div>
       </div>

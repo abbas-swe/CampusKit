@@ -1,6 +1,7 @@
 import type { BreadcrumbItem, FAQItem } from '../types/seo';
 
-export const SITE_URL = 'https://campuskit.io';
+export const SITE_URL = 'https://abbas-swe.github.io';
+export const BASE_PATH = '/CampusKit';
 export const SITE_NAME = 'CampusKit';
 export const SITE_TAGLINE = 'Tools for university life.';
 export const DEFAULT_DESCRIPTION =
@@ -24,20 +25,45 @@ export function formatPageTitle(title?: string): string {
 }
 
 export function formatCanonicalUrl(pathname: string): string {
-  const cleanPath = pathname.replace(/\/+$/, '') || '';
-  return `${SITE_URL}${cleanPath}`;
+  if (pathname.startsWith('http://') || pathname.startsWith('https://')) {
+    return pathname.endsWith('/') ? pathname : `${pathname}/`;
+  }
+
+  let clean = pathname.replace(/^\/+/, '').replace(/\/+$/, '');
+  const baseName = BASE_PATH.replace(/^\/+/, '');
+
+  if (clean.startsWith(baseName)) {
+    clean = clean.slice(baseName.length).replace(/^\/+/, '');
+  }
+
+  if (!clean) {
+    return `${SITE_URL}${BASE_PATH}/`;
+  }
+
+  return `${SITE_URL}${BASE_PATH}/${clean}/`;
 }
 
 export function generateBreadcrumbSchema(items: BreadcrumbItem[]): Record<string, unknown> {
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, index) => ({
-      '@type': 'ListItem',
-      position: index + 1,
-      name: item.name,
-      item: item.item.startsWith('http') ? item.item : `${SITE_URL}${item.item}`,
-    })),
+    itemListElement: items.map((item, index) => {
+      let itemUrl = item.item;
+      if (!itemUrl.startsWith('http')) {
+        let clean = itemUrl.replace(/^\/+/, '').replace(/\/+$/, '');
+        const baseName = BASE_PATH.replace(/^\/+/, '');
+        if (clean.startsWith(baseName)) {
+          clean = clean.slice(baseName.length).replace(/^\/+/, '');
+        }
+        itemUrl = clean ? `${SITE_URL}${BASE_PATH}/${clean}/` : `${SITE_URL}${BASE_PATH}/`;
+      }
+      return {
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: itemUrl,
+      };
+    }),
   };
 }
 
@@ -47,12 +73,21 @@ export function generateSoftwareApplicationSchema(tool: {
   url: string;
   category?: string;
 }): Record<string, unknown> {
+  let toolUrl = tool.url;
+  if (!toolUrl.startsWith('http')) {
+    let clean = toolUrl.replace(/^\/+/, '').replace(/\/+$/, '');
+    const baseName = BASE_PATH.replace(/^\/+/, '');
+    if (clean.startsWith(baseName)) {
+      clean = clean.slice(baseName.length).replace(/^\/+/, '');
+    }
+    toolUrl = clean ? `${SITE_URL}${BASE_PATH}/${clean}/` : `${SITE_URL}${BASE_PATH}/`;
+  }
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: tool.name,
     description: tool.description,
-    url: tool.url.startsWith('http') ? tool.url : `${SITE_URL}${tool.url}`,
+    url: toolUrl,
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'All',
     offers: {

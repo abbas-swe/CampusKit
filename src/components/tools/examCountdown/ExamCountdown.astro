@@ -1,5 +1,6 @@
 ---
 // ExamCountdown.astro
+import { resolvePath } from '../../../utils/paths';
 ---
 
 <div class="w-full max-w-5xl mx-auto" id="exam-countdown-root">
@@ -233,7 +234,7 @@
           </div>
 
           <a
-            href="/tools/study-hours-calculator"
+            href={resolvePath('/tools/study-hours-calculator')}
             class="inline-flex items-center justify-center gap-1 text-academic-700 hover:text-academic-900 font-semibold hover:underline"
           >
             <span>Plan Daily Study Hours</span>

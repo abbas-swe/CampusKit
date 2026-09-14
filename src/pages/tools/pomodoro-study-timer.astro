@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import PomodoroTimer from '../../components/tools/pomodoro/PomodoroTimer.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('pomodoro-study-timer')!;
 
@@ -224,7 +225,7 @@ const pomodoroFaqs: FAQItem[] = [
             Budget Your Total Prep Time First
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Use our <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to determine how many total study hours you need each day, then convert that target into Pomodoro blocks (e.g. 3 hours = 6 Pomodoros).
+            Use our <a href={resolvePath('/tools/study-hours-calculator')} class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to determine how many total study hours you need each day, then convert that target into Pomodoro blocks (e.g. 3 hours = 6 Pomodoros).
           </p>
         </div>
 
@@ -236,7 +237,7 @@ const pomodoroFaqs: FAQItem[] = [
             Track Your Exam Deadlines
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Stay grounded with our live <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown</a> tool to visualize remaining calendar study days before your midterm or final.
+            Stay grounded with our live <a href={resolvePath('/tools/exam-countdown')} class="text-academic-700 font-semibold hover:underline">Exam Countdown</a> tool to visualize remaining calendar study days before your midterm or final.
           </p>
         </div>
 
@@ -248,7 +249,7 @@ const pomodoroFaqs: FAQItem[] = [
             Protect Your Cumulative Standing
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Monitor how your test marks translate into semester honors using the <a href="/tools/gpa-calculator" class="text-academic-700 font-semibold hover:underline">GPA Calculator</a>, <a href="/tools/cgpa-calculator" class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a>, and <a href="/tools/marks-needed-calculator" class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a>. You can also calculate your daily schedule with the <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> and watch test deadlines approach with the <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown</a>.
+            Monitor how your test marks translate into semester honors using the <a href={resolvePath('/tools/gpa-calculator')} class="text-academic-700 font-semibold hover:underline">GPA Calculator</a>, <a href={resolvePath('/tools/cgpa-calculator')} class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a>, and <a href={resolvePath('/tools/marks-needed-calculator')} class="text-academic-700 font-semibold hover:underline">Marks Needed Calculator</a>. You can also calculate your daily schedule with the <a href={resolvePath('/tools/study-hours-calculator')} class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> and watch test deadlines approach with the <a href={resolvePath('/tools/exam-countdown')} class="text-academic-700 font-semibold hover:underline">Exam Countdown</a>.
           </p>
         </div>
       </div>

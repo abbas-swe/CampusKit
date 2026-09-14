@@ -1,6 +1,7 @@
 ---
 import Container from './Container.astro';
 import Button from './Button.astro';
+import { resolvePath } from '../../utils/paths';
 
 interface Props {
   activePath?: string;
@@ -9,11 +10,11 @@ interface Props {
 const { activePath = '' } = Astro.props;
 
 const navLinks = [
-  { name: 'All Tools', href: '/#tools' },
-  { name: 'Academic', href: '/#academic' },
-  { name: 'Productivity', href: '/#productivity' },
-  { name: 'About', href: '/about' },
-  { name: 'Contact', href: '/contact' },
+  { name: 'All Tools', href: resolvePath('/#tools') },
+  { name: 'Academic', href: resolvePath('/#academic') },
+  { name: 'Productivity', href: resolvePath('/#productivity') },
+  { name: 'About', href: resolvePath('/about') },
+  { name: 'Contact', href: resolvePath('/contact') },
 ];
 ---
 
@@ -21,7 +22,7 @@ const navLinks = [
   <Container size="xl">
     <div class="flex items-center justify-between h-16">
       <!-- Brand / Logo -->
-      <a href="/" class="flex items-center gap-3 group focus-visible:rounded-lg" aria-label="CampusKit Home">
+      <a href={resolvePath('/')} class="flex items-center gap-3 group focus-visible:rounded-lg" aria-label="CampusKit Home">
         <div class="w-9 h-9 rounded-lg bg-academic-700 flex items-center justify-center text-white shadow-subtle group-hover:bg-academic-800 transition-colors">
           <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <!-- Subtle abstract CK -->

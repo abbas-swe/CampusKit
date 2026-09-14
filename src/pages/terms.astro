@@ -2,15 +2,16 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Container from '../components/common/Container.astro';
 import Breadcrumbs from '../components/common/Breadcrumbs.astro';
+import { resolvePath } from '../utils/paths';
 
-const breadcrumbs = [{ name: 'Terms of Use', item: '/terms' }];
+const breadcrumbs = [{ name: 'Terms of Use', item: resolvePath('/terms') }];
 const lastUpdated = 'September 14, 2026';
 ---
 
 <BaseLayout
   title="Terms of Use | CampusKit"
   description="CampusKit's Terms of Use. Guidelines, calculator accuracy disclaimers, and user terms for our free student academic tools and utilities."
-  canonical="/terms"
+  canonical={resolvePath('/terms')}
   breadcrumbs={breadcrumbs}
 >
   <!-- Header Banner -->
@@ -217,7 +218,7 @@ const lastUpdated = 'September 14, 2026';
             13. Contact Information
           </h2>
           <p class="text-sm sm:text-base text-slate-600 leading-relaxed">
-            If you have questions, feedback, or concerns regarding these Terms of Use, please reach out through our <a href="/contact" class="text-academic-700 font-medium underline hover:text-academic-800">Contact Page</a>.
+            If you have questions, feedback, or concerns regarding these Terms of Use, please reach out through our <a href={resolvePath('/contact')} class="text-academic-700 font-medium underline hover:text-academic-800">Contact Page</a>.
           </p>
           <p class="text-xs text-slate-500 italic">
             [Administrative Legal Contact Placeholder: inquiries may be submitted via the Contact form or administrator email placeholder: contact@example.com]

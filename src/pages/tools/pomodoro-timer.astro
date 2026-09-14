@@ -1,25 +1,30 @@
 ---
 // Redirect /tools/pomodoro-timer to /tools/pomodoro-study-timer
+import { resolvePath } from '../../utils/paths';
+import { formatCanonicalUrl } from '../../utils/seo';
+
+const targetUrl = resolvePath('/tools/pomodoro-study-timer');
+const canonicalUrl = formatCanonicalUrl('/tools/pomodoro-study-timer');
 ---
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="robots" content="noindex, nofollow" />
-    <meta http-equiv="refresh" content="0;url=/tools/pomodoro-study-timer" />
-    <link rel="canonical" href="https://campuskit.io/tools/pomodoro-study-timer" />
+    <meta http-equiv="refresh" content={`0;url=${targetUrl}`} />
+    <link rel="canonical" href={canonicalUrl} />
     <title>Redirecting to Pomodoro Study Timer | CampusKit</title>
   </head>
   <body class="bg-slate-50 flex items-center justify-center min-h-screen font-sans text-center p-4">
     <div class="bg-white p-8 rounded-2xl border border-slate-200 shadow-sm max-w-sm">
       <h1 class="text-lg font-bold text-slate-900 mb-2">Redirecting...</h1>
       <p class="text-xs text-slate-500 mb-4">Moving to the Pomodoro Study Timer.</p>
-      <a href="/tools/pomodoro-study-timer" class="text-sm font-semibold text-academic-700 hover:underline">
+      <a href={targetUrl} class="text-sm font-semibold text-academic-700 hover:underline">
         Click here if you are not redirected automatically
       </a>
     </div>
-    <script>
-      window.location.replace('/tools/pomodoro-study-timer');
+    <script define:vars={{ targetUrl }}>
+      window.location.replace(targetUrl);
     </script>
   </body>
 </html>

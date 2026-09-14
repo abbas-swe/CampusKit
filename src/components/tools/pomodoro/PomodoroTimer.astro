@@ -1,6 +1,7 @@
 ---
 // PomodoroTimer.astro
 import { DEFAULT_SETTINGS } from '../../../utils/pomodoro.ts';
+import { resolvePath } from '../../../utils/paths';
 ---
 
 <div class="w-full max-w-5xl mx-auto" id="pomodoro-timer-root">
@@ -386,7 +387,7 @@ import { DEFAULT_SETTINGS } from '../../../utils/pomodoro.ts';
         <!-- Companion Tool Link -->
         <div class="pt-2">
           <a
-            href="/tools/study-hours-calculator"
+            href={resolvePath('/tools/study-hours-calculator')}
             class="flex items-center justify-between p-3 rounded-xl border border-slate-200 hover:border-academic-300 hover:bg-academic-50/40 transition-all text-xs group"
           >
             <div>

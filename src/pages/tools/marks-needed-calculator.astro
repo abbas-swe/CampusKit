@@ -3,6 +3,7 @@ import ToolLayout from '../../layouts/ToolLayout.astro';
 import MarksNeededCalculator from '../../components/tools/marksNeeded/MarksNeededCalculator.astro';
 import { getToolBySlug } from '../../data/tools';
 import type { FAQItem } from '../../types/seo';
+import { resolvePath } from '../../utils/paths';
 
 const tool = getToolBySlug('marks-needed-calculator')!;
 
@@ -333,7 +334,7 @@ const marksNeededFaqs: FAQItem[] = [
             Monitor Overall Term GPA & Standing
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            Use our <a href="/tools/gpa-calculator" class="text-academic-700 font-semibold hover:underline">GPA Calculator</a> and <a href="/tools/cgpa-calculator" class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a> to verify how shifts in individual course letter grades affect your scholarship eligibility and degree standing.
+            Use our <a href={resolvePath('/tools/gpa-calculator')} class="text-academic-700 font-semibold hover:underline">GPA Calculator</a> and <a href={resolvePath('/tools/cgpa-calculator')} class="text-academic-700 font-semibold hover:underline">CGPA Calculator</a> to verify how shifts in individual course letter grades affect your scholarship eligibility and degree standing.
           </p>
         </div>
 
@@ -345,7 +346,7 @@ const marksNeededFaqs: FAQItem[] = [
             Pair with Exam Countdown & Study Hours
           </h3>
           <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-            When preparing for exam week, pair your score targets with our <a href="/tools/exam-countdown" class="text-academic-700 font-semibold hover:underline">Exam Countdown Timer</a> and <a href="/tools/study-hours-calculator" class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to structure preparation intervals.
+            When preparing for exam week, pair your score targets with our <a href={resolvePath('/tools/exam-countdown')} class="text-academic-700 font-semibold hover:underline">Exam Countdown Timer</a> and <a href={resolvePath('/tools/study-hours-calculator')} class="text-academic-700 font-semibold hover:underline">Study Hours Calculator</a> to structure preparation intervals.
           </p>
         </div>
       </div>

@@ -6,6 +6,7 @@ import ToolCard from '../components/tools/ToolCard.astro';
 import type { ToolMetadata } from '../types/tools';
 import type { FAQItem } from '../types/seo';
 import { generateSoftwareApplicationSchema } from '../utils/seo';
+import { resolvePath } from '../utils/paths';
 import { TOOLS } from '../data/tools';
 
 interface Props {
@@ -22,14 +23,14 @@ const { tool, pageTitle, faqs = [], canonical, metaDescription, noindex } = Astr
 const shouldNoIndex = noindex ?? (tool.status === 'coming-soon');
 
 const breadcrumbs = [
-  { name: 'Tools', item: '/#tools' },
-  { name: tool.name, item: `/tools/${tool.slug}` },
+  { name: 'Tools', item: resolvePath('/#tools') },
+  { name: tool.name, item: resolvePath(`/tools/${tool.slug}`) },
 ];
 
 const structuredData = generateSoftwareApplicationSchema({
   name: `${tool.name} - CampusKit`,
   description: tool.description,
-  url: `/tools/${tool.slug}`,
+  url: resolvePath(`/tools/${tool.slug}`),
   category: tool.category,
 });
 
@@ -42,7 +43,7 @@ const relatedTools = TOOLS.filter(
 <BaseLayout
   title={pageTitle || tool.name}
   description={metaDescription || tool.description}
-  canonical={canonical || `/tools/${tool.slug}`}
+  canonical={canonical || resolvePath(`/tools/${tool.slug}`)}
   breadcrumbs={breadcrumbs}
   faqs={faqs}
   structuredData={structuredData}

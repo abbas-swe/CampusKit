@@ -10,6 +10,7 @@ import {
   SITE_URL,
   DEFAULT_DESCRIPTION,
 } from '../../utils/seo';
+import { resolvePath } from '../../utils/paths';
 
 interface Props extends SEOProps {}
 
@@ -27,17 +28,17 @@ const {
 
 const canonicalUrl = canonical ? formatCanonicalUrl(canonical) : formatCanonicalUrl(Astro.url.pathname);
 const fullTitle = formatPageTitle(title);
-const fullOgImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage}`;
+const fullOgImageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${resolvePath(ogImage)}`;
 
 const baseSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE_NAME,
-  url: SITE_URL,
+  url: `${SITE_URL}${resolvePath('/')}`,
   description: SITE_TAGLINE,
   potentialAction: {
     '@type': 'SearchAction',
-    target: `${SITE_URL}/?q={search_term_string}`,
+    target: `${SITE_URL}${resolvePath('/')}?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
 };
@@ -99,8 +100,8 @@ if (structuredData) {
 <meta name="twitter:image" content={fullOgImageUrl} />
 
 <!-- Icons & Manifest -->
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="manifest" href="/site.webmanifest" />
+<link rel="icon" type="image/svg+xml" href={resolvePath('/favicon.svg')} />
+<link rel="manifest" href={resolvePath('/site.webmanifest')} />
 <meta name="theme-color" content="#1e40af" />
 
 <!-- Schema.org JSON-LD Structured Data -->
