@@ -9,6 +9,5 @@ Disallow: /CampusKit/tools/percentage-calculator
 Disallow: /CampusKit/tools/attendance-calculator
 Disallow: /CampusKit/tools/final-grade-calculator
 
-# Production Sitemaps
+# Production Sitemap
 Sitemap: https://abbas-swe.github.io/CampusKit/sitemap-index.xml
-Sitemap: https://abbas-swe.github.io/CampusKit/sitemap.xml
