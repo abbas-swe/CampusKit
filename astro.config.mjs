@@ -3,13 +3,10 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 
 // GitHub Pages configuration for repository: https://github.com/abbas-swe/CampusKit
-const site = process.env.ASTRO_SITE || process.env.SITE || 'https://abbas-swe.github.io';
-const base = process.env.ASTRO_BASE || process.env.BASE_PATH || '/CampusKit';
-
 // https://astro.build/config
 export default defineConfig({
-  site,
-  base,
+  site: 'https://abbas-swe.github.io/CampusKit/',
+  base: '/CampusKit',
   trailingSlash: 'always',
   integrations: [
     tailwind({
